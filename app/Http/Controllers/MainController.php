@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-
+use App\Jobs\SendLoginNotificationJob;
 class MainController extends Controller
 {
     public function index()
@@ -42,42 +42,82 @@ class MainController extends Controller
         return redirect('signin')->with('success', 'Registration successful! Please verify your email.');
     }
     
-    public function loginUser(Request $data)
-    {
-        $data->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-            'g-recaptcha-response' => 'required|captcha', 
-        ]);
+//     public function loginUser(Request $data)
+//     {
+//         $data->validate([
+//             'email' => 'required|email',
+//             'password' => 'required',
+//             'g-recaptcha-response' => 'required|captcha', 
+//         ]);
     
-        $user = User::where('email', $data->input('email'))->first();
+//         $user = User::where('email', $data->input('email'))->first();
     
-        if ($user && $data->input('password') === $user->password) {
-            if ($user->status === "Blocked") {
-                return redirect('signin')->with('error', 'Your account has been blocked.');
-            }
+//         if ($user && $data->input('password') === $user->password) {
+//             if ($user->status === "Blocked") {
+//                 return redirect('signin')->with('error', 'Your account has been blocked.');
+//             }
     
-            session()->put('id', $user->id);
-            session()->put('type', $user->type);
+//             session()->put('id', $user->id);
+//             session()->put('type', $user->type);
     
-            if ($user->type === 'student') {
-return redirect()->route('Students.dashboard');
-            } elseif ($user->type === 'professor') {
-                return redirect('/faculityAdmin');
-            }
+//             if ($user->type === 'student') {
+// return redirect()->route('Students.dashboard');
+//             } elseif ($user->type === 'professor') {
+//                 return redirect('/faculityAdmin');
+//             }
+//         }
+    
+//         return redirect('/')->with('error', 'Email or password is incorrect');
+//     }
+
+public function loginUser(Request $data)
+{
+    $data->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+        'requested_type' => 'required|string'
+    ]);
+
+    $user = User::where('email', $data->input('email'))->first();
+
+    if ($user && $data->input('password') === $user->password) {
+        // Compare actual user type with what the portal expects
+        if ($user->type !== $data->input('requested_type')) {
+            return redirect('/')->with('error', 'You are trying to log in from the wrong portal.');
         }
-    
-        return redirect('/')->with('error', 'Email or password is incorrect');
+
+        // Everything matches, proceed
+        session()->put('id', $user->id);
+        session()->put('type', $user->type);
+        session()->put('name', $user->name);
+
+        SendLoginNotificationJob::dispatch(
+            $user->email,
+            [
+                'name' => $user->name,
+                'email' => $user->email,
+                'time' => now()->format('Y-m-d H:i:s'),
+            ]
+        );
+
+        if ($user->type === 'student') {
+            return redirect()->route('Students.dashboard');
+        } elseif ($user->type === 'professor') {
+            return redirect('/faculityAdmin');
+        } elseif ($user->type === 'registrationoffice') {
+            return redirect('/Registration_index');
+        } elseif ($user->type === 'admin') {
+            return redirect('/admin/dashboard');
+        }
     }
+
+    return redirect('/')->with('error', 'Email or password is incorrect');
+}
+
     public function logout()
 {
-    // If using Laravel authentication:
-    // Auth::logout();
-
-    // Clear all session data
+    
     session()->flush();
-
-    // Regenerate session ID to prevent session fixation
     session()->regenerate();
 
     return redirect('/')->with('success', 'You have been successfully logged out.');

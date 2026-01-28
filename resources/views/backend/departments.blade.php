@@ -10,50 +10,27 @@
     <ul class="list-group">
         @php
             $departments = [
-                'Computer Science',
-                'Mechanical Engineering',
-                'Electrical Engineering',
-                'Civil Engineering',
-                'Business Administration',
-                'Mathematics',
-                'Physics',
-                'Chemistry'
+                'CS' => 'Computer Science',
+                'Mechanical Engineering' => 'Mechanical Engineering',
+                'EE' => 'Electrical Engineering',
+                'Civil Engineering' => 'Civil Engineering',
+                'Business Administration' => 'Business Administration',
+                'Mathematics' => 'Mathematics',
+                'Physics' => 'Physics',
+                'Chemistry' => 'Chemistry'
             ];
         @endphp
 
-        @foreach($departments as $dept)
-            <li class="list-group-item">
-                <div class="d-flex justify-content-between align-items-center">
-                    <!-- Department Name (linked to details page) -->
-                    <a href="{{ url('/department/' . urlencode($dept)) }}" class="text-decoration-none fw-bold text-dark">
-                        {{ $dept }}
-                    </a>
-
-                    <!-- Admin Actions -->
-                    <div class="btn-group btn-group-sm" role="group">
-                        <!-- View Details -->
-                        <a href="{{ url('/department/' . urlencode($dept)) }}" class="btn btn-outline-primary" title="View Details">View</a>
-
-                        <!-- Edit Department -->
-                        <a href="{{ url('/department/' . urlencode($dept) . '/edit') }}" class="btn btn-outline-warning" title="Edit Department">Edit</a>
-
-                        <!-- Delete Department -->
-                        <form action="{{ url('/department/' . urlencode($dept)) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this department?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-outline-danger" title="Delete Department">Delete</button>
-                        </form>
-
-                        <!-- Manage Faculty -->
-                        <a href="{{ url('/department/' . urlencode($dept) . '/faculty') }}" class="btn btn-outline-info" title="Manage Faculty">Faculty</a>
-
-                        <!-- Manage Courses -->
-                        <a href="{{ url('/department/' . urlencode($dept) . '/courses') }}" class="btn btn-outline-secondary" title="Manage Courses">Courses</a>
-
-                        <!-- Manage Students -->
-                        <a href="{{ url('/department/' . urlencode($dept) . '/students') }}" class="btn btn-outline-dark" title="Manage Students">Students</a>
-                    </div>
-                </div>
+        @foreach($departments as $key => $dept)
+            <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                style="cursor: pointer; transition: background-color 0.2s;"
+                onmouseover="this.style.backgroundColor='#f8f9fa';"
+                onmouseout="this.style.backgroundColor='';"
+            >
+                <!-- Department Name (linked to details page) -->
+                <a href="{{ url('/department/' . urlencode($key)) }}" class="text-decoration-none fw-bold text-dark">
+                    {{ $dept }}
+                </a>
             </li>
         @endforeach
     </ul>

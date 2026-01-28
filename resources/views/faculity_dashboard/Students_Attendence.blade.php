@@ -118,16 +118,17 @@
                                             {{ $reg->student->registration->roll_no ?? 'N/A' }}
                                         </td>
                                         <td>{{ $reg->student->name ?? 'N/A' }}</td>
-                                        <td>
-                                            <div class="form-check form-check-inline">
-<input class="form-check-input" type="radio" name="attendance[{{ $reg->id }}]" value="present" required>
-                                                <label class="form-check-label">Present</label>
-                                            </div>
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="attendance[{{ $reg->id }}]" value="absent">
-                                                <label class="form-check-label">Absent</label>
-                                            </div>
-                                        </td>
+                                      <td>
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="attendance[{{ $reg->id }}]" value="present" required>
+        <label class="form-check-label">Present</label>
+    </div>
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="attendance[{{ $reg->id }}]" value="absent">
+        <label class="form-check-label">Absent</label>
+    </div>
+</td>
+
                                         <td>{{ $reg->attendance_percentage ?? 0 }}%</td>
                                     </tr>
                                 @endforeach

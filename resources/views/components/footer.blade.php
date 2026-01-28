@@ -64,7 +64,7 @@
 						</div>
 						
 						<div class="col-lg-4 order-lg-2">
-							<p class="text-center mb-15">Copyright @2025 UNIVERSITY Of ALBOURNE.</p>
+							<p class="text-center mb-15">Copyright @2025 Punjab Global University Portal.</p>
 						</div>
 					</div>
 				</div>

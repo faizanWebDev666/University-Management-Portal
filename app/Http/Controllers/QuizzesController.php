@@ -84,6 +84,7 @@ public function store(Request $request)
         'quiz_type' => $validated['quiz_type'],
         'deadline' => $validated['deadline'],
         'deadline_time' => $validated['deadline_time'],
+        'teacher_id' => session('id'), // ✅ Add teacher ID from session
     ];
 
     if ($validated['quiz_type'] === 'file') {
@@ -110,6 +111,7 @@ public function store(Request $request)
 
     return redirect()->back()->with('success', 'Quiz uploaded successfully.');
 }
+
 public function showQuizzes()
 {
     $studentId = session('id'); // Use session ID for student

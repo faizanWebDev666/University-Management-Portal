@@ -16,15 +16,23 @@ class Quiz extends Model
     'written_questions',
     'deadline',
     'deadline_time',
+    'teacher_id'
 ];
+
+
 public function course()
 {
-    return $this->belongsTo(Course::class);
+    return $this->belongsTo(Course::class, 'course_id');
 }
 
 public function class()
 {
-    return $this->belongsTo(Classes::class); // Use your correct class model name
+    return $this->belongsTo(Classes::class, 'class_id');
+}
+
+public function submissions()
+{
+    return $this->hasMany(StudentQuizSubmission::class, 'quiz_id');
 }
 
 }

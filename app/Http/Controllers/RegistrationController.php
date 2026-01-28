@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 use App\Models\Classes;
     use App\Models\Course;
+    use App\Models\Department;
+    use App\Models\OfferCourse;
     use App\Models\StudentImage;
     use App\Models\StudentsRegistration;
     use App\Models\TeacherImage;
@@ -12,15 +14,28 @@ use App\Models\Classes;
     use Illuminate\Support\Facades\DB;
     use Illuminate\Support\Facades\Hash;
     use Illuminate\Support\Facades\Mail;
+    use Illuminate\Support\Facades\Storage;
     use Illuminate\Support\Str;
 
 class RegistrationController extends Controller
 {
     public function Registration_index()
     {
-        return view('faculity_dashboard.Registration_index');
-    }
+        $totalStudents=StudentsRegistration::count();
+        $totalTeachers=TeacherRegistration::count();
+        $totalCourses=Course::count();
+        $totalClasses=Classes::count();
 
+    $allocations = OfferCourse::with([
+        'course', 
+        'professor' => function ($query) {
+            $query->where('type', 'professor');
+        }, 
+        'class'
+    ])->get();
+    
+    return view('faculity_dashboard.Registration_index', compact('totalStudents', 'totalTeachers', 'totalCourses', 'totalClasses','allocations'));
+    }
       public function delete()
     {
         return view('faculity_dashboard.Delete-Account');
@@ -37,14 +52,103 @@ class RegistrationController extends Controller
 
     
     public function RegisterTeachers()
+
     {
-        return view('faculity_dashboard.RegisterTeachers');
+        $departments = Department::all();
+        return view('faculity_dashboard.RegisterTeachers', compact('departments'));
     } 
-    public function RegisterStudents()
-    {
-        $classes = Classes::all(); // fetch all classes from DB
-        return view('faculity_dashboard.RegisterStudents', compact('classes'));
+   public function RegisterStudents()
+{
+    $classes = Classes::all(); // For the dropdown in your form
+    $students = StudentsRegistration::with(['image', 'user'])->get(); // Load related data
+
+    return view('faculity_dashboard.registerstudents', compact('classes', 'students'));
+}
+public function RegistrationProfile()
+{
+    $userId = session('id');
+    $student = StudentsRegistration::where('user_id', $userId)->with('image')->first();
+
+   
+    return view('faculity_dashboard.Registration-profile', compact('student'));
+}
+
+public function update(Request $request, $id)
+{
+    $student = StudentsRegistration::findOrFail($id);
+    $user = User::findOrFail($student->user_id);
+
+    $validatedData = $request->validate([
+        'full_name' => 'required|string|max:255',
+        'email' => 'required|email|unique:students_registrations,email,' . $id . '|unique:users,email,' . $user->id,
+        'phone_number' => 'required|string|max:15',
+        'cnic' => 'required|string|max:15',
+        'department' => 'required|string',
+        'roll_no' => 'required|string|max:3',
+        'degree_program' => 'required|string',
+        'password' => 'nullable|string|min:6',
+        'address' => 'required|string',
+        'country' => 'required|string',
+        'city' => 'required|string',
+        'state_province' => 'required|string',
+        'student_image' => 'nullable|image|mimes:jpg,png|max:2048',
+        'class_id' => 'required|exists:classes,id',
+    ]);
+
+    $imagePath = null;
+    if ($request->hasFile('student_image')) {
+        // Delete old image if exists
+        if ($student->image && Storage::disk('public')->exists($student->image->image_path)) {
+            Storage::disk('public')->delete($student->image->image_path);
+        }
+
+        $image = $request->file('student_image');
+        $imageName = Str::uuid() . '.' . $image->getClientOriginalExtension();
+        $imagePath = $image->storeAs('student_images', $imageName, 'public');
     }
+
+    DB::transaction(function () use ($validatedData, $student, $user, $imagePath) {
+        // Update User
+        $user->name = $validatedData['full_name'];
+        $user->email = $validatedData['email'];
+        if (!empty($validatedData['password'])) {
+            $user->password = Hash::make($validatedData['password']);
+        }
+        $user->class_id = $validatedData['class_id'];
+        $user->save();
+
+        // Update Student
+        $student->fill([
+            'full_name' => $validatedData['full_name'],
+            'email' => $validatedData['email'],
+            'phone_number' => $validatedData['phone_number'],
+            'cnic' => $validatedData['cnic'],
+            'department' => $validatedData['department'],
+            'roll_no' => $validatedData['roll_no'],
+            'degree_program' => $validatedData['degree_program'],
+            'address' => $validatedData['address'],
+            'country' => $validatedData['country'],
+            'city' => $validatedData['city'],
+            'state_province' => $validatedData['state_province'],
+            'class_id' => $validatedData['class_id'],
+        ]);
+
+        if (!empty($validatedData['password'])) {
+            $student->password = Hash::make($validatedData['password']);
+        }
+        $student->save();
+
+        // Update image
+        if ($imagePath) {
+            $imageModel = $student->image ?? new StudentImage();
+            $imageModel->student_id = $student->id;
+            $imageModel->image_path = $imagePath;
+            $imageModel->save();
+        }
+    });
+
+    return redirect()->back()->with('success', 'Student Updated Successfully!');
+}
 
     public function NewCourseRegistration()
     {
@@ -55,6 +159,24 @@ class RegistrationController extends Controller
         return view('faculity_dashboard.RegisterNewClasses');
     } 
     
+    public function RegisterNewDepartments()
+    {
+        return view('faculity_dashboard.RegisterNewDepartments');
+    }
+    public function storeDepartments(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:departments,name',
+            'code' => 'required|string|max:50|unique:departments,code',
+        ]);
+
+        $department = new Department();
+        $department->name = $request->name;
+        $department->code = $request->code;
+        $department->save();
+
+        return redirect()->back()->with('success', 'Department registered successfully!');
+    }
     public function storeClasses(Request $request)
     {
         $request->validate([

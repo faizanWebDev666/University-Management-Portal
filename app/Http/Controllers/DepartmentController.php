@@ -23,14 +23,27 @@ class DepartmentController extends Controller
     }
 
     // 2. Show Department Details
-    public function show($name)
-    {
-        $classes = DB::table('classes')->where('department', $name)->get();
-        $students = DB::table('students_registrations')->where('department', $name)->get();
-        $teachers = DB::table('teacher_registrations')->where('department_id', $name)->get(); // You may need to map ID to name
+public function show($name)
+{
+    // Get department ID
+    $department = DB::table('departments')->where('name', $name)->first();
 
-        return view('backend.show-departments', compact('name', 'classes', 'students', 'teachers'));
+    // These are already Collections
+    $classes = DB::table('classes')->where('department', $name)->get();
+    $students = DB::table('students_registrations')->where('department', $name)->get();
+
+    // Fix: return empty collection instead of []
+    $teachers = collect();  
+
+    if ($department) {
+        $teachers = DB::table('teacher_registrations')
+                      ->where('department_id', $department->id)
+                      ->get();
     }
+
+    return view('backend.show-departments', compact('name', 'classes', 'students', 'teachers'));
+}
+
 
     // 3. Edit Department Name
     public function edit($name)

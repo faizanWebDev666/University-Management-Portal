@@ -45,7 +45,10 @@ public function registration()
     return $this->hasOne(StudentsRegistration::class, 'email', 'email');
 }
 
-
+public function submissions()
+{
+    return $this->hasMany(StudentQuizSubmission::class, 'student_id');
+}
 
 
 }

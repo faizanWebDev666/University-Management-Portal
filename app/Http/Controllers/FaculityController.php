@@ -2,25 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Attendance;
+use App\Models\Quiz;
+use App\Models\User;
 use App\Models\LeaveRequest;
 use App\Models\OfferCourse;
-use App\Models\OfferCourses;
-use App\Models\StudentCourseRegistration;
-use App\Models\User;
 use Illuminate\Http\Request;
-
+use App\Models\StudentCourseRegistration;
 class FaculityController extends Controller
 {
 public function index()
 {
-    $userId = session('id'); // or Auth::id()
+    $userId = session('id'); 
 
     $professor = User::where('id', $userId)
         ->with(['offeredCourses.course', 'offeredCourses.class'])
         ->where('type', 'professor')
         ->first();
-
    
     return view('faculity_dashboard.index', compact('professor'));
 }
@@ -38,7 +35,6 @@ public function store(Request $request)
         'reason' => 'required|string|min:10',
     ]);
 
-    // Example saving logic
     LeaveRequest::create([
 'faculty_id' => session('id'),
         'leave_type' => $request->leave_type,
@@ -50,17 +46,13 @@ public function store(Request $request)
 
     return redirect()->back()->with('success', 'Leave request submitted successfully.');
 }
-
-
-
 public function Students_Attendence(Request $request)
 {
     $offeredCourses = OfferCourse::with(['course', 'class'])->get();
     $offeredCourseId = $request->input('offered_course_id');
-    $registeredStudents = collect(); // Default empty
+    $registeredStudents = collect();
 
     if ($offeredCourseId) {
-        // Fetch students and their attendances for the selected offered course
         $registeredStudents = StudentCourseRegistration::with([
             'student.registration',
             'offeredCourse.course',
@@ -72,7 +64,6 @@ public function Students_Attendence(Request $request)
         ->where('offered_course_id', $offeredCourseId)
         ->get();
 
-        // Calculate attendance percentage
         foreach ($registeredStudents as $reg) {
             $total = $reg->attendances->count();
             $present = $reg->attendances->where('status', 'present')->count();
@@ -83,14 +74,59 @@ public function Students_Attendence(Request $request)
 
     return view('faculity_dashboard.Students_Attendence', compact('offeredCourses', 'registeredStudents', 'offeredCourseId'));
 }
-
-
-
-
     public function WelcomeProfessor()
     {
-        $userId = session('id'); // or Auth::id() if using Auth
+        $userId = session('id'); 
        $offeredCourses = OfferCourse::where('professor_id', session('id'))->get();
         return view('faculity_dashboard.WelcomeProfessor', compact('offeredCourses'));
     }
+
+    
+   public function showquiz($quizId)
+{
+    $professorId = session('id'); // teacher id from session
+
+    // Get quiz and related submissions with student info
+    $quiz = Quiz::where('id', $quizId)
+        ->where('teacher_id', $professorId)
+        ->with(['submissions.student']) // eager load submissions and students
+        ->firstOrFail();
+
+    return view('faculity_dashboard.SubmittedQuizzes', compact('quiz'));
+}
+
+public function courseDetails($uuid)
+{
+    $userId = session('id');
+    
+    // Fetch the course by UUID
+    $course = \App\Models\Course::where('uuid', $uuid)->firstOrFail();
+    
+    // Fetch the offered course with relationships
+    $offeredCourse = OfferCourse::where('course_id', $course->id)
+        ->where('professor_id', $userId)
+        ->with(['course', 'class', 'professor'])
+        ->firstOrFail();
+    
+    // Get all registered students for this course
+    $registeredStudents = StudentCourseRegistration::with([
+        'student.registration',
+        'offeredCourse.course'
+    ])
+    ->where('offered_course_id', $offeredCourse->id)
+    ->get();
+    
+    // Get assignments for this course using course_id and teacher_id
+    $assignments = \App\Models\Assignment::where('course_id', $course->id)
+        ->where('teacher_id', $userId)
+        ->with('submissions')
+        ->get();
+    
+    // Get quizzes for this course using course_id and teacher_id
+    $quizzes = Quiz::where('course_id', $course->id)
+        ->where('teacher_id', $userId)
+        ->get();
+
+    return view('faculity_dashboard.course-details', compact('offeredCourse', 'registeredStudents', 'assignments', 'quizzes'));
+}
 }

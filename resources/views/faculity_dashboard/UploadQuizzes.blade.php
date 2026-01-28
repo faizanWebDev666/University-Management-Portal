@@ -25,6 +25,14 @@
         background-color: black;
     }
 </style>
+<div class="text-center mt-4">
+    <a href="{{ route('faculity.showquiz',$quiz->id) }}" class="btn btn-lg px-4 py-2 shadow-sm"
+       style="background: linear-gradient(45deg, #111, #28a745); color: #fff; font-weight: bold; border-radius: 50px; transition: 0.3s;"
+       onmouseover="this.style.background='linear-gradient(45deg,#28a745,#111)';"
+       onmouseout="this.style.background='linear-gradient(45deg,#111,#28a745)';">
+       <i class="bi bi-eye-fill me-2"></i> View Quizzes
+    </a>
+</div>
 
 <div class="container my-5">
     <div class="card shadow-lg border-0">

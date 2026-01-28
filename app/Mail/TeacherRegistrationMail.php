@@ -14,34 +14,19 @@ class TeacherRegistrationMail extends Mailable
     use Queueable, SerializesModels;
 
     public $details;
-
-    /**
-     * Create a new message instance.
-     *
-     * @param array $details
-     */
     public function __construct(array $details)
     {
         $this->details = $details;
     }
 
-    /**
-     * Get the message envelope.
-     *
-     * @return \Illuminate\Mail\Mailables\Envelope
-     */
     public function envelope()
     {
         return new Envelope(
-            subject: $this->details['title'] ?? 'Successful Registration of Become Faculity Member Notification', // Dynamic subject
+            subject: $this->details['title'] ?? 'Successful Registration of Become Faculity Member Notification', 
         );
     }
 
-    /**
-     * Get the message content definition.
-     *
-     * @return \Illuminate\Mail\Mailables\Content
-     */
+
     public function content()
     {
         return new Content(
@@ -49,11 +34,7 @@ class TeacherRegistrationMail extends Mailable
         );
     }
 
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array
-     */
+   
     public function attachments()
     {
         return [];

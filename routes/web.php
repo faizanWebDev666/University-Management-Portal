@@ -4,20 +4,24 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminCourseController;
 use App\Http\Controllers\AdminleaveRequestsController;
 use App\Http\Controllers\AdminProfessorController;
+use App\Http\Controllers\AdminSearchController;
 use App\Http\Controllers\AdminStudentController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\CourseAllocationController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\FaculityController;
+use App\Http\Controllers\HostelController;
 use App\Http\Controllers\leaveController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\ProfessorCourseController;
 use App\Http\Controllers\QuizzesController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\SettingsConroller;
+use App\Http\Controllers\Student\HostelRequestController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentsController;
+use App\Http\Controllers\StudentUpdateRequest;
 use App\Http\Controllers\TeacherController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +30,18 @@ use Illuminate\Support\Facades\Route;
 
 
 //Admin Routes
+Route::post('/request-update-students', [RegistrationController::class, 'sendRequest'])
+    ->name('request.update.students');
+
+// Admin manages requests
+Route::get('/admin/update-students', [AdminStudentController::class, 'index'])
+    ->middleware('update.permission');
+
+Route::get('/admin/update-requests', [StudentUpdateRequest::class, 'index']); // For listing (optional)
+Route::post('/admin/update-requests/{id}/approve', [StudentUpdateRequest::class, 'approve'])
+    ->name('admin.update.requests.approve');
+Route::post('/admin/update-requests/{id}/reject', [StudentUpdateRequest::class, 'reject'])
+    ->name('admin.update.requests.reject');
 Route::get('admin/settings', [SettingsConroller::class, 'settings'])->name('admin.settings');
 Route::prefix('department')->group(function () {
     Route::get('/', [DepartmentController::class, 'index']);
@@ -39,12 +55,25 @@ Route::prefix('department')->group(function () {
    
 });
 
+
+
+//search filters in admin side only one search bar in admin header exists
+
+Route::get('/admin/users/search', [AdminSearchController::class, 'ajaxFilterUsers'])
+    ->name('admin.users.search');
+
+// Professors
+Route::get('/admin/professors/search', [AdminSearchController::class, 'ajaxFilterProfessors'])
+    ->name('admin.professors.search');
+
+
 Route::get('/admin/leaves/{id}/edit', [AdminleaveRequestsController::class, 'edit'])->name('leaves.edit');
 Route::put('/admin/leaves/{id}', [AdminleaveRequestsController::class, 'update'])->name('leaves.update');
 Route::delete('/admin/leaves/{id}', [AdminleaveRequestsController::class, 'destroy'])->name('leaves.destroy');
 
 use App\Http\Controllers\CourseController;
 Route::get('admin/applications', [leaveController::class, 'adminViewLeaves'])->name('admin.viewLeaves');
+Route::get('admin/users', [AdminController::class, 'users'])->name('admin.users');
 
 Route::get('/courses/{id}', [AdminCourseController::class, 'show'])->name('courses.show');
 Route::get('/courses/{id}/edit', [AdminCourseController::class, 'edit'])->name('courses.edit');
@@ -79,6 +108,7 @@ Route::get('admin/faculity/prof', [AdminController::class, 'display_professors']
 Route::get('admin/Students', [AdminController::class, 'display_students'])->name('display.students');
 Route::get('admin/Courses', [AdminController::class, 'Courses'])->name('display.Courses');
 
+Route::get('admin/classes', [AdminController::class, 'Classes'])->name('display.Classes');
 
 //students Routes:
 Route::get('Students_Dashboard', [StudentsController::class, 'Students_Dashboard'])->name('Students.dashboard');
@@ -90,19 +120,21 @@ Route::get('/logout', [MainController::class, 'logout'])->name('logout');
 Route::get('/faculty/quizzes', [QuizzesController::class, 'showQuizzes'])->name('quizzes.list');
 Route::post('/student/upload-answer/{quiz}', [QuizzesController::class, 'uploadStudentAnswer'])->name('student.uploadAnswer');
 Route::get('/student/course/{course_id}', [StudentController::class, 'courseDetails'])->name('student.course.details');
-
-
-Route::get('/', [MainController::class, 'index']);
+Route::get('student/hostal/request', [HostelRequestController::class, 'create'])->name('student.hostel.request');
+ Route::post('/hostel-request', [HostelRequestController::class, 'store'])
+        ->name('student.hostel.store');
+Route::get('/', [MainController::class, 'index'])->name('home');
 Route::post('registerUser', [MainController::class, 'registerUser'])->name('registerUser');
 Route::post('loginUser', [MainController::class, 'loginUser'])->name('loginUser');
 
 //Teachers Routes
 Route::get('faculityAdmin', [FaculityController::class, 'index'])->name('faculity.dashboard');
+Route::get('/faculty/course/{uuid}', [FaculityController::class, 'courseDetails'])->name('faculty.course.details');
 Route::get('/faculty/attendance', [FaculityController::class, 'Students_Attendence'])->name('Students_Attendence');
 Route::get('WelcomeProfessor', [FaculityController::class, 'WelcomeProfessor'])->name('WelcomeProfessor');
 Route::get('UploadAssignments', [AssignmentController::class, 'UploadAssignments'])->name('Upload.assignments');
 Route::get('UploadQuizzes', [QuizzesController::class, 'UploadQuizzes'])->name('Upload.Quizzes');
-Route::post('/UploadQuizzes', [QuizzesController::class, 'store'])->name('quizzes.store');
+Route::post('/faculity/UploadQuizzes', [QuizzesController::class, 'store'])->name('quizzes.store');
 Route::get('faculity/leave-request', [FaculityController::class, 'leave'])->name('teacher.leave');
 Route::post('/faculty/leave-request', [FaculityController::class, 'store'])->name('faculty.leave.store');
 
@@ -113,13 +145,18 @@ Route::post('/submit-attendance', [AttendanceController::class, 'store'])->name(
 Route::get('/teacher/assignments/{id}/submissions', [TeacherController::class, 'viewSubmissions'])->name('view.assignments');
 Route::get('/teacher/assignments', [TeacherController::class, 'allAssignments'])->name('teacher.assignments.list');
 Route::post('/submissions/{id}/grade', [TeacherController::class, 'grade'])->name('submissions.grade');
+Route::get('teacher/quiz/{quizId}submissions', [FaculityController::class, 'showquiz'])->name('faculity.showquiz');
 
 
 //Registration Branch
 Route::get('OfferCoursesToClasses', [RegistrationController::class, 'OfferCoursesToClasses']);
 Route::get('Registration_index', [RegistrationController::class, 'Registration_index']);
-Route::get('RegisterStudents', [RegistrationController::class, 'RegisterStudents']);
-Route::get('RegisterTeachers', [RegistrationController::class, 'RegisterTeachers']);
+Route::get('RegisterStudents', [RegistrationController::class, 'RegisterStudents'])->name('students.register');
+Route::get('Registration-profile', [RegistrationController::class, 'RegistrationProfFile'])->name('Registration.profile');
+
+Route::post('RegisterStudents/update/{id}', [RegistrationController::class, 'update'])->name('update.students');
+Route::delete('RegisterStudents/delete/{id}', [RegistrationController::class, 'destroy'])->name('students.delete');
+Route::get('RegisterTeachers', [RegistrationController::class, 'RegisterTeachers'])->name('teachers.register');
 Route::post('/register-student', [RegistrationController::class, 'storeStudent'])->name('student.store');
 Route::post('/register-teacher', [RegistrationController::class, 'storeTeacher'])->name('register.teacher');
 Route::get('AllocateCoursesToProfessorsForm', [ProfessorCourseController::class, 'AllocateCoursesToProfessorsForm']);
@@ -131,3 +168,16 @@ Route::get('RegisterNewClasses', [RegistrationController::class, 'RegisterNewCla
 Route::post('registerclasses', [RegistrationController::class, 'storeClasses'])->name('registerNewclasses');
 Route::post('allocate', [CourseAllocationController::class, 'store'])->name('courses.allocate');
 Route::get('/accounts/delete', [RegistrationController::class, 'delete'])->name('delete.accounts');
+Route::get('RegisterNewDepartments', [RegistrationController::class, 'RegisterNewDepartments'])->name('register.new.departments');
+Route::post('register-departments', [RegistrationController::class, 'storeDepartments'])->name( 'registerdepartments');
+
+
+
+
+//Hostel Routes
+Route::get('Hostel/index', [HostelRequestController::class, 'index'])->name('hostel.index');
+Route::post('hostel/requests', [HostelRequestController::class, 'store'])->name('hostel.requests.store');
+Route::get('hostel/requests', [HostelRequestController::class, 'hostalrequest'])->name('hostel.request');
+Route::get('/hostels', [HostelController::class, 'show'])->name('hostel.show');
+    Route::get('/hostel/create', [HostelController::class, 'create'])->name('hostel.create');
+    Route::post('/hostel/store', [HostelController::class, 'store'])->name('hostel.store');

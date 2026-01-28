@@ -32,37 +32,13 @@
                     </a>
                     <button class="close-btn d-block d-md-none"><i class="bi bi-x-lg"></i></button>
                 </div>
-                <div class="user-data">
-                    <div class="user-avatar online position-relative rounded-circle">
-                        <img src="{{ asset('frontend/images/Person.png') }}" alt="User Avatar" class="lazy-img">
-                    </div>
-                    <div class="user-name-data">
-                        <button class="user-name dropdown-toggle" type="button" id="profile-dropdown"
-                            data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                            Rashed Kabir
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="profile-dropdown">
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center"
-                                    href="candidate-dashboard-profile.html"><img
-                                        src="../backend_faculity/images/lazy.svg"
-                                        data-src="backend_faculity/images/icon/icon_23.svg" alt=""
-                                        class="lazy-img"><span class="ms-2 ps-1">Profile</span></a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center"
-                                    href="candidate-dashboard-settings.html"><img
-                                        src="../backend_faculity/images/lazy.svg"
-                                        data-src="backend_faculity/images/icon/icon_24.svg" alt=""
-                                        class="lazy-img"><span class="ms-2 ps-1">Account Settings</span></a>
-                            </li>
-                        </ul>
-                    </div>
+                
+                
                 </div>
 
                 <nav class="dasboard-main-nav">
                     <ul class="style-none">
-                        <li><a href="candidate-dashboard-index.html" class="d-flex w-100 align-items-center active">
+                        <li><a href="{{ 'Registration_index' }}" class="d-flex w-100 align-items-center active">
                                 <img src="../backend_faculity/images/lazy.svg"
                                     data-src="backend_faculity/images/icon/icon_1_active.svg" alt=""
                                     class="lazy-img">
@@ -73,6 +49,29 @@
                                     data-src="backend_faculity/images/icon/icon_2.svg" alt="" class="lazy-img">
                                 <span>Register Students</span>
                             </a></li>
+                            <li>
+  <a href="javascript:void(0);" onclick="sendUpdateRequest()" class="d-flex w-100 align-items-center">
+    <img src="../backend_faculity/images/lazy.svg" data-src="backend_faculity/images/icon/icon_2.svg" alt="" class="lazy-img">
+    <span>Update Students</span>
+  </a>
+</li>
+
+<script>
+function sendUpdateRequest() {
+    fetch("{{ route('request.update.students') }}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({})
+    })
+    .then(response => response.json())
+    .then(data => alert(data.message))
+    .catch(error => console.error(error));
+}
+</script>
+
                         <li><a href="{{ URL::to('RegisterTeachers') }}" class="d-flex w-100 align-items-center">
                                 <img src="../backend_faculity/images/lazy.svg"
                                     data-src="backend_faculity/images/icon/icon_3.svg" alt="" class="lazy-img">
@@ -90,6 +89,12 @@
                                     data-src="backend_faculity/images/icon/icon_6.svg" alt=""
                                     class="lazy-img">
                                 <span>Add New Classes</span>
+                            </a></li>
+                             <li><a href="{{ route('register.new.departments') }}" class="d-flex w-100 align-items-center">
+                                <img src="backend_faculity/images/lazy.svg"
+                                    data-src="backend_faculity/images/icon/icon_6.svg" alt=""
+                                    class="lazy-img">
+                                <span>Add New Departments</span>
                             </a></li>
                         <li><a href="{{ URL::to('OfferCoursesToClasses') }}" class="d-flex w-100 align-items-center">
                                 <img src="../backend_faculity/images/lazy.svg"

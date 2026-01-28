@@ -10,4 +10,11 @@ class TeacherImage extends Model
         'Teacher_id',
         'image_path',
     ];
+  
+    public function teacher()
+{
+    return $this->belongsTo(TeacherRegistration::class, 'Teacher_id');
 }
+}
+
+

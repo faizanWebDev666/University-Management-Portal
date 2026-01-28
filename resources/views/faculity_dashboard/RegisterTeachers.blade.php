@@ -96,15 +96,15 @@
             <input type="text" name="specialization" placeholder="Ex: Machine Learning" required>
         </div>
 
-        <div class="dash-input-wrapper mb-30">
-            <label for="">Department*</label>
-            <select class="nice-select" name="department_id" required>
-                <option value="1">Computer Science</option>
-                <option value="2">Mathematics</option>
-                <option value="3">Physics</option>
-                <!-- Add more dynamically -->
-            </select>
-        </div>
+       <div class="dash-input-wrapper mb-30">
+    <label for="">Department*</label>
+    <select class="nice-select" name="department_id" required>
+        <option value="">Select Department</option>
+        @foreach($departments as $department)
+            <option value="{{ $department->id }}">{{ $department->name }}</option>
+        @endforeach
+    </select>
+</div>
 
         <div class="dash-input-wrapper mb-30">
             <label for="">Designation*</label>
@@ -128,11 +128,24 @@
             <input type="text" name="username" placeholder="Ex: ahmad.khan" required>
         </div>
 
-        <div class="dash-input-wrapper mb-30">
-            <label for="">Password*</label>
-            <input type="password" name="password" placeholder="••••••••" required>
-        </div>
+       <div class="dash-input-wrapper mb-30">
+    <label for="">Password*</label>
+    <input type="password" id="password" name="password" placeholder="••••••••" required>
+</div>
 
+<script>
+    const passwordInput = document.getElementById("password");
+
+    passwordInput.addEventListener("input", function () {
+        if (passwordInput.value.length < 6) {
+            passwordInput.style.border = "2px solid red"; // box red
+            passwordInput.style.backgroundColor = "#ffe6e6"; // light red background
+        } else {
+            passwordInput.style.border = "2px solid green"; // valid -> green
+            passwordInput.style.backgroundColor = "white";
+        }
+    });
+</script>
         <div class="dash-input-wrapper mb-30">
             <label for="">Role*</label>
             <select class="nice-select" name="role" required>

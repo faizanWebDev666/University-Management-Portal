@@ -51,10 +51,13 @@
                 <div class="dash-input-wrapper mb-30">
                     <label for="">Department*</label>
                     <select class="nice-select" name="department" required>
-                        <option value="CS">Computer Science</option>
-                        <option value="SE">Software Engineering</option>
-                        <option value="EE">Electrical Engineering</option>
-                        <option value="BBA">Business Administration</option>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Software Engineering">Software Engineering</option>
+                        <option value="Electrical Engineering">Electrical Engineering</option>
+                        <option value="Business Administration">Business Administration</option>
+                        <option value="Mathematics">Mathematics</option>
+
+                        
                     </select>
                 </div>
             </div>

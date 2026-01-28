@@ -45,5 +45,9 @@ public function users()
 {
     return $this->belongsToMany(User::class)->withTimestamps();
 }
+public function teacher()
+{
+    return $this->belongsTo(User::class, 'teacher_id'); // assuming courses table has teacher_id
+}
 
 }

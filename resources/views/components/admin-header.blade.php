@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
-<link rel="icon" href="favicon.ico" type="image/x-icon"/>
+<link rel="icon" href="{{ asset('backend/images/university.png') }}" type="image/x-icon"/>
 <title>Admin</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="{{ asset('backend/plugins/bootstrap/css/bootstrap.min.css') }}" />
@@ -773,19 +773,19 @@
                     <ul class="metismenu">
                         <li class="active"><a href="index.html"><i class="fa fa-dashboard"></i><span>Dashboard</span></a></li>
                         <li><a href="{{ route( 'display.professors' )}}"><i class="fa fa-black-tie"></i><span>Professors</span></a></li>
-                        <li><a href="staff.html"><i class="fa fa-user-circle-o"></i><span>Staff</span></a></li>
+                        <li><a href="{{ route('admin.users') }}"><i class="fa fa-user-circle-o"></i><span>Users</span></a></li>
                         <li><a href="{{ route('display.students') }}"><i class="fa fa-users"></i><span>Students</span></a></li>
                         <li><a href="{{ route('admin.department') }}"><i class="fa fa-users"></i><span>Departments</span></a></li>
                         <li><a href="{{ route('display.Courses') }}"><i class="fa fa-graduation-cap"></i><span>Courses</span></a></li>                        
+<li>
+    <a href="{{ route('display.Classes') }}">
+        <i class="fa fa-book"></i>
+        <span>Classes</span>
+    </a>
+</li>
                         <li><a href="library.html"><i class="fa fa-book"></i><span>Library</span></a></li>
                         <li><a href="{{ route('admin.viewLeaves') }}"><i class="fa fa-bullhorn"></i><span>Leave Applications</span></a></li>
-                        <li class="g_heading">Extra</li>
-                        <li><a href="events.html"><i class="fa fa-calendar"></i><span>Calender</span></a></li>
-                        <li><a href="app-chat.html"><i class="fa fa-comments-o"></i><span>Chat App</span></a></li>
-                        <li><a href="app-contact.html"><i class="fa fa-address-book"></i><span>Contact</span></a></li>
-                        <li><a href="app-filemanager.html"><i class="fa fa-folder"></i><span>FileManager</span></a></li>
-                        <li><a href="our-centres.html"><i class="fa fa-map"></i><span>OurCentres</span></a></li>
-                        <li><a href="gallery.html"><i class="fa fa-camera-retro"></i><span>Gallery</span></a></li>
+
                     </ul>
                 </nav>
             </div>
@@ -810,48 +810,24 @@
             <div class="container-fluid">
                 <div class="page-header">
                     <div class="left">                        
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="What you want to find">
-                            <div class="input-group-append">
-                                <button class="btn btn-outline-secondary" type="button">Search</button>
-                            </div>
-                        </div>
+                     <input
+    type="text"
+    id="globalSearch"
+    class="form-control"
+    placeholder="Search..."
+    data-page="{{ request()->segment(2) }}"
+>
+
+
                     </div>
+                    
                     <div class="right">
-                        <ul class="nav nav-pills">                            
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Pages</a>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="page-empty.html">Empty page</a>
-                                    <a class="dropdown-item" href="page-profile.html">Profile</a>
-                                    <a class="dropdown-item" href="page-search.html">Search Results</a>
-                                    <a class="dropdown-item" href="page-timeline.html">Timeline</a>
-                                    <a class="dropdown-item" href="page-invoices.html">Invoices</a>
-                                    <a class="dropdown-item" href="page-pricing.html">Pricing</a>
-                                </div>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Auth</a>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="login.html">Login</a>
-                                    <a class="dropdown-item" href="register.html">Register</a>
-                                    <a class="dropdown-item" href="forgot-password.html">Forgot password</a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="404.html">404 error</a>
-                                    <a class="dropdown-item" href="500.html">500 error</a>
-                                </div>
-                            </li>
-                        </ul>
+                       
+
                         <div class="notification d-flex">
                             <div class="dropdown d-flex">
                                 <a class="nav-link icon d-none d-md-flex btn btn-default btn-icon ml-1" data-toggle="dropdown"><i class="fa fa-language"></i></a>
-                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                                    <a class="dropdown-item" href="#"><img class="w20 mr-2" src="https://puffintheme.com/themeforest/ericsson/backend/images/flags/us.svg" alt="">English</a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="#"><img class="w20 mr-2" src="https://puffintheme.com/themeforest/ericsson/backend/images/flags/es.svg" alt="">Spanish</a>
-                                    <a class="dropdown-item" href="#"><img class="w20 mr-2" src="https://puffintheme.com/themeforest/ericsson/backend/images/flags/jp.svg" alt="">japanese</a>
-                                    <a class="dropdown-item" href="#"><img class="w20 mr-2" src="https://puffintheme.com/themeforest/ericsson/backend/images/flags/bl.svg" alt="">France</a> 
-                                </div>
+                             
                             </div>
                             <div class="dropdown d-flex">
                                 <a class="nav-link icon d-none d-md-flex btn btn-default btn-icon ml-1" data-toggle="dropdown"><i class="fa fa-envelope"></i><span class="badge badge-success nav-unread"></span></a>

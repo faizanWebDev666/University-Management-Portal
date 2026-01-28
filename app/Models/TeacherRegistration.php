@@ -34,5 +34,11 @@ class TeacherRegistration extends Model
 {
     return $this->hasOne(TeacherImage::class, 'teacher_id', 'id');
 }
+// In TeacherRegistration.php
+public function images()
+{
+    return $this->hasMany(TeacherImage::class, 'Teacher_id'); // 👈 match DB column exactly
+}
+
 
 }

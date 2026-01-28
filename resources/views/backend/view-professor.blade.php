@@ -5,6 +5,25 @@
 
     <table class="table table-bordered">
         <tr><th>ID</th><td>{{ $teacher->id }}</td></tr>
+
+        {{-- Professor Image --}}
+       <tr>
+    <th>Photo(s)</th>
+    <td>
+        @if($teacher->images->count())
+            @foreach($teacher->images as $image)
+                <img src="{{ asset('storage/' . $image->image_path) }}" 
+                     alt="Professor Image" 
+                     class="img-thumbnail rounded me-2 mb-2" 
+                     style="max-width: 120px; height: auto;">
+            @endforeach
+        @else
+            <span class="text-muted">N/A</span>
+        @endif
+    </td>
+</tr>
+
+
         <tr><th>Full Name</th><td>{{ $teacher->full_name }}</td></tr>
         <tr><th>Father Name</th><td>{{ $teacher->father_name }}</td></tr>
         <tr><th>CNIC</th><td>{{ $teacher->cnic }}</td></tr>
@@ -21,15 +40,21 @@
         <tr><th>Joining Date</th><td>{{ \Carbon\Carbon::parse($teacher->joining_date)->format('d M Y') }}</td></tr>
         <tr><th>Username</th><td>{{ $teacher->username }}</td></tr>
         <tr><th>Role</th><td>{{ $teacher->role }}</td></tr>
-        <tr><th>Resume</th>
+
+        {{-- Resume --}}
+        <tr>
+            <th>Resume</th>
             <td>
                 @if($teacher->resume)
-                    <a href="{{ asset('storage/' . $teacher->resume) }}" target="_blank">View Resume</a>
+                    <a href="{{ asset('storage/' . $teacher->resume) }}" target="_blank" class="btn btn-primary btn-sm">
+                        📄 View Resume
+                    </a>
                 @else
                     N/A
                 @endif
             </td>
         </tr>
+
         <tr><th>Address</th><td>{{ $teacher->address }}</td></tr>
         <tr><th>Country</th><td>{{ $teacher->country }}</td></tr>
         <tr><th>City</th><td>{{ $teacher->city }}</td></tr>

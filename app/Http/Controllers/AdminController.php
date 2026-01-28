@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Classes;
 use App\Models\Course;
 use App\Models\StudentsRegistration;
 use App\Models\TeacherRegistration;
@@ -47,7 +48,17 @@ public function display_professors()
          $courses = Course::all();
         return view('backend.Courses',compact('courses'));
     }
-    
+     public function users()
+    {
+         $users = User::all();
+        return view('backend.users', compact('users'));
+    }
+    public function Classes()
+    {
+        $classes = Classes::all();
+        return view('backend.Classes',compact('classes'));
+
+    }
       public function registerUser(Request $data)
     {
         $data->validate([

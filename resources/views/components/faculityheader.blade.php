@@ -105,7 +105,7 @@
                                     class="lazy-img">
                                 <span>Upload Assignments</span>
                             </a></li>
-                        <li><a href="{{ route('Upload.Quizzes') }}" class="d-flex w-100 align-items-center">
+                        <li><a href="{{ ROUTE('Upload.Quizzes') }}" class="d-flex w-100 align-items-center">
                                 <img src="../backend_faculity/images/lazy.svg"
                                     data-src="backend_faculity/images/icon/icon_2.svg" alt=""
                                     class="lazy-img">
@@ -151,7 +151,7 @@
                     <p>Profile Complete</p>
                 </div>
 
-                <a href="#" class="d-flex w-100 align-items-center logout-btn">
+                <a href="{{ route('logout') }}" class="d-flex w-100 align-items-center logout-btn">
                     <img src="../backend_faculity/images/lazy.svg" data-src="backend_faculity/images/icon/icon_9.svg"
                         alt="" class="lazy-img">
                     <span>Logout</span>

@@ -15,7 +15,22 @@
 
     <form action="{{ route('admin.teachers.update', $teacher->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
+<div class="col-md-6 mb-3">
+    <label>Teacher Photo</label>
+    
 
+    @if($teacher->images && $teacher->images->first())
+        <div class="mt-2">
+            <img src="{{ asset('storage/' . $teacher->images->first()->image_path) }}"
+                 alt="Teacher Photo"
+                 width="120"
+                 class="rounded border">
+        </div>
+    @endif
+</div>
+<label>Update Photo</label>
+
+<input type="file" name="teacher_image" class="form-control">
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label>Full Name</label>
@@ -102,7 +117,7 @@
 
             <div class="col-md-6 mb-3">
                 <label>Password (Leave blank to keep current)</label>
-                <input type="password" name="password" class="form-control">
+                <input type="password" name="password" class="form-control" value="{{ old('password', $teacher->password) }}">
             </div>
 
             <div class="col-md-6 mb-3">

@@ -12,5 +12,6 @@ class StudentController extends Controller
     $course = StudentCourseRegistration::with('course', 'professor', 'class')->findOrFail($course_id);
     return view('Course-details', compact('course'));
 }
+   
 
 }

@@ -105,10 +105,12 @@ public function studentAssignments()
 
     $courseIds = $student->registeredCourses->pluck('course_id');
 
-    $assignments = Assignment::whereIn('course_id', $courseIds)
-        ->where('deadline', '>', Carbon::now())
-        ->latest()
-        ->get();
+  $assignments = Assignment::with('course') // eager load course details
+    ->whereIn('course_id', $courseIds)
+    ->where('deadline', '>', Carbon::now())
+    ->latest()
+    ->get();
+
 
     $submissions = AssignmentSubmission::where('student_id', $studentId)
         ->get()

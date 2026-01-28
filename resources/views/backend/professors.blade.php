@@ -50,7 +50,8 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+               <tbody id="professorsTableBody">
+    @include('backend.partials.professors-rows', ['professors' => $teachers])
                     @foreach ($teachers as $teacher)
                         <tr>
                             <td>{{ $teacher->id }}</td>
@@ -107,6 +108,7 @@
         </div>
     </div>
 </div>
+
 
 
 

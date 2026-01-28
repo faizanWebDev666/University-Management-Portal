@@ -10,10 +10,11 @@ class OfferCourse extends Model
         protected $table = 'offer_courses';
         protected $fillable = ['course_id', 'class_id', 'professor_id'];
 
-    public function professor()
+public function professor()
 {
-    return $this->belongsTo(User::class, 'professor_id');
+    return $this->belongsTo(User::class, 'professor_id')->where('type', 'professor');
 }
+
 public function students()
 {
     return $this->belongsToMany(User::class, 'offer_course_user')->where('type', 'student');
