@@ -28,7 +28,7 @@
             <div class="position-relative">
                 <div class="logo text-md-center d-md-block d-flex align-items-center justify-content-between">
                     <a href="candidate-dashboard-index.html">
-                        <img src="frontend/images/logo/logo_01_whitebg.png" alt="">
+                        <img src="frontend/images/logo/3rdlogo.png" alt="">
                     </a>
                     <button class="close-btn d-block d-md-none"><i class="bi bi-x-lg"></i></button>
                 </div>

@@ -5,15 +5,16 @@
         <div class="card-header bg-dark text-white fw-bold fs-5">
             🎓 Student Attendance
         </div>
-
         <div class="alert alert-info border border-primary shadow-sm mb-4">
             <h5 class="fw-bold text-primary">📝 Important Notes for Marking Attendance</h5>
             <ul class="mb-0">
                 <li>Select the correct <strong>Class & Course</strong> before proceeding.</li>
-                <li>Ensure the <strong>Date</strong> and <strong>Time Slot</strong> match the actual class schedule.</li>
+                <li>Ensure the <strong>Date</strong> and <strong>Time Slot</strong> match the actual class schedule.
+                </li>
                 <li>You can use the <strong>Mark All</strong> options to mark everyone Present/Absent quickly.</li>
                 <li>Once submitted, attendance cannot be edited — please double-check before clicking "Submit".</li>
-                <li>If a student is missing from the list, ensure they are registered for the course via the system.</li>
+                <li>If a student is missing from the list, ensure they are registered for the course via the system.
+                </li>
             </ul>
         </div>
 
@@ -21,11 +22,13 @@
             <form method="GET" action="">
                 <div class="mb-3">
                     <label for="offered_course_id" class="form-label">Select Class & Course</label>
-                    <select name="offered_course_id" id="offered_course_id" class="form-select" onchange="this.form.submit()" required>
+                    <select name="offered_course_id" id="offered_course_id" class="form-select"
+                        onchange="this.form.submit()" required>
                         <option value="">-- Select Class & Course --</option>
                         @foreach ($offeredCourses as $course)
                             @if ($course->class)
-                                <option value="{{ $course->id }}" {{ $offeredCourseId == $course->id ? 'selected' : '' }}>
+                                <option value="{{ $course->id }}"
+                                    {{ $offeredCourseId == $course->id ? 'selected' : '' }}>
                                     {{ strtoupper(substr($course->class->semester, 0, 2)) }}{{ substr($course->class->year, -2) }}-
                                     {{ strtoupper(substr($course->class->degree_program, 0, 1)) }}{{ strtoupper(substr($course->class->department, 0, 2)) }}-{{ $course->class->section }}
                                     |
@@ -45,7 +48,8 @@
                     <div class="row mb-4">
                         <div class="col-md-6">
                             <label for="date" class="form-label">Class Date:</label>
-                            <input type="date" name="date" class="form-control" value="{{ now()->toDateString() }}" required>
+                            <input type="date" name="date" class="form-control"
+                                value="{{ now()->toDateString() }}" required>
                         </div>
                         <div class="col-md-6">
                             <label for="time_slot" class="form-label">Time Slot:</label>
@@ -63,21 +67,23 @@
                     <div class="mb-3">
                         <label class="me-3">Mark All:</label>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="mark_all" id="markAllPresent" value="present">
+                            <input class="form-check-input" type="radio" name="mark_all" id="markAllPresent"
+                                value="present">
                             <label class="form-check-label" for="markAllPresent">All Present</label>
                         </div>
                         <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="mark_all" id="markAllAbsent" value="absent">
+                            <input class="form-check-input" type="radio" name="mark_all" id="markAllAbsent"
+                                value="absent">
                             <label class="form-check-label" for="markAllAbsent">All Absent</label>
                         </div>
                     </div>
 
                     <script>
-                        document.addEventListener('DOMContentLoaded', function () {
+                        document.addEventListener('DOMContentLoaded', function() {
                             const presentBtn = document.getElementById('markAllPresent');
                             const absentBtn = document.getElementById('markAllAbsent');
 
-                            presentBtn.addEventListener('change', function () {
+                            presentBtn.addEventListener('change', function() {
                                 if (this.checked) {
                                     document.querySelectorAll('input[type=radio][value=present]').forEach(radio => {
                                         radio.checked = true;
@@ -85,7 +91,7 @@
                                 }
                             });
 
-                            absentBtn.addEventListener('change', function () {
+                            absentBtn.addEventListener('change', function() {
                                 if (this.checked) {
                                     document.querySelectorAll('input[type=radio][value=absent]').forEach(radio => {
                                         radio.checked = true;
@@ -118,16 +124,18 @@
                                             {{ $reg->student->registration->roll_no ?? 'N/A' }}
                                         </td>
                                         <td>{{ $reg->student->name ?? 'N/A' }}</td>
-                                      <td>
-    <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="attendance[{{ $reg->id }}]" value="present" required>
-        <label class="form-check-label">Present</label>
-    </div>
-    <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="attendance[{{ $reg->id }}]" value="absent">
-        <label class="form-check-label">Absent</label>
-    </div>
-</td>
+                                        <td>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio"
+                                                    name="attendance[{{ $reg->id }}]" value="present" required>
+                                                <label class="form-check-label">Present</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio"
+                                                    name="attendance[{{ $reg->id }}]" value="absent">
+                                                <label class="form-check-label">Absent</label>
+                                            </div>
+                                        </td>
 
                                         <td>{{ $reg->attendance_percentage ?? 0 }}%</td>
                                     </tr>

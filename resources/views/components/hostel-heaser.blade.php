@@ -100,11 +100,23 @@
                                     class="lazy-img">
                                 <span>Students Hostal Requests</span></li>
 
-                                  <li><a href="{{ route('hostel.create') }}" class="d-flex w-100 align-items-center">
+                        <li><a href="{{ route('hostel.allocation') }}" class="d-flex w-100 align-items-center">
+                                <img src="../backend_faculity/images/lazy.svg"
+                                    data-src="backend_faculity/images/icon/icon_2.svg" alt=""
+                                    class="lazy-img">
+                                <span>Allocate Rooms to Students</span></li>
+
+                        <li><a href="{{ route('hostel.create') }}" class="d-flex w-100 align-items-center">
                                 <img src="../backend_faculity/images/lazy.svg"
                                     data-src="backend_faculity/images/icon/icon_2.svg" alt=""
                                     class="lazy-img">
                                 <span>Add Hostals</span></li>
+
+                        <li><a href="{{ route('hostel.show') }}" class="d-flex w-100 align-items-center">
+                                <img src="../backend_faculity/images/lazy.svg"
+                                    data-src="backend_faculity/images/icon/icon_2.svg" alt=""
+                                    class="lazy-img">
+                                <span>Available Hostels</span></li>
                     </ul>
                 </nav>
                 <div class="profile-complete-status">

@@ -61,8 +61,8 @@ class RegistrationController extends Controller
 {
     $classes = Classes::all(); // For the dropdown in your form
     $students = StudentsRegistration::with(['image', 'user'])->get(); // Load related data
-
-    return view('faculity_dashboard.registerstudents', compact('classes', 'students'));
+    $departments = Department::all();
+    return view('faculity_dashboard.registerstudents', compact('classes', 'students', 'departments'));
 }
 public function RegistrationProfile()
 {

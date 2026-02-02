@@ -13,8 +13,10 @@ class AdminController extends Controller
 {
     public function index()
     {
-
-        return view('backend.index');
+        $students = StudentsRegistration::count();
+        $courses = Course::count();
+        $professors = TeacherRegistration::count();
+        return view('backend.index', compact('students', 'courses', 'professors'));
     }
      public function department()
     {

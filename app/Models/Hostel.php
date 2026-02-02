@@ -16,4 +16,10 @@ class Hostel extends Model
         'address',
         'description'
     ];
+
+    public function rooms()
+    {
+
+        return $this->hasMany(Room::class);
+    }
 }

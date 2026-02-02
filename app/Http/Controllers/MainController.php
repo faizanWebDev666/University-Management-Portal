@@ -86,7 +86,6 @@ public function loginUser(Request $data)
             return redirect('/')->with('error', 'You are trying to log in from the wrong portal.');
         }
 
-        // Everything matches, proceed
         session()->put('id', $user->id);
         session()->put('type', $user->type);
         session()->put('name', $user->name);

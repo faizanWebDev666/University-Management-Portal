@@ -1,5 +1,7 @@
 <x-faculityheader />
 
+
+
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="main-title text-dark fw-bold">My Courses</h2>
     <div class="user-data d-flex align-items-center">

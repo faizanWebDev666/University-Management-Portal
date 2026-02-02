@@ -122,7 +122,6 @@
     </div>
 </section>
 
-<x-footer />
 
 <script>
     // Auto-fill Semester field based on Accommodation Duration

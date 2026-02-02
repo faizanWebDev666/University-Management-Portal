@@ -24,8 +24,10 @@
                     <div class="col-lg-3 col-md-6 col-sm-6">
                         <div class="card overflow-hidden">
                             <div class="card-body">
+                                    
+                               
                                 <div class="mb-2 h6">New Students</div>
-                                <div><span class="h4 font700">758</span> <span class="small text-danger"><i class="fa fa-level-down"></i> 08%</span></div>
+                                <div><span class="h4 font700">{{ $students }}</span> <span class="small text-danger"><i class="fa fa-level-down"></i> 08%</span></div>
                                 <small class="text-muted">Analytics for last week</small>
                             </div>
                             <div class="progress" style="height: 4px;">
@@ -37,7 +39,7 @@
                         <div class="card overflow-hidden">
                             <div class="card-body">
                                 <div class="mb-2 h6">Total Courses</div>
-                                <div><span class="h4 font700">125</span> <span class="small text-success"><i class="fa fa-level-up"></i> 24%</span></div>
+                                <div><span class="h4 font700">{{ $courses }}</span> <span class="small text-success"><i class="fa fa-level-up"></i> 24%</span></div>
                                 <small class="text-muted">Analytics for last week</small>
                             </div>
                             <div class="progress" style="height: 4px;">
@@ -49,7 +51,7 @@
                         <div class="card overflow-hidden">
                             <div class="card-body">
                                 <div class="mb-2 h6">Total Teachers</div>
-                                <div><span class="h4 font700">89</span> <span class="small text-success"><i class="fa fa-level-up"></i> 15%</span></div>
+                                <div><span class="h4 font700">{{ $professors }}</span> <span class="small text-success"><i class="fa fa-level-up"></i> 15%</span></div>
                                 <small class="text-muted">Analytics for last week</small>
                             </div>
                             <div class="progress" style="height: 4px;">

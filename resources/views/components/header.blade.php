@@ -147,7 +147,7 @@
 
 <!-- ===== TOP BAR ===== -->
 <div class="top-bar">
-    Welcome: {{ $student->session }} {{ $student->degree_program }}{{ $student->department }}-{{ $student->roll_no }}
+    Welcome: {{ $student->full_name -- }} {{ $student->degree_program }}{{ $student->department }}-{{ $student->roll_no -- }}
 </div>
 
 <!-- ===== NAV HEADER ===== -->
@@ -226,7 +226,7 @@ document.getElementById('globalSearch')?.addEventListener('keyup', function () {
             tableBodyId = 'professorsTableBody';
             break;
         case 'students':
-            url = "{{ route('admin.students.search') }}";
+            url = "";
             tableBodyId = 'studentsTableBody';
             break;
         default:

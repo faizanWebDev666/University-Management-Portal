@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+# Installation and Deployment Checklist for Session Inactivity Timeout Feature
+
+echo "=========================================="
+echo "Session Inactivity Timeout - Quick Setup"
+echo "=========================================="
+echo ""
+
+echo "✅ FILES CREATED:"
+echo "   1. app/Http/Middleware/SessionInactivityTimeout.php"
+echo "   2. resources/views/components/inactivity-modal.blade.php"
+echo "   3. public/js/inactivity-timeout.js"
+echo "   4. SESSION_INACTIVITY_TIMEOUT.md (Documentation)"
+echo ""
+
+echo "✅ FILES MODIFIED:"
+echo "   1. app/Http/Kernel.php"
+echo "      - Added 'session.inactivity' middleware"
+echo ""
+echo "   2. routes/web.php"
+echo "      - Wrapped faculty routes with 'session.inactivity' middleware"
+echo ""
+echo "   3. resources/views/components/faculityheader.blade.php"
+echo "      - Added Bootstrap Icons CDN"
+echo ""
+echo "   4. resources/views/components/faculityfooter.blade.php"
+echo "      - Added inactivity-timeout.js script reference"
+echo "      - Added inactivity-modal component include"
+echo ""
+
+echo "=========================================="
+echo "IMPLEMENTATION SUMMARY"
+echo "=========================================="
+echo ""
+echo "🔧 What this feature does:"
+echo "   • Monitors faculty member activity"
+echo "   • Shows warning modal after 1 minute of inactivity"
+echo "   • Displays 10-second countdown before logout"
+echo "   • Allows user to stay active or logout manually"
+echo ""
+
+echo "⏱️  Timeline:"
+echo "   0:00 - 0:50   → Activity tracked, timer reset on user interaction"
+echo "   0:50 - 1:00   → User inactive, no warning yet"
+echo "   1:00 - 1:10   → Warning modal appears with countdown"
+echo "   1:10          → Automatic logout if no action taken"
+echo ""
+
+echo "📋 DEPLOYMENT STEPS:"
+echo ""
+echo "Step 1: Clear application cache"
+php artisan optimize:clear
+echo "   ✓ Cache cleared"
+echo ""
+
+echo "Step 2: Optimize application"
+php artisan optimize
+echo "   ✓ Application optimized"
+echo ""
+
+echo "=========================================="
+echo "QUICK TEST"
+echo "=========================================="
+echo ""
+echo "1. Login to faculty dashboard"
+echo "2. Wait 1 minute without any interaction"
+echo "3. Verify warning modal appears"
+echo "4. Test 'Stay Active' and 'Logout' buttons"
+echo ""
+
+echo "📚 DOCUMENTATION:"
+echo "   Read: SESSION_INACTIVITY_TIMEOUT.md"
+echo ""
+
+echo "=========================================="
+echo "✅ INSTALLATION COMPLETE!"
+echo "=========================================="
+echo ""

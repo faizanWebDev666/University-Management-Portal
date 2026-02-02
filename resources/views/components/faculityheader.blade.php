@@ -21,6 +21,8 @@
     <link rel="stylesheet" type="text/css" href="{{ URL::asset('backend_faculity/css/bootstrap.min.css') }}"media="all">
     <link rel="stylesheet" type="text/css" href="{{ URL::asset('backend_faculity/css/style.min.css') }}" media="all">
     <link rel="stylesheet" type="text/css" href="{{ URL::asset('backend_faculity/css/responsive.css') }}"media="all">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 
 <body>
@@ -43,46 +45,14 @@
             <div class="position-relative">
                 <div class="logo text-md-center d-md-block d-flex align-items-center justify-content-between">
                     <a href="candidate-dashboard-index.html">
-                        <img src="frontend/images/logo/logo_01_whitebg.png" alt="">
+                        <img src="{{ URL::asset('frontend/images/logo/3rdlogo.png') }}" alt="">
                     </a>
                     <button class="close-btn d-block d-md-none"><i class="bi bi-x-lg"></i></button>
                 </div>
 
                 <div class="user-data">
                     <div class="user-name-data">
-                        @if ($student && $student->image)
-                            <img src="{{ asset('storage/' . $student->image->image_path) }}" alt="Student Image"
-                                style="height: 110px; border-radius: 15px; display: block; margin: 0 auto;">
-                        @else
-                            <img src="{{ asset('frontend/images/Person.png') }}" alt="Default Student Image"
-                                style="height: 110px; border-radius: 15px; display: block; margin: 0 auto;">
-                        @endif
-                        <button class="user-name dropdown-toggle" type="button" id="profile-dropdown"
-                            data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                            {{ $professor->name ?? 'Professor' }}
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="profile-dropdown">
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center"
-                                    href="candidate-dashboard-profile.html"><img
-                                        src="../backend_faculity/images/lazy.svg"
-                                        data-src="backend_faculity/images/icon/icon_23.svg" alt=""
-                                        class="lazy-img"><span class="ms-2 ps-1">Profile</span></a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center"
-                                    href="candidate-dashboard-settings.html"><img
-                                        src="../backend_faculity/images/lazy.svg"
-                                        data-src="backend_faculity/images/icon/icon_24.svg" alt=""
-                                        class="lazy-img"><span class="ms-2 ps-1">Account Settings</span></a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center" href="#"><img
-                                        src="../backend_faculity/images/lazy.svg"
-                                        data-src="backend_faculity/images/icon/icon_25.svg" alt=""
-                                        class="lazy-img"><span class="ms-2 ps-1">Notification</span></a>
-                            </li>
-                        </ul>
+
                     </div>
                 </div>
 
@@ -101,45 +71,43 @@
                             </a></li>
                         <li><a href="{{ route('Upload.assignments') }}" class="d-flex w-100 align-items-center">
                                 <img src="../backend_faculity/images/lazy.svg"
-                                    data-src="backend_faculity/images/icon/icon_2.svg" alt=""
-                                    class="lazy-img">
+                                    data-src="backend_faculity/images/icon/icon_2.svg" alt="" class="lazy-img">
                                 <span>Upload Assignments</span>
                             </a></li>
                         <li><a href="{{ ROUTE('Upload.Quizzes') }}" class="d-flex w-100 align-items-center">
                                 <img src="../backend_faculity/images/lazy.svg"
-                                    data-src="backend_faculity/images/icon/icon_2.svg" alt=""
-                                    class="lazy-img">
+                                    data-src="backend_faculity/images/icon/icon_2.svg" alt="" class="lazy-img">
                                 <span>Upload Quizzes</span>
                             </a></li>
                         <li>
-                            <a href="{{ route('teacher.assignments.list') }}"
-                                class="d-flex w-100 align-items-center">
+                            <a href="{{ route('teacher.assignments.list') }}" class="d-flex w-100 align-items-center">
                                 <img src="../backend_faculity/images/lazy.svg"
-                                    data-src="backend_faculity/images/icon/icon_2.svg" alt=""
-                                    class="lazy-img">
+                                    data-src="backend_faculity/images/icon/icon_2.svg" alt="" class="lazy-img">
                                 <span>View Assignments</span>
                             </a>
                         </li>
                         <li>
                             <a href="{{ route('teacher.leave') }}" class="d-flex w-100 align-items-center">
                                 <img src="../backend_faculity/images/lazy.svg"
-                                    data-src="backend_faculity/images/icon/icon_2.svg" alt=""
-                                    class="lazy-img">
+                                    data-src="backend_faculity/images/icon/icon_2.svg" alt="" class="lazy-img">
                                 <span>leave Request</span>
                             </a>
                         </li>
                         <li><a href="{{ route('faculty.leave.index') }}" class="d-flex w-100 align-items-center">
                                 <img src="../backend_faculity/images/lazy.svg"
-                                    data-src="backend_faculity/images/icon/icon_2.svg" alt=""
-                                    class="lazy-img">
+                                    data-src="backend_faculity/images/icon/icon_2.svg" alt="" class="lazy-img">
                                 <span>My Applications</span>
                             </a></li>
 
                         <li><a href="candidate-dashboard-profile.html" class="d-flex w-100 align-items-center">
                                 <img src="../backend_faculity/images/lazy.svg"
-                                    data-src="backend_faculity/images/icon/icon_2.svg" alt=""
-                                    class="lazy-img">
+                                    data-src="backend_faculity/images/icon/icon_2.svg" alt="" class="lazy-img">
                                 <span>Upload Marks</span>
+                            </a></li>
+                             <li><a href="{{ route('teacher.change.password') }}" class="d-flex w-100 align-items-center">
+                                <img src="../backend_faculity/images/lazy.svg"
+                                    data-src="backend_faculity/images/icon/icon_2.svg" alt="" class="lazy-img">
+                                <span>Update Your Password</span>
                             </a></li>
                     </ul>
                 </nav>

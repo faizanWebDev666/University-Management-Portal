@@ -8,6 +8,7 @@ use App\Models\LeaveRequest;
 use App\Models\OfferCourse;
 use Illuminate\Http\Request;
 use App\Models\StudentCourseRegistration;
+use Illuminate\Support\Facades\Hash;
 class FaculityController extends Controller
 {
 public function index()
@@ -49,31 +50,45 @@ public function store(Request $request)
 public function Students_Attendence(Request $request)
 {
     $offeredCourses = OfferCourse::with(['course', 'class'])->get();
-    $offeredCourseId = $request->input('offered_course_id');
-    $registeredStudents = collect();
+    $offeredCourseId = $request->offered_course_id;
+
+    $students = collect();
 
     if ($offeredCourseId) {
-        $registeredStudents = StudentCourseRegistration::with([
+
+        $students = ClassStudent::with([
             'student.registration',
-            'offeredCourse.course',
-            'offeredCourse.class',
-            'attendances' => function ($query) use ($offeredCourseId) {
-                $query->where('offer_course_id', $offeredCourseId);
+            'student.courseRegistrations' => function ($q) use ($offeredCourseId) {
+                $q->where('offered_course_id', $offeredCourseId);
+            },
+            'student.attendances' => function ($q) use ($offeredCourseId) {
+                $q->where('offer_course_id', $offeredCourseId);
             }
         ])
         ->where('offered_course_id', $offeredCourseId)
         ->get();
 
-        foreach ($registeredStudents as $reg) {
-            $total = $reg->attendances->count();
-            $present = $reg->attendances->where('status', 'present')->count();
+        foreach ($students as $row) {
+            $attendances = $row->student->attendances;
 
-            $reg->attendance_percentage = $total > 0 ? round(($present / $total) * 100, 2) : 0;
+            $total = $attendances->count();
+            $present = $attendances->where('status', 'present')->count();
+
+            $row->attendance_percentage = $total > 0
+                ? round(($present / $total) * 100, 2)
+                : 0;
+
+            // Flag for UI
+            $row->is_registered = $row->student->courseRegistrations->isNotEmpty();
         }
     }
 
-    return view('faculity_dashboard.Students_Attendence', compact('offeredCourses', 'registeredStudents', 'offeredCourseId'));
+    return view(
+        'faculity_dashboard.Students_Attendence',
+        compact('offeredCourses', 'students', 'offeredCourseId')
+    );
 }
+
     public function WelcomeProfessor()
     {
         $userId = session('id'); 
@@ -129,4 +144,43 @@ public function courseDetails($uuid)
 
     return view('faculity_dashboard.course-details', compact('offeredCourse', 'registeredStudents', 'assignments', 'quizzes'));
 }
+
+public function changePassword()
+{
+    return view('faculity_dashboard.professorchangepassword');
+}
+   public function updatePassword(Request $request)
+    {
+        // Validate the inputs
+        $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:8|confirmed', // requires new_password_confirmation
+        ]);
+
+        // Get user ID from session
+        $userId = $request->session()->get('id');
+        $userType = $request->session()->get('type');
+
+        if (!$userId || $userType !== 'professor') {
+            return redirect()->back()->with('error', 'You are not logged in or not authorized.');
+        }
+
+        // Get the user
+        $user = User::find($userId);
+        if (!$user) {
+            return redirect()->back()->with('error', 'User not found.');
+        }
+
+        // Check previous password
+        if ($request->current_password !== $user->password) { // Direct comparison like your login
+            return redirect()->back()->with('error', 'Previous password is incorrect.');
+        }
+
+        // Update password
+        $user->password = $request->new_password; // Keep consistent with your login logic
+        $user->save();
+
+        return redirect()->back()->with('success', 'Password updated successfully.');
+    }
+
 }

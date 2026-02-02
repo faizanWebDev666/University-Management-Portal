@@ -3,18 +3,35 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Course extends Model
 {
     protected $table = 'courses';
 
     protected $fillable = [
+        'uuid',
         'course_name',
         'course_code',
         'credit_hours',
         'description',
-        'class_id', // you should also make this fillable
+        'class_id',
     ];
+
+    protected $casts = [
+        'uuid' => 'string',
+    ];
+
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->uuid)) {
+                $model->uuid = (string) Str::uuid();
+            }
+        });
+    }
   
     // Many-to-many relationship with users (professors)
     public function professors()
