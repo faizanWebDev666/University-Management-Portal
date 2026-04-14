@@ -783,6 +783,7 @@
         <span>Classes</span>
     </a>
 </li>
+                        <li><a href="{{ route('admin.permissions.index') }}"><i class="fa fa-lock"></i><span>Permissions</span></a></li>
                         <li><a href="library.html"><i class="fa fa-book"></i><span>Library</span></a></li>
                         <li><a href="{{ route('admin.viewLeaves') }}"><i class="fa fa-bullhorn"></i><span>Leave Applications</span></a></li>
 

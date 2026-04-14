@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Attendance;
 use App\Models\LeaveRequest;
 use App\Models\OfferCourse;
+use App\Models\ProfessorPermission;
 use App\Models\StudentsRegistration;
 use Illuminate\Http\Request;
 use App\Models\StudentCourseRegistration;
@@ -49,62 +50,7 @@ public function store(Request $request)
 
     return redirect()->back()->with('success', 'Leave request submitted successfully.');
 }
-    public function Students_Attendence(Request $request)
-    {
-        $userId = session('id');
-        $offeredCourses = OfferCourse::where('professor_id', $userId)->with(['course', 'class'])->get();
-        $offeredCourseId = $request->offered_course_id;
-        $registeredStudents = collect();
 
-        if ($offeredCourseId) {
-            // Find the offered course to get its class_id
-            $offeredCourse = OfferCourse::with(['class', 'course'])->find($offeredCourseId);
-            
-            if ($offeredCourse && $offeredCourse->class) {
-                // Fetch all students belonging to the class associated with this course
-                // This ensures all students in the class are visible to the professor immediately
-                $registeredStudents = StudentsRegistration::where('class_id', $offeredCourse->class_id)
-                    ->with('user')
-                    ->get();
-
-                // Pre-fetch all attendance sessions for this course to avoid N+1 inside student loop
-                $allCourseAttendanceSessions = Attendance::where('offer_course_id', $offeredCourseId)->get();
-
-                foreach ($registeredStudents as $student) {
-                    // Calculate attendance percentage for this student from all sessions
-                    $presentCount = 0;
-                    $totalCount = $allCourseAttendanceSessions->count();
-
-                    foreach ($allCourseAttendanceSessions as $session) {
-                        $status = $session->getStatusForStudent($student->id);
-                        if ($status === 'present') {
-                            $presentCount++;
-                        }
-                    }
-                    
-                    $student->attendance_percentage = $totalCount > 0 ? round(($presentCount / $totalCount) * 100, 2) : 0;
-                    
-                    // Mock the structure expected by the view for compatibility
-                    $student->offeredCourse = $offeredCourse;
-                     
-                     // Ensure $student->student exists for the view (reg->student->registration)
-                     if (!$student->user) {
-                         // Create a temporary object if User record doesn't exist yet
-                         $student->student = (object)[
-                             'name' => $student->full_name,
-                             'email' => $student->email,
-                             'registration' => $student
-                         ];
-                     } else {
-                         $student->student = $student->user;
-                         $student->student->registration = $student;
-                     }
-                 }
-            }
-        }
-
-        return view('faculity_dashboard.Students_Attendence', compact('offeredCourses', 'registeredStudents', 'offeredCourseId'));
-    }
     public function WelcomeProfessor()
     {
         $userId = session('id'); 
@@ -144,7 +90,26 @@ public function store(Request $request)
             ->with('user')
             ->get();
 
+        // Pre-fetch all attendance sessions for this course to avoid N+1 inside student loop
+        $allCourseAttendanceSessions = Attendance::where('offer_course_id', $offeredCourse->id)->get();
+        $canEditMarkedAttendance = ProfessorPermission::where('professor_id', $userId)
+            ->where('can_edit_marked_attendance', true)
+            ->exists();
+
         foreach ($registeredStudents as $student) {
+            // Calculate attendance percentage for this student from all sessions
+            $presentCount = 0;
+            $totalCount = $allCourseAttendanceSessions->count();
+
+            foreach ($allCourseAttendanceSessions as $session) {
+                $status = $session->getStatusForStudent($student->id);
+                if ($status === 'present') {
+                    $presentCount++;
+                }
+            }
+            
+            $student->attendance_percentage = $totalCount > 0 ? round(($presentCount / $totalCount) * 100, 2) : 0;
+
              // Mock the structure expected by the view for compatibility
              if (!$student->user) {
                  // Create a temporary object if User record doesn't exist yet
@@ -170,7 +135,7 @@ public function store(Request $request)
             ->where('teacher_id', $userId)
             ->get();
 
-        return view('faculity_dashboard.course-details', compact('offeredCourse', 'registeredStudents', 'assignments', 'quizzes'));
+        return view('faculity_dashboard.course-details', compact('offeredCourse', 'registeredStudents', 'assignments', 'quizzes', 'allCourseAttendanceSessions', 'canEditMarkedAttendance'));
     }
 
 public function changePassword()

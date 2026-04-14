@@ -8,7 +8,6 @@ use App\Models\OfferCourse;
 use App\Models\OfferCourses;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 class AssignmentController extends Controller
@@ -70,18 +69,18 @@ public function UploadAssignments(Request $request)
         'assignment_title' => 'required|string|max:255',
         'assignment_file' => 'required|file|mimes:pdf,doc,docx|max:2048',
         'deadline' => 'required|date',
-        'course_class' => ['required', 'string', 'regex:/^\d+\|\\d+$/'],
-         'total_marks' => 'required|integer|min:1|max:1000',
+        'course_id' => 'required|exists:courses,id',
+        'class_id' => 'required|exists:classes,id',
+        'total_marks' => 'required|integer|min:1|max:1000',
     ]);
-    [$courseId, $classId] = explode('|', $request->course_class);
     $filePath = $request->file('assignment_file')->store('assignments', 'public');
     Assignment::create([
         'assignment_title' => $request->assignment_title,
         'assignment_file' => $filePath,
         'deadline' => $request->deadline,
         'teacher_id' => $teacherId,
-        'course_id' => $courseId,
-        'class_id' => $classId,
+        'course_id' => $request->course_id,
+        'class_id' => $request->class_id,
         'total_marks' => $request->total_marks,
     ]);
     return redirect()->back()->with('success', 'Assignment uploaded successfully.');
@@ -122,6 +121,8 @@ public function studentAssignments()
 
 public function Assignmentsubmission(Request $request, $assignmentId)
 {
+    $assignment = Assignment::findOrFail($assignmentId);
+
     $request->validate([
         'submission_file' => 'required|file|mimes:pdf,doc,docx|max:2048',
     ]);
@@ -131,12 +132,25 @@ public function Assignmentsubmission(Request $request, $assignmentId)
         return back()->withErrors('You must be logged in as a student to submit.');
     }
 
+    if (Carbon::parse($assignment->deadline)->isPast()) {
+        return back()->withErrors('Submission deadline has passed for this assignment.');
+    }
+
+    $alreadySubmitted = AssignmentSubmission::where('assignment_id', $assignmentId)
+        ->where('student_id', $studentId)
+        ->exists();
+
+    if ($alreadySubmitted) {
+        return back()->withErrors('You have already submitted this assignment.');
+    }
+
     $filePath = $request->file('submission_file')->store('submissions', 'public');
 
     AssignmentSubmission::create([
         'assignment_id' => $assignmentId,
         'student_id' => $studentId,
         'file_path' => $filePath,
+        'submitted_at' => now(),
     ]);
 
     return back()->with('success', 'Assignment submitted successfully.');
@@ -152,8 +166,54 @@ public function PostedAssignments()
 public function viewSubmissions($assignmentId)
 {
     $assignment = Assignment::with('submissions.student')->findOrFail($assignmentId);
+    return view('faculity_dashboard.viewAssignmentSubmissions', compact('assignment'));
+}
 
-    return view('faculity_dashboard.viewAssignmentsSubmissions', compact('assignment'));
+public function storeMarks(Request $request, $assignmentId)
+{
+    $teacherId = session('id');
+    $assignment = Assignment::where('teacher_id', $teacherId)->findOrFail($assignmentId);
+
+    $request->validate([
+        'marks.*' => 'nullable|integer|min:0',
+    ]);
+
+    foreach ($request->marks as $submissionId => $mark) {
+        if ($mark !== null && (int) $mark > (int) $assignment->total_marks) {
+            return back()->withErrors("Marks cannot exceed total marks ({$assignment->total_marks}).");
+        }
+
+        AssignmentSubmission::where('id', $submissionId)
+            ->where('assignment_id', $assignment->id)
+            ->update(['marks' => $mark]);
+    }
+
+    return back()->with('success', 'Marks updated successfully.');
+}
+
+public function updateMeta(Request $request, $assignmentId)
+{
+    $teacherId = session('id');
+    $assignment = Assignment::where('teacher_id', $teacherId)->findOrFail($assignmentId);
+
+    $validated = $request->validate([
+        'deadline' => 'required|date',
+        'total_marks' => 'required|integer|min:1|max:1000',
+    ]);
+
+    $existingDeadline = Carbon::parse($assignment->deadline)->startOfDay();
+    $newDeadline = Carbon::parse($validated['deadline'])->startOfDay();
+
+    if ($newDeadline->lt($existingDeadline)) {
+        return back()->withErrors('New assignment deadline must be the same or later than the current deadline.');
+    }
+
+    $assignment->update([
+        'deadline' => $validated['deadline'],
+        'total_marks' => $validated['total_marks'],
+    ]);
+
+    return back()->with('success', 'Assignment timeline and marks updated successfully.');
 }
 
 }

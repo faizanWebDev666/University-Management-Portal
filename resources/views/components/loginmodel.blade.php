@@ -2,119 +2,131 @@
 <!-- Login Modal -->
 <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered pgu-modal-dialog">
-        <div class="modal-content pgu-modal-content border-0 rounded-4 overflow-hidden">
-            
-            <!-- Modal Header -->
-            <div class="pgu-modal-header p-4 text-center">
-                <div class="pgu-modal-header-content">
-                    <button type="button" class="btn-close pgu-close-btn position-absolute" data-bs-dismiss="modal" aria-label="Close"></button>
-                    <h3 class="pgu-modal-title mb-1">Account Access</h3>
-                    <p class="pgu-modal-subtitle">Sign in to continue to your dashboard</p>
+        <div class="modal-content pgu-modal-content border-0 rounded-5 overflow-hidden">
+            <div class="row g-0">
+                <div class="col-lg-5 d-none d-lg-flex pgu-aside-panel flex-column justify-content-between p-4">
+                    <div>
+                        <span class="pgu-tag">University Portal</span>
+                        <h4 class="pgu-aside-title">Secure access for students, faculty and admins.</h4>
+                        <p class="pgu-aside-text">Sign in quickly with a trusted single entry point designed for modern academic teams.</p>
+                    </div>
+                    <div class="pgu-aside-features">
+                        <div class="pgu-aside-item">
+                            <i class="fas fa-lock"></i>
+                            <span>Secure login</span>
+                        </div>
+                        <div class="pgu-aside-item">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Fast access</span>
+                        </div>
+                        <div class="pgu-aside-item">
+                            <i class="fas fa-user-check"></i>
+                            <span>Trusted platform</span>
+                        </div>
+                    </div>
                 </div>
-            </div>
-             @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-            <!-- Modal Body -->
-            <div class="pgu-modal-body p-4 pt-3">
-                <form action="{{ route('loginUser') }}" method="POST" class="pgu-login-form" id="loginForm">
-                    @csrf
-                    
-                    <!-- Email Field -->
-                    <div class="pgu-form-group mb-4">
-                        <label for="loginEmail" class="pgu-form-label">Email Address</label>
-                        <div class="pgu-input-group">
-                            <span class="pgu-input-icon">
-                                <i class="bi bi-envelope"></i>
-                            </span>
-                            <input type="email" 
-                                   class="pgu-form-control" 
-                                   id="loginEmail" 
-                                   name="email" 
-                                   placeholder="example@gmail.com"
-                                   required>
-                        </div>
-                        <div class="pgu-form-text">Enter your registered university email address</div>
-                    </div>
 
-                    <!-- Hidden Field -->
-                    <input type="hidden" name="requested_type" id="requested_type" value="">
-
-                    <!-- Password Field -->
-                    <div class="pgu-form-group mb-4">
-                        <label for="loginPassword" class="pgu-form-label">Password</label>
-                        <div class="pgu-input-group">
-                            <span class="pgu-input-icon">
-                                <i class="bi bi-lock"></i>
-                            </span>
-                            <input type="password" 
-                                   class="pgu-form-control" 
-                                   id="loginPassword" 
-                                   name="password" 
-                                   placeholder="Enter your password" 
-                                   required>
-                            <button type="button" 
-                                    class="pgu-password-toggle"
-                                    id="toggleLoginPassword"
-                                    aria-label="Toggle password visibility">
-                                <i class="bi bi-eye-slash"></i>
-                            </button>
+                <div class="col-lg-7">
+                    <div class="pgu-modal-header p-4">
+                        <button type="button" class="btn-close pgu-close-btn position-absolute" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <div class="pgu-modal-header-content text-center text-lg-start">
+                            <h3 class="pgu-modal-title mb-2">Account Access</h3>
+                            <p class="pgu-modal-subtitle">Sign in to continue to your dashboard</p>
                         </div>
                     </div>
 
-                    <!-- Remember & Forgot -->
-                    <div class="pgu-remember-forgot d-flex justify-content-between align-items-center mb-4">
-                        <div class="pgu-checkbox-group">
-                            <input class="pgu-checkbox" type="checkbox" id="rememberMe" name="remember">
-                            <label class="pgu-checkbox-label" for="rememberMe">
-                                Remember this device
-                            </label>
+                    @if ($errors->any())
+                        <div class="alert alert-danger mx-4">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
                         </div>
-                    </div>
+                    @endif
 
-                    <!-- reCAPTCHA -->
-                    @php
-                        use Anhskohbo\NoCaptcha\Facades\NoCaptcha;
-                    @endphp
-                    <div class="pgu-captcha-container mb-4">
-                        {!! NoCaptcha::renderJs() !!}
-                        {!! NoCaptcha::display(['data-theme' => 'light', 'class' => 'pgu-captcha']) !!}
-                        @error('g-recaptcha-response')
-                            <div class="pgu-alert-error mt-2">
-                                <i class="bi bi-exclamation-circle me-1"></i>
-                                {{ $message }}
+                    <div class="pgu-modal-body p-4 pt-0">
+                        <form action="{{ route('loginUser') }}" method="POST" class="pgu-login-form" id="loginForm">
+                            @csrf
+
+                            <div class="pgu-form-group mb-4">
+                                <label for="loginEmail" class="pgu-form-label">Email Address</label>
+                                <div class="pgu-input-group">
+                                    <span class="pgu-input-icon">
+                                        <i class="bi bi-envelope"></i>
+                                    </span>
+                                    <input type="email"
+                                           class="pgu-form-control"
+                                           id="loginEmail"
+                                           name="email"
+                                           placeholder="example@university.edu"
+                                           required>
+                                </div>
+                                <div class="pgu-form-text">Enter your registered university email address</div>
                             </div>
-                        @enderror
-                    </div>
 
-                    <!-- Submit Button -->
-                    <div class="pgu-submit-container">
-                        <button type="submit" class="pgu-submit-btn">
-                            <i class="bi bi-box-arrow-in-right me-2"></i>
-                            Sign In to Portal
-                        </button>
-                    </div>
-                </form>
+                            <input type="hidden" name="requested_type" id="requested_type" value="">
 
-                <!-- Divider -->
-                <div class="pgu-divider my-4">
-                    <span class="pgu-divider-text">OR</span>
-                </div>
+                            <div class="pgu-form-group mb-4">
+                                <label for="loginPassword" class="pgu-form-label">Password</label>
+                                <div class="pgu-input-group">
+                                    <span class="pgu-input-icon">
+                                        <i class="bi bi-lock"></i>
+                                    </span>
+                                    <input type="password"
+                                           class="pgu-form-control"
+                                           id="loginPassword"
+                                           name="password"
+                                           placeholder="Enter your password"
+                                           required>
+                                    <button type="button"
+                                            class="pgu-password-toggle"
+                                            id="toggleLoginPassword"
+                                            aria-label="Toggle password visibility">
+                                        <i class="bi bi-eye-slash"></i>
+                                    </button>
+                                </div>
+                            </div>
 
-                <!-- Registration Option -->
-                
+                            <div class="pgu-remember-forgot d-flex justify-content-between align-items-center mb-4 flex-column flex-sm-row gap-3">
+                                <div class="pgu-checkbox-group">
+                                    <input class="pgu-checkbox" type="checkbox" id="rememberMe" name="remember">
+                                    <label class="pgu-checkbox-label" for="rememberMe">Remember this device</label>
+                                </div>
+                            </div>
 
-                <!-- Security Footer -->
-                <div class="pgu-security-footer mt-4 pt-3 border-top">
-                    <div class="d-flex align-items-center justify-content-center">
-                        <i class="bi bi-shield-check pgu-security-icon me-2"></i>
-                        <span class="pgu-security-text">Your credentials are encrypted and securely transmitted</span>
+                            @php
+                                use Anhskohbo\NoCaptcha\Facades\NoCaptcha;
+                            @endphp
+                            <div class="pgu-captcha-container mb-4">
+                                {!! NoCaptcha::renderJs() !!}
+                                {!! NoCaptcha::display(['data-theme' => 'light', 'class' => 'pgu-captcha']) !!}
+                                @error('g-recaptcha-response')
+                                    <div class="pgu-alert-error mt-2">
+                                        <i class="bi bi-exclamation-circle me-1"></i>
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+
+                            <div class="pgu-submit-container">
+                                <button type="submit" class="pgu-submit-btn">
+                                    <i class="bi bi-box-arrow-in-right me-2"></i>
+                                    Sign In to Portal
+                                </button>
+                            </div>
+                        </form>
+
+                        <div class="pgu-divider my-4">
+                            <span class="pgu-divider-text">OR</span>
+                        </div>
+
+                        <div class="pgu-security-footer mt-4 pt-3">
+                            <div class="d-flex align-items-center justify-content-center">
+                                <i class="bi bi-shield-check pgu-security-icon me-2"></i>
+                                <span class="pgu-security-text">Your credentials are encrypted and securely transmitted</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -126,19 +138,101 @@
 <style>
 /* Modal Container */
 .pgu-modal-dialog {
-    max-width: 420px;
-    margin: 1rem;
+    max-width: 820px;
+    margin: 1rem auto;
+    transform: scale(0.70);
+    transform-origin: center center;
 }
 
 .pgu-modal-content {
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(46, 90, 62, 0.1);
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.14);
+    border: 1px solid rgba(46, 90, 62, 0.08);
+    min-height: auto;
+}
+
+.pgu-aside-panel {
+    background: linear-gradient(180deg, rgba(46, 90, 62, 0.95), rgba(33, 68, 45, 0.95));
+    color: rgba(255, 255, 255, 0.95);
+    position: relative;
+    overflow: hidden;
+}
+
+.pgu-aside-panel::before {
+    content: '';
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    top: 16px;
+    right: -60px;
+}
+
+.pgu-aside-panel::after {
+    content: '';
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+    bottom: 20px;
+    left: -60px;
+}
+
+.pgu-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding: 0.55rem 1rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.pgu-aside-title {
+    font-size: 1.9rem;
+    font-weight: 700;
+    margin-top: 2rem;
+    line-height: 1.2;
+}
+
+.pgu-aside-text {
+    margin-top: 1rem;
+    max-width: 320px;
+    opacity: 0.9;
+    font-size: 0.98rem;
+    line-height: 1.7;
+}
+
+.pgu-aside-features {
+    display: grid;
+    gap: 1rem;
+    margin-top: 2.25rem;
+}
+
+.pgu-aside-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.95rem 1rem;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.pgu-aside-item i {
+    font-size: 1.1rem;
+    color: #A5D6A7;
 }
 
 /* Header */
 .pgu-modal-header {
-    background: linear-gradient(135deg, rgba(46, 90, 62, 0.95), rgba(33, 68, 45, 0.95));
-    padding: 2rem 1.5rem;
+    background: #fff;
+    padding: 2rem 2rem 1rem;
     position: relative;
 }
 
@@ -147,36 +241,32 @@
 }
 
 .pgu-close-btn {
-    top: 1rem;
-    right: 1rem;
-    background: rgba(255, 255, 255, 0.1);
+    top: 1.25rem;
+    right: 1.25rem;
+    background: #f8fafc;
     border-radius: 50%;
-    padding: 0.5rem;
-    opacity: 0.8;
-    transition: all 0.2s ease;
+    padding: 0.65rem;
+    opacity: 0.9;
+    transition: all 0.25s ease;
 }
 
 .pgu-close-btn:hover {
     opacity: 1;
-    background: rgba(255, 255, 255, 0.2);
-}
-
-.pgu-logo {
-    filter: brightness(0) invert(1);
-    opacity: 0.9;
+    background: #e2e8f0;
 }
 
 .pgu-modal-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: white;
-    letter-spacing: 0.5px;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: -0.04em;
 }
 
 .pgu-modal-subtitle {
-    font-size: 0.875rem;
-    color: rgba(255, 255, 255, 0.85);
-    margin: 0;
+    font-size: 1rem;
+    color: #6b7280;
+    margin: 0.75rem 0 0;
+    line-height: 1.75;
 }
 
 /* Form Elements */
@@ -401,7 +491,7 @@
 /* Responsive Design */
 @media (max-width: 576px) {
     .pgu-modal-dialog {
-        margin: 0.5rem;
+        margin: 0.5rem auto;
         max-width: calc(100vw - 1rem);
     }
     

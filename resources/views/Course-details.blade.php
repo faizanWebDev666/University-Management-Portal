@@ -71,11 +71,43 @@
                         <i class="fas fa-question-circle me-2"></i>Quizzes
                     </button>
                 </li>
+                <li class="nav-item">
+                    <button class="nav-link" id="tab-marks" onclick="showSection('marks-section')">
+                        <i class="fas fa-chart-line me-2"></i>Marks
+                    </button>
+                </li>
             </ul>
         </div>
     </div>
 
     <div class="container py-5">
+        <!-- ===================== COURSE SUMMARY BLOCK ===================== -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="bg-white border rounded-3 p-3 h-100">
+                    <p class="text-muted small text-uppercase fw-bold mb-1">Attendance Summary</p>
+                    <h5 class="mb-1">{{ $presentCount }}/{{ $totalClasses }} Present</h5>
+                    <p class="mb-0 small {{ $attendancePercent >= 75 ? 'text-success' : 'text-danger' }}">
+                        {{ $attendancePercent }}% Current Attendance
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="bg-white border rounded-3 p-3 h-100">
+                    <p class="text-muted small text-uppercase fw-bold mb-1">Assignment Marks</p>
+                    <h5 class="mb-1">{{ number_format((float) $assignmentObtained, 2) }} / {{ number_format((float) $assignmentTotal, 2) }}</h5>
+                    <p class="mb-0 small text-muted">{{ $assignmentGradedCount }} graded submissions</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="bg-white border rounded-3 p-3 h-100">
+                    <p class="text-muted small text-uppercase fw-bold mb-1">Quiz Marks</p>
+                    <h5 class="mb-1">{{ number_format((float) $quizObtained, 2) }}</h5>
+                    <p class="mb-0 small text-muted">{{ $quizGradedCount }} graded quizzes</p>
+                </div>
+            </div>
+        </div>
+
         <!-- ===================== ATTENDANCE SECTION ===================== -->
         <div id="attendance-section" class="detail-section">
             <!-- Inline Stats Row -->
@@ -347,6 +379,91 @@
                 @endforelse
             </div>
         </div>
+
+        <!-- ===================== MARKS SECTION ===================== -->
+        <div id="marks-section" class="detail-section d-none">
+            <div class="row g-4">
+                <div class="col-12">
+                    <div class="border rounded-3 bg-white p-4">
+                        <h5 class="fw-bold mb-3"><i class="fas fa-file-alt me-2 text-primary"></i>Assignment Marks</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>Assignment</th>
+                                        <th class="text-center">Total Marks</th>
+                                        <th class="text-center">Obtained</th>
+                                        <th class="text-end">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($assignmentMarkRows as $row)
+                                        <tr>
+                                            <td>{{ $row->title }}</td>
+                                            <td class="text-center">{{ is_numeric($row->total_marks) ? $row->total_marks : 'N/A' }}</td>
+                                            <td class="text-center">
+                                                {{ $row->obtained_marks !== null ? number_format((float) $row->obtained_marks, 2) : '-' }}
+                                            </td>
+                                            <td class="text-end">
+                                                @if (!$row->is_submitted)
+                                                    <span class="badge bg-secondary-subtle text-secondary border">Not Submitted</span>
+                                                @elseif ($row->obtained_marks === null)
+                                                    <span class="badge bg-warning-subtle text-warning-emphasis border">Submitted - Pending Grade</span>
+                                                @else
+                                                    <span class="badge bg-success-subtle text-success border">Graded</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr><td colspan="4" class="text-center text-muted py-4">No assignment marks available.</td></tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="border rounded-3 bg-white p-4">
+                        <h5 class="fw-bold mb-3"><i class="fas fa-question-circle me-2 text-primary"></i>Quiz Marks</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>Quiz</th>
+                                        <th class="text-center">Type</th>
+                                        <th class="text-center">Obtained</th>
+                                        <th class="text-end">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($quizMarkRows as $row)
+                                        <tr>
+                                            <td>{{ $row->title }}</td>
+                                            <td class="text-center text-uppercase">{{ $row->type }}</td>
+                                            <td class="text-center">
+                                                {{ $row->obtained_marks !== null ? number_format((float) $row->obtained_marks, 2) : '-' }}
+                                            </td>
+                                            <td class="text-end">
+                                                @if (!$row->is_submitted)
+                                                    <span class="badge bg-secondary-subtle text-secondary border">Not Submitted</span>
+                                                @elseif ($row->obtained_marks === null)
+                                                    <span class="badge bg-warning-subtle text-warning-emphasis border">Submitted - Pending Grade</span>
+                                                @else
+                                                    <span class="badge bg-success-subtle text-success border">Graded</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr><td colspan="4" class="text-center text-muted py-4">No quiz marks available.</td></tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -547,7 +664,13 @@
                 `);
             },
             error: function(xhr) {
-                let msg = xhr.responseJSON?.message || 'Upload failed.';
+                let msg = xhr.responseJSON?.message || xhr.responseJSON?.error || 'Upload failed.';
+                if (xhr.responseJSON?.errors) {
+                    const firstError = Object.values(xhr.responseJSON.errors)[0];
+                    if (Array.isArray(firstError) && firstError.length) {
+                        msg = firstError[0];
+                    }
+                }
                 alert(msg);
                 btn.html(originalText).prop('disabled', false);
             }

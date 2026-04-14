@@ -70,12 +70,10 @@
                     @elseif(!$quiz->already_submitted)
                         <form action="{{ route('student.uploadAnswer', $quiz->id) }}"
                               method="POST"
-                              enctype="multipart/form-data"
                               class="mt-3">
                             @csrf
-                            <label class="form-label fw-semibold">Upload Your Answer (PDF only, max 5MB)</label>
-                            <input type="file" name="answer_file" class="form-control mb-2"
-                                   accept="application/pdf" required>
+                            <label class="form-label fw-semibold">Write Your Answer</label>
+                            <textarea name="written_answer" class="form-control mb-2" rows="6" required></textarea>
                             <button class="btn btn-success btn-sm" type="submit">Submit Answer</button>
                         </form>
                     @else

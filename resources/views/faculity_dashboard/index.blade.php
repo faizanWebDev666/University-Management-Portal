@@ -58,7 +58,7 @@
                             </p>
                         </div>
                         <a href="{{ route('faculty.course.details', $offered->course->uuid) }}" class="btn btn-sm btn-primary w-100 mt-auto">
-                            <i class="bi bi-eye me-1"></i> View Details
+                            <i class="fas fa-cog me-1"></i> Manage Course
                         </a>
                     </div>
                 </div>

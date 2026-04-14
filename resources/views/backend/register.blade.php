@@ -41,17 +41,26 @@
 
                         <div class="form-group">
                             <label class="form-label">Name</label>
-                            <input type="text" name="name" class="form-control" placeholder="Enter name" required>
+                            <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" placeholder="Enter name" value="{{ old('name') }}" required>
+                            @error('name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="form-group">
                             <label class="form-label">Email address</label>
-                            <input type="email" name="email" class="form-control" placeholder="Enter email" required>
+                            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" placeholder="Enter email" value="{{ old('email') }}" required>
+                            @error('email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                         <div class="form-group">
                             <label class="form-label">Password</label>
-                            <input type="password" name="password" class="form-control" placeholder="Password" required>
+                            <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" placeholder="Password (Min. 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special)" required>
+                            @error('password')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
                          @php

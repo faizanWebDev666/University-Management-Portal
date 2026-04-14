@@ -6,6 +6,7 @@ use App\Models\StudentCourseRegistration;
 use App\Models\Attendance;
 use App\Models\Assignment;
 use App\Models\Quiz;
+use App\Models\StudentQuizSubmission;
 use Illuminate\Http\Request;
 
 class StudentController extends Controller
@@ -56,6 +57,49 @@ class StudentController extends Controller
             }])
             ->get();
 
-        return view('Course-details', compact('registration', 'attendances', 'assignments', 'quizzes'));
+        $assignmentMarkRows = $assignments->map(function ($assignment) {
+            $submission = $assignment->submissions->first();
+            return (object) [
+                'title' => $assignment->assignment_title,
+                'total_marks' => $assignment->total_marks,
+                'obtained_marks' => $submission?->marks,
+                'is_submitted' => (bool) $submission,
+            ];
+        });
+
+        $quizMarkRows = $quizzes->map(function ($quiz) use ($studentId) {
+            $submission = $quiz->submissions->first()
+                ?? StudentQuizSubmission::where('quiz_id', $quiz->id)->where('student_id', $studentId)->first();
+
+            return (object) [
+                'title' => $quiz->quiz_title,
+                'type' => $quiz->quiz_type,
+                'obtained_marks' => $submission?->marks,
+                'is_submitted' => (bool) $submission,
+            ];
+        });
+
+        $assignmentObtained = $assignmentMarkRows->whereNotNull('obtained_marks')->sum('obtained_marks');
+        $assignmentTotal = $assignmentMarkRows->sum(function ($item) {
+            return is_numeric($item->total_marks) ? (float) $item->total_marks : 0;
+        });
+        $assignmentGradedCount = $assignmentMarkRows->whereNotNull('obtained_marks')->count();
+
+        $quizObtained = $quizMarkRows->whereNotNull('obtained_marks')->sum('obtained_marks');
+        $quizGradedCount = $quizMarkRows->whereNotNull('obtained_marks')->count();
+
+        return view('Course-details', compact(
+            'registration',
+            'attendances',
+            'assignments',
+            'quizzes',
+            'assignmentMarkRows',
+            'quizMarkRows',
+            'assignmentObtained',
+            'assignmentTotal',
+            'assignmentGradedCount',
+            'quizObtained',
+            'quizGradedCount'
+        ));
     }
 }

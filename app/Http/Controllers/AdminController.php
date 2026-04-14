@@ -41,23 +41,23 @@ public function display_professors()
     }
     public function display_students()
     {
-         $students = StudentsRegistration::all();
+         $students = StudentsRegistration::paginate(10);
         return view('backend.students',compact('students'));
     }
 
  public function Courses()
     {
-         $courses = Course::all();
+         $courses = Course::paginate(10);
         return view('backend.Courses',compact('courses'));
     }
      public function users()
     {
-         $users = User::all();
+         $users = User::paginate(10);
         return view('backend.users', compact('users'));
     }
     public function Classes()
     {
-        $classes = Classes::all();
+        $classes = Classes::paginate(10);
         return view('backend.Classes',compact('classes'));
 
     }
@@ -81,12 +81,15 @@ public function display_professors()
         $newUser->name = $data->input('name');
         $newUser->email = $data->input('email');
         $newUser->password = $data->input('password');
-        $newUser->type = 'Admin';
+        $newUser->type = 'admin'; // Normalize to lowercase
         $newUser->save();
     
-        // Mail::to($newUser->email)->send(new Verifyemail($newUser));
+        // Set session so the user is logged in immediately
+        session()->put('id', $newUser->id);
+        session()->put('type', $newUser->type);
+        session()->put('name', $newUser->name);
     
-return redirect()->route('Admin.Dashboard')->with('success', 'Registration successful! Please verify your email.');
+        return redirect()->route('Admin.Dashboard')->with('success', 'Registration successful! Welcome to the Admin Dashboard.');
     }    
     public function loginUser(Request $data)
     {
@@ -104,11 +107,12 @@ return redirect()->route('Admin.Dashboard')->with('success', 'Registration succe
             }
     
             session()->put('id', $user->id);
-            session()->put('type', $user->type);
+            session()->put('type', strtolower($user->type)); // Normalize session type
+            session()->put('name', $user->name);
     
-            if ($user->type === 'admin') {
-return redirect()->route('Admin.Dashboard');
-            } elseif ($user->type === 'professor') {
+            if (strtolower($user->type) === 'admin') {
+                return redirect()->route('Admin.Dashboard');
+            } elseif (strtolower($user->type) === 'professor') {
                 return redirect('/faculityAdmin');
             }
         }

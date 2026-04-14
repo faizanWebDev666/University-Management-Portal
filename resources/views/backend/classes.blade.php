@@ -66,6 +66,9 @@
                 </tbody>
             </table>
         </div>
+        <div class="mt-4 d-flex justify-content-center">
+            {{ $classes->links('pagination::bootstrap-4') }}
+        </div>
     </div>
 </div>
 <x-admin-footer/>
