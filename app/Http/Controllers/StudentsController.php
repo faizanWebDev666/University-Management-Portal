@@ -33,14 +33,19 @@ class StudentsController extends Controller
 
     foreach ($courses as $course) {
         if ($studentRegistration) {
-            // Fetch attendances directly from DB using registration ID
-            $attendances = Attendance::where('student_registration_id', $studentRegistration->id)
-                ->where('offer_course_id', $course->id)
-                ->get();
+            // Fetch all attendance sessions for this course
+            $allSessions = Attendance::where('offer_course_id', $course->id)->get();
             
-            $total = $attendances->count();
-            $present = $attendances->where('status', 'present')->count();
-            $percentage = $total > 0 ? round(($present / $total) * 100) : 0;
+            $totalCount = $allSessions->count();
+            $presentCount = 0;
+            
+            foreach ($allSessions as $session) {
+                if ($session->getStatusForStudent($studentRegistration->id) === 'present') {
+                    $presentCount++;
+                }
+            }
+            
+            $percentage = $totalCount > 0 ? round(($presentCount / $totalCount) * 100) : 0;
         } else {
             $percentage = 0;
         }

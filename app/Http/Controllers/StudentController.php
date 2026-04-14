@@ -22,15 +22,23 @@ class StudentController extends Controller
 
         $offeredCourseId = $registration->offered_course_id;
 
-        // Fetch attendance for this specific course and student
-        $attendances = Attendance::where('student_registration_id', function($query) use ($studentId) {
-                $query->select('id')
-                    ->from('students_registrations')
-                    ->where('user_id', $studentId)
-                    ->limit(1);
-            })
-            ->where('offer_course_id', $offeredCourseId)
-            ->get();
+        // Fetch attendance for this specific course and student (optimized JSON structure)
+        $studentRegistration = \App\Models\StudentsRegistration::where('user_id', $studentId)->first();
+        $allSessions = Attendance::where('offer_course_id', $offeredCourseId)->get();
+        
+        $attendances = collect();
+        if ($studentRegistration) {
+            foreach ($allSessions as $session) {
+                $status = $session->getStatusForStudent($studentRegistration->id);
+                if ($status) {
+                    $attendances->push((object)[
+                        'date' => $session->date,
+                        'time_slot' => $session->time_slot,
+                        'status' => $status
+                    ]);
+                }
+            }
+        }
 
         // Fetch assignments for this course and class
         $assignments = Assignment::where('course_id', $registration->course_id)

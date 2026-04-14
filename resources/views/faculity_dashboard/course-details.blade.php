@@ -184,7 +184,7 @@
                                 @foreach ($registeredStudents as $registration)
                                     <tr style="border-bottom: 1px solid #e9ecef;">
                                         <td>
-                                            <span class="badge bg-light text-dark fw-semibold">{{ $registration->student->registration->roll_number ?? 'N/A' }}</span>
+                                            <span class="badge bg-light text-dark fw-semibold">{{ $registration->student->registration->roll_no ?? 'N/A' }}</span>
                                         </td>
                                         <td class="fw-500 text-dark">{{ $registration->student->name ?? 'N/A' }}</td>
                                         <td class="text-muted d-none d-md-table-cell">{{ $registration->student->email ?? 'N/A' }}</td>

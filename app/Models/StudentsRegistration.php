@@ -37,10 +37,5 @@ class StudentsRegistration extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
-
-    public function attendances()
-    {
-        return $this->hasMany(Attendance::class, 'student_registration_id');
-    }
 }
 

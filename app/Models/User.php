@@ -52,18 +52,6 @@ public function submissions()
     return $this->hasMany(StudentQuizSubmission::class, 'student_id');
 }
 
-public function attendances()
- {
-     return $this->hasManyThrough(
-         Attendance::class,
-         StudentsRegistration::class,
-         'user_id',               // Foreign key on StudentsRegistration table
-         'student_registration_id', // Foreign key on Attendance table
-         'id',                    // Local key on User table
-         'id'                     // Local key on StudentsRegistration table
-     );
- }
-
 public function courseRegistrations()
 {
     return $this->hasMany(StudentCourseRegistration::class, 'student_id');

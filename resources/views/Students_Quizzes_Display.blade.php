@@ -250,4 +250,3 @@ function startQuiz(questions, quizId) {
 </script>
 
 
-<x-footer />

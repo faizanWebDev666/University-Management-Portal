@@ -45,34 +45,13 @@ class AttendanceController extends Controller
 
         DB::beginTransaction();
         try {
-            $records = [];
-
-            foreach ($request->attendance as $studentId => $status) {
-                // ✅ Ensure per-student uniqueness
-                $exists = Attendance::where('student_registration_id', $studentId)
-                    ->where('offer_course_id', $request->offer_course_id)
-                    ->where('date', $request->date)
-                    ->where('time_slot', $request->time_slot)
-                    ->exists();
-
-                if ($exists) {
-                    DB::rollBack();
-                    return back()->with('error', "Attendance for student ID {$studentId} already exists.");
-                }
-
-                $records[] = [
-                    'student_registration_id' => $studentId,
-                    'offer_course_id' => $request->offer_course_id,
-                    'status' => $status,
-                    'date' => $request->date,
-                    'time_slot' => $request->time_slot,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            }
-
-            // ✅ Insert all attendance records
-            Attendance::insert($records);
+            // ✅ Save as a single record (Session-based)
+            Attendance::create([
+                'offer_course_id' => $request->offer_course_id,
+                'date' => $request->date,
+                'time_slot' => $request->time_slot,
+                'attendance_data' => $request->attendance, // Already an array from request
+            ]);
 
             DB::commit();
             return back()->with('success', 'Attendance submitted successfully.');

@@ -75,11 +75,4 @@ public function student()
     {
         return $this->offeredCourse?->class_id;
     }
-
-    // Add this method
-    public function attendances()
-    {
-        return $this->hasMany(\App\Models\Attendance::class, 'student_registration_id');
-    }
-
 }

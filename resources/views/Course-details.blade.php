@@ -1,144 +1,139 @@
 <x-header />
 
-<section class="course-details-section pt-80 pb-80">
-    <div class="container">
-        <!-- Course Title Header -->
-        <div class="text-center mb-5">
-            <h2 class="course-title-banner">
-                {{ $registration->course->course_name ?? 'Course Details' }}
-            </h2>
-            <div class="course-meta mt-3">
-                <span class="badge-code">
-                    <i class="fas fa-hashtag"></i> {{ $registration->course->course_code ?? 'N/A' }}
-                </span>
-                <span class="badge-prof">
-                    <i class="fas fa-chalkboard-teacher"></i> {{ $registration->professor->name ?? 'TBD' }}
-                </span>
-                <span class="badge-credits">
-                    <i class="fas fa-star"></i> Credits: {{ $registration->course->credit_hours ?? 'N/A' }}
-                </span>
-            </div>
-        </div>
-
-        <!-- Navigation Icon Cards (Tabs) -->
-        <div class="row justify-content-center mb-5 g-4">
-            <div class="col-md-4">
-                <div class="nav-icon-card card-attendance active-card" id="card-attendance-section" onclick="showSection('attendance-section')">
-                    <div class="icon-circle bg-attendance">
-                        <i class="fas fa-calendar-check"></i>
+<section class="course-details-section">
+    <!-- Top Header Banner -->
+    <div class="course-header-banner">
+        <div class="container">
+            <div class="row align-items-center py-5">
+                <div class="col-lg-8">
+                    <nav aria-label="breadcrumb" class="mb-3">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="{{ route('Students.dashboard') }}" class="text-white-50 text-decoration-none">Dashboard</a></li>
+                            <li class="breadcrumb-item active text-white" aria-current="page">{{ $registration->course->course_code ?? 'N/A' }}</li>
+                        </ol>
+                    </nav>
+                    <h1 class="display-5 fw-bold text-white mb-2">{{ $registration->course->course_name ?? 'Course Details' }}</h1>
+                    <div class="d-flex flex-wrap gap-4 mt-3">
+                        <div class="header-meta-item">
+                            <span class="text-white-50 d-block small text-uppercase fw-bold">Instructor</span>
+                            <span class="text-white fw-semibold"><i class="fas fa-chalkboard-teacher me-2 opacity-75"></i>{{ $registration->professor->name ?? 'TBD' }}</span>
+                        </div>
+                        <div class="header-meta-item">
+                            <span class="text-white-50 d-block small text-uppercase fw-bold">Credits</span>
+                            <span class="text-white fw-semibold"><i class="fas fa-star me-2 opacity-75"></i>{{ $registration->course->credit_hours ?? 'N/A' }} Hours</span>
+                        </div>
+                        <div class="header-meta-item">
+                            <span class="text-white-50 d-block small text-uppercase fw-bold">Course Code</span>
+                            <span class="text-white fw-semibold"><i class="fas fa-hashtag me-2 opacity-75"></i>{{ $registration->course->course_code ?? 'N/A' }}</span>
+                        </div>
                     </div>
-                    <h4>Attendance</h4>
-                    <p>View your class presence</p>
-                    <span class="card-arrow"><i class="fas fa-arrow-down"></i></span>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="nav-icon-card card-assignments" id="card-assignments-section" onclick="showSection('assignments-section')">
-                    <div class="icon-circle bg-assignments">
-                        <i class="fas fa-file-alt"></i>
+                <div class="col-lg-4 mt-4 mt-lg-0">
+                    @php
+                        $totalClasses = $attendances->count();
+                        $presentCount = $attendances->where('status', 'present')->count();
+                        $absentCount = $totalClasses - $presentCount;
+                        $attendancePercent = $totalClasses > 0 ? round(($presentCount / $totalClasses) * 100) : 0;
+                    @endphp
+                    <div class="attendance-progress-box p-4 rounded-3" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(5px);">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-white small fw-bold text-uppercase">Overall Attendance</span>
+                            <span class="text-white fw-bold">{{ $attendancePercent }}%</span>
+                        </div>
+                        <div class="progress" style="height: 10px; background: rgba(255,255,255,0.2);">
+                            <div class="progress-bar {{ $attendancePercent >= 75 ? 'bg-success' : ($attendancePercent >= 50 ? 'bg-warning' : 'bg-danger') }}" 
+                                 role="progressbar" style="width: {{ $attendancePercent }}%" 
+                                 aria-valuenow="{{ $attendancePercent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <p class="text-white-50 small mt-2 mb-0">Requirement: 75% for exam eligibility</p>
                     </div>
-                    <h4>Assignments</h4>
-                    <p>Download & submit tasks</p>
-                    <span class="card-arrow"><i class="fas fa-arrow-down"></i></span>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="nav-icon-card card-quizzes" id="card-quizzes-section" onclick="showSection('quizzes-section')">
-                    <div class="icon-circle bg-quizzes">
-                        <i class="fas fa-question-circle"></i>
-                    </div>
-                    <h4>Quizzes</h4>
-                    <p>Attempt & review quizzes</p>
-                    <span class="card-arrow"><i class="fas fa-arrow-down"></i></span>
                 </div>
             </div>
         </div>
+    </div>
 
+    <!-- Navigation Tabs Bar -->
+    <div class="course-nav-bar sticky-top border-bottom bg-white shadow-sm">
+        <div class="container">
+            <ul class="nav nav-tabs border-0" id="course-tabs" role="tablist">
+                <li class="nav-item">
+                    <button class="nav-link active" id="tab-attendance" onclick="showSection('attendance-section')">
+                        <i class="fas fa-calendar-check me-2"></i>Attendance
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" id="tab-assignments" onclick="showSection('assignments-section')">
+                        <i class="fas fa-file-alt me-2"></i>Assignments
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" id="tab-quizzes" onclick="showSection('quizzes-section')">
+                        <i class="fas fa-question-circle me-2"></i>Quizzes
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container py-5">
         <!-- ===================== ATTENDANCE SECTION ===================== -->
         <div id="attendance-section" class="detail-section">
-            <div class="section-header">
-                <div class="section-icon bg-attendance"><i class="fas fa-calendar-check"></i></div>
-                <div>
-                    <h3 class="mb-0 fw-bold">Attendance History</h3>
-                    <small class="text-muted">Your class presence records for this course</small>
+            <!-- Inline Stats Row -->
+            <div class="row g-0 mb-5 border rounded-3 bg-white overflow-hidden">
+                <div class="col-md-3 col-6 border-end p-4 text-center">
+                    <span class="text-muted small text-uppercase fw-bold d-block mb-1">Total Classes</span>
+                    <h3 class="fw-bold mb-0 text-dark">{{ $totalClasses }}</h3>
                 </div>
-            </div>
-
-            @php
-                $totalClasses = $attendances->count();
-                $presentCount = $attendances->where('status', 'present')->count();
-                $absentCount = $totalClasses - $presentCount;
-                $attendancePercent = $totalClasses > 0 ? round(($presentCount / $totalClasses) * 100) : 0;
-            @endphp
-
-            <!-- Attendance Summary Cards -->
-            <div class="row g-3 mb-4">
-                <div class="col-md-3 col-6">
-                    <div class="stat-card stat-total">
-                        <div class="stat-number">{{ $totalClasses }}</div>
-                        <div class="stat-label">Total Classes</div>
-                    </div>
+                <div class="col-md-3 col-6 border-end p-4 text-center">
+                    <span class="text-muted small text-uppercase fw-bold d-block mb-1">Present</span>
+                    <h3 class="fw-bold mb-0 text-success">{{ $presentCount }}</h3>
                 </div>
-                <div class="col-md-3 col-6">
-                    <div class="stat-card stat-present">
-                        <div class="stat-number">{{ $presentCount }}</div>
-                        <div class="stat-label">Present</div>
-                    </div>
+                <div class="col-md-3 col-6 border-end p-4 text-center">
+                    <span class="text-muted small text-uppercase fw-bold d-block mb-1">Absent</span>
+                    <h3 class="fw-bold mb-0 text-danger">{{ $absentCount }}</h3>
                 </div>
-                <div class="col-md-3 col-6">
-                    <div class="stat-card stat-absent">
-                        <div class="stat-number">{{ $absentCount }}</div>
-                        <div class="stat-label">Absent</div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-6">
-                    <div class="stat-card stat-percent">
-                        <div class="stat-number">{{ $attendancePercent }}%</div>
-                        <div class="stat-label">Percentage</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Attendance Progress Bar -->
-            <div class="mb-4">
-                <div class="progress" style="height: 25px; border-radius: 12px; background-color: #e9ecef;">
-                    <div class="progress-bar {{ $attendancePercent >= 75 ? 'bg-success' : ($attendancePercent >= 50 ? 'bg-warning' : 'bg-danger') }}"
-                         style="width: {{ $attendancePercent }}%; font-weight: 700; font-size: 14px;">
-                        {{ $attendancePercent }}%
-                    </div>
+                <div class="col-md-3 col-6 p-4 text-center">
+                    <span class="text-muted small text-uppercase fw-bold d-block mb-1">Percentage</span>
+                    <h3 class="fw-bold mb-0" style="color: #009A9A;">{{ $attendancePercent }}%</h3>
                 </div>
             </div>
 
             <!-- Attendance Table -->
-            <div class="table-responsive shadow-sm rounded">
-                <table class="table table-hover align-middle bg-white mb-0 custom-table">
-                    <thead style="background: #1a1a2e; color: white;">
+            <div class="table-container border rounded-3 bg-white">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="bg-light border-bottom">
                         <tr>
-                            <th class="ps-4" style="border-top-left-radius: 8px;">#</th>
-                            <th>Date</th>
-                            <th>Time Slot</th>
-                            <th style="border-top-right-radius: 8px;">Status</th>
+                            <th class="ps-4 py-3 text-uppercase small fw-bold text-muted" style="width: 80px;">#</th>
+                            <th class="py-3 text-uppercase small fw-bold text-muted">Date</th>
+                            <th class="py-3 text-uppercase small fw-bold text-muted">Time Slot</th>
+                            <th class="pe-4 py-3 text-uppercase small fw-bold text-muted text-end">Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ($attendances as $index => $attendance)
-                            <tr>
-                                <td class="ps-4 fw-bold text-muted">{{ $index + 1 }}</td>
-                                <td>{{ \Carbon\Carbon::parse($attendance->date)->format('M d, Y') }}</td>
-                                <td>{{ $attendance->time_slot }}</td>
-                                <td>
+                            <tr class="border-bottom">
+                                <td class="ps-4 py-3 text-muted fw-semibold">{{ $index + 1 }}</td>
+                                <td class="py-3 fw-medium">{{ \Carbon\Carbon::parse($attendance->date)->format('M d, Y') }}</td>
+                                <td class="py-3 text-muted">{{ $attendance->time_slot }}</td>
+                                <td class="pe-4 py-3 text-end">
                                     @if($attendance->status == 'present')
-                                        <span class="status-badge status-present"><i class="fas fa-check-circle me-1"></i>Present</span>
+                                        <span class="badge rounded-pill bg-success-subtle text-success px-3 border border-success-subtle">
+                                            <i class="fas fa-check-circle me-1 small"></i>Present
+                                        </span>
                                     @else
-                                        <span class="status-badge status-absent"><i class="fas fa-times-circle me-1"></i>Absent</span>
+                                        <span class="badge rounded-pill bg-danger-subtle text-danger px-3 border border-danger-subtle">
+                                            <i class="fas fa-times-circle me-1 small"></i>Absent
+                                        </span>
                                     @endif
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="text-center py-5 text-muted">
-                                    <i class="fas fa-inbox fa-3x mb-3 d-block" style="opacity: 0.5;"></i>
-                                    <h5>No attendance records found</h5>
+                                <td colspan="4" class="text-center py-5">
+                                    <div class="py-4">
+                                        <i class="fas fa-inbox fa-3x mb-3 text-muted opacity-25"></i>
+                                        <p class="text-muted mb-0">No attendance records found for this course.</p>
+                                    </div>
                                 </td>
                             </tr>
                         @endforelse
@@ -149,607 +144,348 @@
 
         <!-- ===================== ASSIGNMENTS SECTION ===================== -->
         <div id="assignments-section" class="detail-section d-none">
-            <div class="section-header">
-                <div class="section-icon bg-assignments"><i class="fas fa-file-alt"></i></div>
-                <div>
-                    <h3 class="mb-0 fw-bold">Course Assignments</h3>
-                    <small class="text-muted">Download, complete, and submit your assignments</small>
-                </div>
-            </div>
-
-            @if ($assignments->isEmpty())
-                <div class="empty-state">
-                    <i class="fas fa-clipboard-list fa-4x mb-4 text-warning" style="opacity: 0.6;"></i>
-                    <h4 class="fw-bold">No Assignments Yet</h4>
-                    <p class="text-muted">No assignments have been posted for this course.</p>
-                </div>
-            @else
-                <div class="row">
-                    @foreach ($assignments as $index => $assignment)
-                        @php
-                            $submitted = $assignment->submissions->isNotEmpty();
-                            $isPastDeadline = \Carbon\Carbon::parse($assignment->deadline)->isPast();
-                        @endphp
-                        <div class="col-lg-6 mb-4">
-                            <div class="content-card">
-                                <div class="d-flex justify-content-between align-items-start mb-3">
-                                    <h5 class="fw-bold mb-0 text-dark">{{ $assignment->assignment_title }}</h5>
-                                    <span class="marks-badge">{{ $assignment->total_marks }} Marks</span>
+            <div class="row g-4">
+                @forelse ($assignments as $index => $assignment)
+                    @php
+                        $submitted = $assignment->submissions->isNotEmpty();
+                        $isPastDeadline = \Carbon\Carbon::parse($assignment->deadline)->isPast();
+                    @endphp
+                    <div class="col-lg-12">
+                        <div class="assignment-row border rounded-3 bg-white p-4 d-md-flex align-items-center justify-content-between gap-4">
+                            <div class="d-flex align-items-center gap-4 flex-grow-1">
+                                <div class="assignment-icon flex-shrink-0 d-flex align-items-center justify-content-center rounded-3 bg-light text-primary" style="width: 50px; height: 50px;">
+                                    <i class="fas fa-file-pdf fs-4"></i>
                                 </div>
-                                
-                                <div class="mb-3 text-muted small">
-                                    <div class="mb-1">
-                                        <i class="fas fa-clock text-primary me-2"></i> 
-                                        <strong>Deadline:</strong> <span class="{{ $isPastDeadline && !$submitted ? 'text-danger fw-bold' : '' }}">{{ \Carbon\Carbon::parse($assignment->deadline)->format('d M, Y') }}</span>
+                                <div class="flex-grow-1">
+                                    <h5 class="fw-bold text-dark mb-1">{{ $assignment->assignment_title }}</h5>
+                                    <div class="d-flex flex-wrap gap-3 small text-muted">
+                                        <span><i class="fas fa-calendar-alt me-1"></i> Due: {{ \Carbon\Carbon::parse($assignment->deadline)->format('d M, Y') }}</span>
+                                        <span><i class="fas fa-star me-1"></i> {{ $assignment->total_marks }} Marks</span>
                                     </div>
                                 </div>
+                            </div>
 
-                                <div class="d-flex gap-2 mt-4 mt-auto">
-                                    <a href="{{ asset('storage/' . $assignment->assignment_file) }}" class="btn btn-sm btn-outline-dark flex-grow-1" download>
-                                        <i class="fas fa-download me-1"></i> Download File
+                            <div class="d-flex flex-column align-items-md-end gap-3 mt-4 mt-md-0" id="upload-section-{{ $assignment->id }}">
+                                <div class="d-flex gap-2">
+                                    <a href="{{ asset('storage/' . $assignment->assignment_file) }}" class="btn btn-sm btn-outline-dark px-3 rounded-pill" download>
+                                        <i class="fas fa-download me-1"></i> Download
                                     </a>
-                                </div>
-
-                                <hr class="my-3 opacity-25">
-
-                                <div id="upload-section-{{ $assignment->id }}" class="mt-2 text-center">
+                                    
                                     @if ($submitted)
-                                        <div class="alert alert-success py-2 mb-0 border-0 fs-sm" style="border-radius: 8px;">
-                                            <i class="fas fa-check-circle me-1"></i> Assignment Submitted Successfully
-                                        </div>
+                                        <span class="btn btn-sm btn-success px-3 rounded-pill disabled border-0">
+                                            <i class="fas fa-check-circle me-1"></i> Submitted
+                                        </span>
                                     @elseif ($isPastDeadline)
-                                        <div class="alert alert-danger py-2 mb-0 border-0 fs-sm" style="border-radius: 8px;">
-                                            <i class="fas fa-times-circle me-1"></i> Deadline Passed
-                                        </div>
-                                    @else
-                                        <form class="upload-form d-flex flex-column gap-2"
-                                              data-assignment-id="{{ $assignment->id }}"
-                                              enctype="multipart/form-data">
-                                            @csrf
-                                            <div class="d-flex align-items-center gap-2">
-                                                <input type="file" name="submission_file"
-                                                    accept=".pdf,.doc,.docx" class="form-control form-control-sm border-2" required>
-                                                <button type="submit" class="btn btn-sm btn-upload px-4 text-nowrap">
-                                                    <i class="fas fa-upload me-1"></i> Upload
-                                                </button>
-                                            </div>
-                                        </form>
+                                        <span class="btn btn-sm btn-danger px-3 rounded-pill disabled border-0">
+                                            <i class="fas fa-times-circle me-1"></i> Overdue
+                                        </span>
                                     @endif
                                 </div>
+
+                                @if (!$submitted && !$isPastDeadline)
+                                    <form class="upload-form" data-assignment-id="{{ $assignment->id }}" enctype="multipart/form-data">
+                                        @csrf
+                                        <div class="input-group input-group-sm">
+                                            <input type="file" name="submission_file" accept=".pdf,.doc,.docx" class="form-control border-end-0 rounded-start-pill" required>
+                                            <button type="submit" class="btn btn-primary btn-upload rounded-end-pill px-4">
+                                                <i class="fas fa-upload me-1"></i> Upload
+                                            </button>
+                                        </div>
+                                    </form>
+                                @endif
                             </div>
                         </div>
-                    @endforeach
-                </div>
-            @endif
+                    </div>
+                @empty
+                    <div class="col-12 text-center py-5">
+                        <div class="py-5 bg-white border rounded-3">
+                            <i class="fas fa-clipboard-list fa-3x mb-3 text-muted opacity-25"></i>
+                            <p class="text-muted">No assignments have been posted yet.</p>
+                        </div>
+                    </div>
+                @endforelse
+            </div>
         </div>
 
         <!-- ===================== QUIZZES SECTION ===================== -->
         <div id="quizzes-section" class="detail-section d-none">
-            <div class="section-header">
-                <div class="section-icon bg-quizzes"><i class="fas fa-question-circle"></i></div>
-                <div>
-                    <h3 class="mb-0 fw-bold">Course Quizzes</h3>
-                    <small class="text-muted">Attempt quizzes and track your performance</small>
-                </div>
-            </div>
-
-            @if ($quizzes->isEmpty())
-                <div class="empty-state">
-                    <i class="fas fa-brain fa-4x mb-4 text-danger" style="opacity: 0.6;"></i>
-                    <h4 class="fw-bold">No Quizzes Yet</h4>
-                    <p class="text-muted">No quizzes have been posted for this course.</p>
-                </div>
-            @else
-                @foreach ($quizzes as $quiz)
+            <div class="row g-4">
+                @forelse ($quizzes as $quiz)
                     @php
                         $badgeClass = match($quiz->quiz_type) {
-                            'mcq' => 'quiz-type-mcq',
-                            'written' => 'quiz-type-written',
-                            'file' => 'quiz-type-file',
-                            default => 'quiz-type-default'
+                            'mcq' => 'bg-primary-subtle text-primary',
+                            'written' => 'bg-warning-subtle text-warning-emphasis',
+                            'file' => 'bg-success-subtle text-success',
+                            default => 'bg-secondary-subtle text-secondary'
                         };
                         $isDeadlineOver = \Carbon\Carbon::parse($quiz->deadline . ' ' . ($quiz->deadline_time ?? '23:59'))->isPast();
                         $alreadySubmitted = $quiz->submissions->isNotEmpty();
                     @endphp
 
-                    <div class="content-card mb-4 border-start border-4
-                        {{ $quiz->quiz_type == 'mcq' ? 'border-primary' : ($quiz->quiz_type == 'written' ? 'border-warning' : 'border-success') }}">
-                        
-                        <div class="d-flex flex-wrap justify-content-between align-items-md-center mb-3 pb-3 border-bottom border-light">
-                            <div>
-                                <h4 class="mb-1 fw-bold text-dark">{{ $quiz->quiz_title }}</h4>
-                                <small class="text-muted">
-                                    <i class="fas fa-clock text-primary me-1"></i>
-                                    <strong>Deadline:</strong>
-                                    <span class="{{ $isDeadlineOver && !$alreadySubmitted ? 'text-danger fw-bold' : '' }}">
-                                        {{ \Carbon\Carbon::parse($quiz->deadline)->format('d M Y') }}
-                                        @if($quiz->deadline_time)
-                                            at {{ \Carbon\Carbon::parse($quiz->deadline_time)->format('h:i A') }}
-                                        @endif
-                                    </span>
-                                </small>
-                            </div>
-                            <div class="mt-2 mt-md-0">
-                                <span class="quiz-type-badge {{ $badgeClass }} fs-6 px-3 py-1">{{ strtoupper($quiz->quiz_type) }} QUIZ</span>
-                            </div>
-                        </div>
-
-                        <div class="quiz-content py-2">
-                            {{-- FILE-BASED QUIZ --}}
-                            @if($quiz->quiz_type === 'file' && $quiz->quiz_file)
-                                <div class="bg-light p-4 rounded-3 text-center mb-0">
-                                    <i class="fas fa-file-pdf fa-3x text-danger mb-3"></i>
-                                    <h5 class="fw-bold">File Based Quiz</h5>
-                                    <p class="text-muted small mb-3">Download the question file, write your answers, and upload the completed document before the deadline.</p>
-                                    
-                                    @if($isDeadlineOver && !$alreadySubmitted)
-                                        <div class="alert alert-danger py-2 mb-0 border-0 d-inline-block">
-                                            <i class="fas fa-ban me-1"></i> This quiz is closed. Deadline has passed.
+                    <div class="col-lg-12">
+                        <div class="quiz-row border rounded-3 bg-white p-4">
+                            <div class="d-md-flex align-items-center justify-content-between gap-4 mb-4">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="quiz-icon flex-shrink-0 d-flex align-items-center justify-content-center rounded-3 {{ $badgeClass }} border" style="width: 50px; height: 50px;">
+                                        <i class="fas {{ $quiz->quiz_type == 'mcq' ? 'fa-list-ul' : ($quiz->quiz_type == 'written' ? 'fa-pen-nib' : 'fa-file-upload') }} fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="fw-bold text-dark mb-1">{{ $quiz->quiz_title }}</h5>
+                                        <div class="d-flex flex-wrap gap-3 small text-muted">
+                                            <span><i class="fas fa-clock me-1"></i> Due: {{ \Carbon\Carbon::parse($quiz->deadline)->format('d M, Y') }}</span>
+                                            <span class="badge rounded-pill {{ $badgeClass }} px-2 text-uppercase" style="font-size: 10px;">{{ $quiz->quiz_type }}</span>
                                         </div>
-                                    @else
-                                        <div class="mb-4">
-                                            <a href="{{ asset('storage/' . $quiz->quiz_file) }}"
-                                               class="btn btn-outline-dark" target="_blank">
-                                                <i class="fas fa-download me-1"></i> Download Question File
-                                            </a>
-                                        </div>
+                                    </div>
+                                </div>
+                                
+                                @if($alreadySubmitted)
+                                    <div class="alert alert-success py-1 px-3 mb-0 border-0 rounded-pill small">
+                                        <i class="fas fa-check-circle me-1"></i> Completed
+                                    </div>
+                                @elseif($isDeadlineOver)
+                                    <div class="alert alert-danger py-1 px-3 mb-0 border-0 rounded-pill small">
+                                        <i class="fas fa-ban me-1"></i> Closed
+                                    </div>
+                                @endif
+                            </div>
 
-                                        @if(!$alreadySubmitted)
-                                            <div class="upload-box p-3 bg-white border rounded">
+                            <div class="quiz-action-container mt-3">
+                                {{-- FILE-BASED QUIZ --}}
+                                @if($quiz->quiz_type === 'file' && $quiz->quiz_file)
+                                    <div class="bg-light p-4 rounded-3 border-0">
+                                        <div class="row align-items-center g-4">
+                                            <div class="col-md-7">
+                                                <p class="text-muted small mb-0">Download the question file, write your answers, and upload as PDF.</p>
+                                            </div>
+                                            <div class="col-md-5 text-md-end">
+                                                @if(!$alreadySubmitted && !$isDeadlineOver)
+                                                    <div class="d-flex flex-column gap-3">
+                                                        <a href="{{ asset('storage/' . $quiz->quiz_file) }}" class="btn btn-sm btn-dark px-4 rounded-pill" target="_blank">
+                                                            <i class="fas fa-download me-2"></i> Download Question
+                                                        </a>
+                                                        <form action="{{ route('student.uploadAnswer', $quiz->id) }}" method="POST" enctype="multipart/form-data">
+                                                            @csrf
+                                                            <div class="input-group input-group-sm">
+                                                                <input type="file" name="answer_file" class="form-control rounded-start-pill border-end-0" accept="application/pdf" required>
+                                                                <button class="btn btn-primary px-4 rounded-end-pill" type="submit">Submit</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                @elseif(!$alreadySubmitted && $isDeadlineOver)
+                                                    <button class="btn btn-sm btn-outline-secondary px-4 rounded-pill disabled">
+                                                        <i class="fas fa-lock me-2"></i> Quiz Closed
+                                                    </button>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                {{-- WRITTEN QUIZ --}}
+                                @elseif($quiz->quiz_type === 'written')
+                                    <div class="written-box p-4 rounded-3 bg-light mb-0 border-0">
+                                        <h6 class="fw-bold text-dark mb-3">Questions:</h6>
+                                        <pre class="bg-white p-3 rounded border small mb-4 text-dark" style="white-space: pre-wrap;">{{ $quiz->written_questions }}</pre>
+                                        
+                                        @if(!$alreadySubmitted && !$isDeadlineOver)
+                                            <div class="max-w-500 ms-auto">
                                                 <form action="{{ route('student.uploadAnswer', $quiz->id) }}" method="POST" enctype="multipart/form-data">
                                                     @csrf
-                                                    <label class="form-label fw-semibold text-dark"><i class="fas fa-upload me-2 text-primary"></i>Upload Your Answer <small class="text-muted fw-normal">(PDF only, max 10MB)</small></label>
-                                                    <div class="d-flex align-items-center gap-2 max-w-500 mx-auto">
-                                                        <input type="file" name="answer_file" class="form-control border-2" accept="application/pdf" required>
-                                                        <button class="btn btn-upload px-4" type="submit">Submit</button>
+                                                    <div class="input-group input-group-sm">
+                                                        <input type="file" name="answer_file" class="form-control rounded-start-pill border-end-0" accept="application/pdf" required>
+                                                        <button class="btn btn-primary px-4 rounded-end-pill" type="submit">Submit</button>
                                                     </div>
                                                 </form>
                                             </div>
-                                        @else
-                                            <div class="alert alert-success py-2 border-0 d-inline-block shadow-sm">
-                                                <i class="fas fa-check-circle me-1"></i> Quiz Submitted Successfully
+                                        @endif
+                                    </div>
+
+                                {{-- MCQ QUIZ --}}
+                                @elseif($quiz->quiz_type === 'mcq')
+                                    @php $questions = json_decode($quiz->quiz_data, true); @endphp
+                                    <div id="mcq-quiz-{{ $quiz->id }}" class="bg-light p-4 rounded-3 border-0 text-center">
+                                        @if(!$alreadySubmitted && !$isDeadlineOver)
+                                            <div class="quiz-intro-{{ $quiz->id }}">
+                                                <p class="text-muted small mb-4">Multiple Choice Quiz • {{ count($questions ?? []) }} Questions • 1 Minute per Question</p>
+                                                <button class="btn btn-primary px-5 py-2 rounded-pill fw-bold" 
+                                                        onclick="startQuiz({{ json_encode($questions) }}, '{{ $quiz->id }}')">
+                                                    <i class="fas fa-play me-2"></i> Start Quiz
+                                                </button>
+                                            </div>
+
+                                            <div class="d-none text-start" id="quiz-container-wrapper-{{ $quiz->id }}">
+                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                    <span class="badge bg-white text-dark border px-3 py-2 fw-semibold" id="q-counter-{{ $quiz->id }}">Question 1</span>
+                                                    <span id="timer-{{ $quiz->id }}" class="badge bg-danger px-3 py-2 fw-bold shadow-sm">60s</span>
+                                                </div>
+                                                <div class="progress mb-4" style="height: 6px; border-radius: 3px; background: #e0e0e0;">
+                                                    <div id="progress-bar-{{ $quiz->id }}" class="progress-bar bg-primary" style="width: 0%;"></div>
+                                                </div>
+                                                <form id="mcq-form-{{ $quiz->id }}" action="{{ route('student.uploadAnswer', $quiz->id) }}" method="POST">
+                                                    @csrf
+                                                    <div id="question-container-{{ $quiz->id }}" class="bg-white p-4 rounded-3 border"></div>
+                                                    <input type="hidden" name="answers" id="answers-{{ $quiz->id }}">
+                                                </form>
+                                            </div>
+                                        @elseif($alreadySubmitted)
+                                            <div class="py-2">
+                                                <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                                                <p class="text-success fw-bold mb-0">Quiz Submitted</p>
                                             </div>
                                         @endif
-                                    @endif
-                                </div>
-
-                            {{-- WRITTEN QUIZ --}}
-                            @elseif($quiz->quiz_type === 'written')
-                                <div class="written-questions-box mb-4 shadow-sm border border-light">
-                                    <h6 class="fw-bold mb-3 pb-2 border-bottom"><i class="fas fa-pen-nib text-warning me-2"></i> Questions</h6>
-                                    <pre class="mb-0 fs-6" style="line-height: 1.6;">{{ $quiz->written_questions }}</pre>
-                                </div>
-
-                                <div class="bg-light p-4 rounded-3 text-center border">
-                                    @if($isDeadlineOver && !$alreadySubmitted)
-                                        <div class="alert alert-danger py-2 mb-0 border-0 d-inline-block">
-                                            <i class="fas fa-ban me-1"></i> This quiz is closed. Deadline has passed.
-                                        </div>
-                                    @elseif(!$alreadySubmitted)
-                                        <div class="upload-box p-3 bg-white border rounded shadow-sm">
-                                            <form action="{{ route('student.uploadAnswer', $quiz->id) }}" method="POST" enctype="multipart/form-data">
-                                                @csrf
-                                                <label class="form-label fw-semibold text-dark"><i class="fas fa-file-upload text-primary me-2"></i>Upload Your Response <small class="text-muted fw-normal">(PDF only)</small></label>
-                                                <div class="d-flex align-items-center gap-2 max-w-500 mx-auto">
-                                                    <input type="file" name="answer_file" class="form-control border-2" accept="application/pdf" required>
-                                                    <button class="btn btn-warning fw-bold text-dark px-4" type="submit">Submit</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    @else
-                                        <div class="alert alert-success py-2 border-0 d-inline-block shadow-sm">
-                                            <i class="fas fa-check-circle me-1"></i> Quiz Submitted Successfully
-                                        </div>
-                                    @endif
-                                </div>
-
-                            {{-- MCQ QUIZ --}}
-                            @elseif($quiz->quiz_type === 'mcq')
-                                @php $questions = json_decode($quiz->quiz_data, true); @endphp
-
-                                <div id="mcq-quiz-{{ $quiz->id }}" class="bg-light p-4 rounded-3 border">
-                                    
-                                    @if($isDeadlineOver && !$alreadySubmitted)
-                                        <div class="text-center">
-                                            <div class="alert alert-danger py-2 mb-0 border-0 d-inline-block">
-                                                <i class="fas fa-ban me-1"></i> This quiz is closed. Deadline has passed.
-                                            </div>
-                                        </div>
-                                    @elseif(!$alreadySubmitted)
-                                        <div class="text-center mb-4 quiz-intro-{{ $quiz->id }}">
-                                            <i class="fas fa-laptop-code fa-3x text-primary mb-3"></i>
-                                            <h5 class="fw-bold">Multiple Choice Quiz</h5>
-                                            <p class="text-muted">Contains <strong>{{ count($questions ?? []) }}</strong> questions. Each question has a 1-minute time limit.</p>
-                                            <button class="btn btn-primary btn-lg mt-2 shadow-sm rounded-pill px-5"
-                                                    onclick="startQuiz({{ json_encode($questions) }}, '{{ $quiz->id }}')">
-                                                <i class="fas fa-play-circle me-1"></i> Start Interactive Quiz
-                                            </button>
-                                        </div>
-
-                                        <div class="d-none" id="quiz-container-wrapper-{{ $quiz->id }}">
-                                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                                <span class="badge bg-primary px-3 py-2 fs-6" id="q-counter-{{ $quiz->id }}">Question 1/X</span>
-                                                <span id="timer-{{ $quiz->id }}" class="badge bg-danger px-3 py-2 fs-6 fw-bold shadow-sm">
-                                                    <i class="fas fa-stopwatch me-1"></i> 60s
-                                                </span>
-                                            </div>
-
-                                            <div class="progress mb-4" style="height: 10px; border-radius: 5px;">
-                                                <div id="progress-bar-{{ $quiz->id }}" class="progress-bar progress-bar-striped progress-bar-animated bg-primary" style="width: 0%;"></div>
-                                            </div>
-
-                                            <form id="mcq-form-{{ $quiz->id }}" action="{{ route('student.uploadAnswer', $quiz->id) }}" method="POST">
-                                                @csrf
-                                                <div id="question-container-{{ $quiz->id }}" class="bg-white p-4 rounded border shadow-sm"></div>
-                                                <input type="hidden" name="answers" id="answers-{{ $quiz->id }}">
-                                            </form>
-                                        </div>
-                                    @else
-                                        <div class="text-center">
-                                            <i class="fas fa-check-circle fa-4x text-success mb-3 opacity-75"></i>
-                                            <h5 class="fw-bold text-success">Quiz Completed</h5>
-                                            <p class="text-muted">You have successfully attempted and submitted this quiz.</p>
-                                        </div>
-                                    @endif
-                                </div>
-                            @endif
+                                    </div>
+                                @endif
+                            </div>
                         </div>
                     </div>
-                @endforeach
-            @endif
-        </div>
-
-        <!-- Back to Dashboard Button -->
-        <div class="text-center mt-5">
-            <a href="{{ route('Students.dashboard') }}" class="btn btn-back-dashboard shadow-sm">
-                <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
-            </a>
+                @empty
+                    <div class="col-12 text-center py-5">
+                        <div class="py-5 bg-white border rounded-3">
+                            <i class="fas fa-brain fa-3x mb-3 text-muted opacity-25"></i>
+                            <p class="text-muted">No quizzes have been posted yet.</p>
+                        </div>
+                    </div>
+                @endforelse
+            </div>
         </div>
     </div>
 </section>
 
 <style>
-    /* ================= GENERAL ================= */
-    .course-details-section {
-        background: #f8f9fa;
-        min-height: 100vh;
-        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    /* ================= UNIVERSAL STYLES ================= */
+    :root {
+        --primary: #009A9A;
+        --primary-dark: #007a7a;
+        --bg-light: #f8f9fa;
+        --border-color: #e9ecef;
     }
 
-    /* ================= COURSE TITLE ================= */
-    .course-title-banner {
+    body {
+        background-color: var(--bg-light);
+        font-family: 'Inter', -apple-system, system-ui, sans-serif;
+    }
+
+    /* ================= HEADER BANNER ================= */
+    .course-header-banner {
         background: linear-gradient(135deg, #009A9A 0%, #006666 100%);
         color: white;
-        padding: 24px 30px;
-        border-radius: 16px;
-        font-size: 32px;
-        font-weight: 800;
-        box-shadow: 0 10px 25px rgba(0, 154, 154, 0.25);
-        letter-spacing: -0.5px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
     }
 
-    .course-meta {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        flex-wrap: wrap;
+    .breadcrumb-item + .breadcrumb-item::before {
+        color: rgba(255,255,255,0.3);
     }
 
-    .badge-code, .badge-prof, .badge-credits {
-        background: white;
-        padding: 8px 20px;
-        border-radius: 30px;
-        font-size: 14px;
-        font-weight: 700;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.06);
-        color: #444;
-        border: 1px solid #f0f0f0;
-    }
-
-    .badge-code i { color: #009A9A; }
-    .badge-prof i { color: #e67e22; }
-    .badge-credits i { color: #f39c12; }
-
-    /* ================= NAV ICON CARDS (TABS) ================= */
-    .nav-icon-card {
-        background: white;
-        border-radius: 20px;
-        padding: 35px 20px;
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    .header-meta-item {
         position: relative;
-        overflow: hidden;
-        border: 2px solid transparent;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
     }
 
-    .nav-icon-card::before {
+    /* ================= NAVIGATION ================= */
+    .course-nav-bar {
+        z-index: 1020;
+    }
+
+    .nav-tabs .nav-link {
+        border: none;
+        padding: 1.2rem 1.5rem;
+        font-weight: 600;
+        color: #6c757d;
+        font-size: 15px;
+        position: relative;
+        background: transparent;
+        transition: all 0.2s ease;
+    }
+
+    .nav-tabs .nav-link:hover {
+        color: var(--primary);
+    }
+
+    .nav-tabs .nav-link.active {
+        color: var(--primary);
+        background: transparent;
+    }
+
+    .nav-tabs .nav-link.active::after {
         content: '';
         position: absolute;
-        top: 0; left: 0; right: 0;
-        height: 5px;
-        border-radius: 20px 20px 0 0;
-        opacity: 0.7;
-        transition: opacity 0.3s;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--primary);
     }
 
-    .card-attendance::before { background: linear-gradient(90deg, #20c997, #12b886); }
-    .card-assignments::before { background: linear-gradient(90deg, #f39c12, #e67e22); }
-    .card-quizzes::before { background: linear-gradient(90deg, #e74c3c, #c0392b); }
-
-    .nav-icon-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-    }
-    
-    .nav-icon-card:hover::before { opacity: 1; height: 8px; }
-
-    /* ACTIVE TAB STATE */
-    .nav-icon-card.active-card {
-        transform: translateY(-10px);
-        box-shadow: 0 15px 35px rgba(0, 154, 154, 0.15);
-        border: 2px solid #009A9A;
-        background: #f8ffff;
-    }
-    
-    .nav-icon-card.active-card::before {
-        background: #009A9A;
-        height: 8px;
-        opacity: 1;
+    /* ================= TABLES & LISTS ================= */
+    .table thead th {
+        background: #fdfdfd;
+        border-top: none;
     }
 
-    .nav-icon-card h4 {
-        font-weight: 800;
-        margin-top: 20px;
-        font-size: 20px;
-        color: #2b2b2b;
+    .table-hover tbody tr:hover {
+        background-color: #f8ffff;
     }
 
-    .nav-icon-card p {
-        color: #6b7280;
-        margin: 0;
-        font-size: 14px;
-        font-weight: 500;
-    }
-
-    .icon-circle {
-        width: 75px;
-        height: 75px;
-        border-radius: 50%;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 32px;
-        color: white;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        transition: transform 0.3s;
-    }
-    
-    .nav-icon-card.active-card .icon-circle {
-        transform: scale(1.1);
-    }
-
-    .bg-attendance { background: linear-gradient(135deg, #20c997, #12b886); }
-    .bg-assignments { background: linear-gradient(135deg, #f39c12, #e67e22); }
-    .bg-quizzes { background: linear-gradient(135deg, #e74c3c, #c0392b); }
-
-    .card-arrow {
-        display: block;
-        margin-top: 15px;
-        color: #009A9A;
-        font-size: 18px;
-        transition: all 0.3s ease;
-        opacity: 0; 
-        transform: translateY(-10px);
-    }
-
-    .nav-icon-card.active-card .card-arrow {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    /* ================= DETAIL SECTION (TAB CONTENT) ================= */
-    .detail-section {
-        background: white;
-        border-radius: 20px;
-        padding: 35px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.06);
-        animation: slideFadeIn 0.5s ease;
-        border: 1px solid #f1f3f5;
-    }
-
-    @keyframes slideFadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .section-header {
-        display: flex;
-        align-items: center;
-        gap: 18px;
-        margin-bottom: 30px;
-        padding-bottom: 20px;
-        border-bottom: 2px solid #f8f9fa;
-    }
-
-    .section-icon {
-        width: 55px;
-        height: 55px;
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 22px;
-        color: white;
-        flex-shrink: 0;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    /* ================= STAT CARDS ================= */
-    .stat-card {
-        background: #fafbfe;
-        border-radius: 16px;
-        padding: 22px 15px;
-        text-align: center;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-        border: 1px solid #edf2f9;
-        transition: all 0.3s ease;
-    }
-
-    .stat-card:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.06); }
-    
-    .stat-number {
-        font-size: 32px;
-        font-weight: 800;
-        color: #1a1a2e;
-        line-height: 1.1;
-        margin-bottom: 5px;
-    }
-
-    .stat-label {
-        font-size: 13px;
-        color: #6c757d;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    
-    /* Highlight coloring for specific stats */
-    .stat-present .stat-number { color: #12b886; }
-    .stat-absent .stat-number { color: #fa5252; }
-    .stat-percent .stat-number { color: #009A9A; }
-
-    /* ================= CONTENT CARDS (Assignments/Quizzes) ================= */
-    .content-card {
-        background: #ffffff;
-        border-radius: 16px;
-        padding: 25px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-        border: 1px solid #edf2f9;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        transition: all 0.3s ease;
-    }
-    
-    .content-card:hover {
-        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-        border-color: #e2e8f0;
-    }
-
-    /* ================= STATUS BADGES ================= */
-    .status-badge {
-        padding: 6px 16px;
-        border-radius: 20px;
-        font-size: 13px;
+    .badge-subtle {
         font-weight: 700;
     }
 
-    .status-present {
-        background: #e6fcf5;
-        color: #0ca678;
+    .assignment-row, .quiz-row {
+        transition: all 0.2s ease;
+        border: 1px solid var(--border-color) !important;
     }
 
-    .status-absent {
-        background: #fff5f5;
-        color: #e03131;
+    .assignment-row:hover, .quiz-row:hover {
+        border-color: var(--primary) !important;
+        background-color: #fdfdfd;
     }
 
     /* ================= BUTTONS ================= */
-    .btn-download, .btn-upload {
-        border: none;
-        border-radius: 8px;
-        font-weight: 700;
-        padding: 8px 20px;
-        transition: all 0.3s ease;
+    .btn-primary, .btn-upload {
+        background-color: var(--primary) !important;
+        border-color: var(--primary) !important;
+        font-weight: 600;
     }
 
-    .btn-upload {
-        background: linear-gradient(135deg, #009A9A, #007a7a);
-        color: white;
-        box-shadow: 0 4px 10px rgba(0, 154, 154, 0.2);
+    .btn-primary:hover, .btn-upload:hover {
+        background-color: var(--primary-dark) !important;
+        border-color: var(--primary-dark) !important;
     }
 
-    .btn-upload:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 15px rgba(0, 154, 154, 0.3);
-        color: white;
+    .rounded-pill {
+        border-radius: 50rem !important;
     }
 
-    .btn-back-dashboard {
-        background: white;
-        color: #4b5563;
-        border: 2px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 12px 35px;
-        font-weight: 700;
-        font-size: 16px;
-        transition: all 0.3s ease;
+    /* ================= PROGRESS & CARDS ================= */
+    .progress {
+        background-color: #e9ecef;
+        box-shadow: none;
     }
 
-    .btn-back-dashboard:hover {
-        background: #f9fafb;
-        color: #111827;
-        border-color: #d1d5db;
-        transform: translateY(-2px);
-    }
+    .bg-success-subtle { background-color: #e6fcf5; }
+    .bg-danger-subtle { background-color: #fff5f5; }
+    .bg-primary-subtle { background-color: #e7f5ff; }
+    .bg-warning-subtle { background-color: #fff9db; }
 
-    /* ================= BADGES ================= */
-    .marks-badge {
-        background: #f1f3f5;
-        color: #495057;
-        padding: 6px 16px;
-        border-radius: 20px;
-        font-weight: 800;
-        font-size: 14px;
-        border: 1px solid #e9ecef;
-    }
-
-    .quiz-type-badge {
-        border-radius: 8px;
-        font-weight: 800;
-        letter-spacing: 1px;
+    /* ================= QUIZ ENGINE ================= */
+    .custom-radio-btn {
+        transition: all 0.2s ease;
     }
     
-    .quiz-type-mcq { background: #e7f5ff; color: #1c7ed6; }
-    .quiz-type-written { background: #fff9db; color: #f59f00; }
-    .quiz-type-file { background: #ebfbee; color: #2b8a3e; }
-
-    /* ================= TYPOGRAPHY & MISC ================= */
-    .fs-sm { font-size: 14px; }
-    .max-w-500 { max-width: 500px; }
-    .custom-table th { padding: 16px; border: none; letter-spacing: 0.5px; opacity: 0.9; }
-    .custom-table td { padding: 18px 16px; border-bottom: 1px solid #f1f3f5; }
-
-    .written-questions-box {
-        background: #fff;
-        padding: 20px 25px;
-        border-radius: 12px;
-        border-left: 5px solid #f59f00 !important;
+    .custom-radio-btn:hover {
+        border-color: var(--primary) !important;
     }
 
-    .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-        background: #fafbfe;
-        border-radius: 16px;
-        border: 2px dashed #edf2f9;
-        margin: 20px 0;
+    pre {
+        font-family: inherit;
     }
 
-    /* ================= MOBILE RESPONSIVE ================= */
     @media (max-width: 768px) {
-        .course-title-banner { font-size: 24px; padding: 18px; }
-        .badge-code, .badge-prof, .badge-credits { font-size: 12px; padding: 6px 14px; }
-        .nav-icon-card { padding: 20px 15px; }
-        .icon-circle { width: 60px; height: 60px; font-size: 26px; }
-        .detail-section { padding: 25px 15px; border-radius: 16px; }
-        .stat-number { font-size: 24px; }
-        .section-header { flex-direction: column; text-align: center; gap: 10px; }
+        .nav-tabs .nav-link {
+            padding: 1rem 0.8rem;
+            font-size: 13px;
+        }
+        .header-meta-item {
+            width: 100%;
+        }
     }
 </style>
 
@@ -764,25 +500,22 @@
             section.classList.add('d-none');
         });
 
-        // 2. Remove 'active-card' from all nav cards
-        const cards = document.querySelectorAll('.nav-icon-card');
-        cards.forEach(card => {
-            card.classList.remove('active-card');
+        // 2. Remove 'active' from all nav links
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.classList.remove('active');
         });
 
         // 3. Show the selected section
         const selectedSection = document.getElementById(sectionId);
         if (selectedSection) {
             selectedSection.classList.remove('d-none');
-            // Scroll to the content slightly down for better UX on mobile
-            const y = selectedSection.getBoundingClientRect().top + window.scrollY - 100;
-            window.scrollTo({top: y, behavior: 'smooth'});
         }
 
-        // 4. Add 'active-card' state to the clicked nav card
-        const selectedCard = document.getElementById('card-' + sectionId);
-        if (selectedCard) {
-            selectedCard.classList.add('active-card');
+        // 4. Add 'active' state to the clicked tab button
+        const selectedTab = document.getElementById('tab-' + sectionId.split('-')[0]);
+        if (selectedTab) {
+            selectedTab.classList.add('active');
         }
     }
 
@@ -808,8 +541,8 @@
             },
             success: function(response) {
                 $(`#upload-section-${assignmentId}`).html(`
-                    <div class="alert alert-success py-2 mb-0 border-0 fs-sm" style="border-radius: 8px; animation: slideFadeIn 0.3s ease;">
-                        <i class="fas fa-check-circle me-1"></i> Assignment Submitted Successfully
+                    <div class="alert alert-success py-2 px-4 mb-0 border-0 rounded-pill small" style="animation: slideFadeIn 0.3s ease;">
+                        <i class="fas fa-check-circle me-1"></i> Submitted Successfully
                     </div>
                 `);
             },
@@ -823,7 +556,6 @@
 
     // ----- MCQ QUIZ ENGINE ------
     function startQuiz(questions, quizId) {
-        // Hide intro, show quiz
         document.querySelector(`.quiz-intro-${quizId}`).classList.add('d-none');
         document.getElementById(`quiz-container-wrapper-${quizId}`).classList.remove('d-none');
 
@@ -855,9 +587,9 @@
             q.options.forEach((opt, i) => {
                 const optId = `opt-${quizId}-${index}-${i}`;
                 html += `
-                    <div class="form-check custom-radio-btn mb-3 p-3 border rounded-3 position-relative" style="cursor:pointer; transition:all 0.2s;" onclick="document.getElementById('${optId}').click()">
+                    <div class="form-check custom-radio-btn mb-3 p-3 border rounded-3 position-relative" style="cursor:pointer;" onclick="document.getElementById('${optId}').click()">
                         <input class="form-check-input ms-1 me-3 position-absolute top-50 translate-middle-y" style="width:1.2em; height:1.2em;" type="radio" name="option-${quizId}-${index}" id="${optId}" value="${String.fromCharCode(65 + i)}">
-                        <label class="form-check-label ps-4 w-100 fw-medium" for="${optId}" style="cursor:pointer;">
+                        <label class="form-check-label ps-4 w-100 fw-medium mb-0" for="${optId}" style="cursor:pointer;">
                             <span class="badge bg-light text-dark border me-2">${String.fromCharCode(65 + i)}</span> 
                             ${opt}
                         </label>
@@ -867,55 +599,41 @@
             html += `
                     </div>
                 </div>
-                <div class="text-end border-top pt-3 mt-4">
-                    <button type="button" class="btn btn-primary px-4 fw-bold shadow-sm rounded-pill" id="next-btn-${quizId}">
-                        ${index === questions.length - 1 ? 'Finish & Submit <i class="fas fa-check ms-1"></i>' : 'Next Question <i class="fas fa-arrow-right ms-1"></i>'}
+                <div class="text-end border-top pt-4 mt-4">
+                    <button type="button" class="btn btn-primary px-5 rounded-pill fw-bold" id="next-btn-${quizId}">
+                        ${index === questions.length - 1 ? 'Finish & Submit' : 'Next Question'}
                     </button>
                 </div>`;
 
             container.innerHTML = html;
             
-            // Add hover effects via JS for custom radio buttons
             document.querySelectorAll('.custom-radio-btn').forEach(btn => {
-                btn.addEventListener('mouseenter', function() { if(!this.querySelector('input').checked) this.classList.add('bg-light'); });
-                btn.addEventListener('mouseleave', function() { this.classList.remove('bg-light'); });
                 btn.querySelector('input').addEventListener('change', function() {
                     document.querySelectorAll('.custom-radio-btn').forEach(b => {
-                        b.classList.remove('border-primary', 'bg-primary');
-                        b.style.backgroundColor = '';
+                        b.classList.remove('border-primary', 'bg-primary-subtle');
+                        b.style.borderColor = '#e9ecef';
                     });
-                    this.closest('.custom-radio-btn').classList.add('border-primary');
-                    this.closest('.custom-radio-btn').style.backgroundColor = '#e7f5ff';
+                    this.closest('.custom-radio-btn').classList.add('border-primary', 'bg-primary-subtle');
+                    this.closest('.custom-radio-btn').style.borderColor = 'var(--primary)';
                 });
             });
 
             document.getElementById(`next-btn-${quizId}`).addEventListener('click', nextQuestion);
-
             time = 60;
             updateTimerDisplay();
             updateProgress();
         }
 
         function updateTimerDisplay() {
-            if(time <= 10) {
-                timerEl.classList.remove('bg-primary');
-                timerEl.classList.add('bg-danger');
-                timerEl.classList.add('animate__animated', 'animate__pulse', 'animate__infinite');
-            } else {
-                timerEl.classList.add('bg-primary');
-                timerEl.classList.remove('bg-danger');
-                timerEl.classList.remove('animate__animated', 'animate__pulse', 'animate__infinite');
-            }
-            timerEl.innerHTML = `<i class="fas fa-stopwatch me-1"></i> ${time}s`;
+            timerEl.textContent = `${time}s`;
+            if(time <= 10) timerEl.classList.replace('bg-danger', 'bg-danger');
         }
 
         function nextQuestion(e) {
             if (e) e.preventDefault();
             clearInterval(interval);
-
             const selectedOption = document.querySelector(`input[name="option-${quizId}-${index}"]:checked`);
             answers.push(selectedOption ? selectedOption.value : null);
-
             index++;
             loadQuestion();
             startTimer();
@@ -925,27 +643,17 @@
             interval = setInterval(() => {
                 time--;
                 updateTimerDisplay();
-                if (time <= 0) {
-                    nextQuestion(new Event('submit'));
-                }
+                if (time <= 0) nextQuestion();
             }, 1000);
         }
 
         function updateProgress() {
-            const percent = (index / questions.length) * 100;
-            progressBar.style.width = `${percent}%`;
+            progressBar.style.width = `${(index / questions.length) * 100}%`;
         }
 
         function submitQuiz() {
             clearInterval(interval);
-            container.innerHTML = `
-                <div class="text-center py-5">
-                    <i class="fas fa-circle-notch fa-spin fa-3x text-primary mb-3"></i>
-                    <h5 class="fw-bold">Submitting Your Quiz</h5>
-                    <p class="text-muted">Please wait...</p>
-                </div>
-            `;
-            
+            container.innerHTML = `<div class="text-center py-5"><i class="fas fa-circle-notch fa-spin fa-2x text-primary mb-3"></i><p>Submitting...</p></div>`;
             if (answersInput) answersInput.value = JSON.stringify(answers);
             if (form) form.submit();
         }
