@@ -38,6 +38,11 @@ Route::get('/debug/inactivity', function() {
     return view('debug-inactivity');
 })->name('debug.inactivity');
 
+// Session keep-alive route
+Route::get('/session/keep-alive', function() {
+    return response()->json(['status' => 'success']);
+})->name('session.keep-alive');
+
 //Admin Routes
 Route::post('/request-update-students', [RegistrationController::class, 'sendRequest'])->name('request.update.students');
 Route::get('/admin/update-students', [AdminStudentController::class, 'index'])->middleware('update.permission');

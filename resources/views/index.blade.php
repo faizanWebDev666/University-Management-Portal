@@ -1,15 +1,4 @@
 <x-indexheader />
-
-
- @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
 <section class="hero-section">
     <div class="container">
         <h1>Welcome to Punjab Global University Portal</h1>

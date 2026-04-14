@@ -12,11 +12,11 @@
             <div class="modal-body text-center py-4 px-4">
                 <!-- Large Countdown Circle -->
                 <div class="countdown-circle mb-3" style="width: 100px; height: 100px; margin: 0 auto; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); box-shadow: 0 0 20px rgba(255, 107, 107, 0.3);">
-                    <span id="countdownTimer" style="font-size: 2.5rem; font-weight: bold; color: white; line-height: 1;">10</span>
+                    <span id="countdownTimer" style="font-size: 2.5rem; font-weight: bold; color: white; line-height: 1;">60</span>
                 </div>
 
                 <!-- Message -->
-                <p class="text-dark fw-bold mb-2" style="font-size: 0.95rem;">Your session expires in <span class="text-danger" id="countdownDisplay">10</span>s</p>
+                <p class="text-dark fw-bold mb-2" style="font-size: 0.95rem;">Your session expires in <span class="text-danger" id="countdownDisplay">60</span>s</p>
                 <p class="text-muted mb-3" style="font-size: 0.85rem;">Move your mouse or press a key to stay active</p>
             </div>
 

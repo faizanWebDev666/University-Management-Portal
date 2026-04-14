@@ -1,6 +1,18 @@
 <x-faculityheader />
 
 <div class="container my-5">
+    @if (session('success'))
+        <div class="alert alert-success mx-auto my-4 w-100 rounded shadow-sm">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert alert-danger mx-auto my-4 w-100 rounded shadow-sm">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div class="card shadow-lg border-0">
         <div class="card-header bg-dark text-white fw-bold fs-5">
             🎓 Student Attendance
@@ -127,12 +139,12 @@
                                         <td>
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio"
-                                                    name="attendance[{{ $reg->id }}]" value="present" required>
+                                                    name="attendance[{{ $reg->student->registration->id }}]" value="present" required>
                                                 <label class="form-check-label">Present</label>
                                             </div>
                                             <div class="form-check form-check-inline">
                                                 <input class="form-check-input" type="radio"
-                                                    name="attendance[{{ $reg->id }}]" value="absent">
+                                                    name="attendance[{{ $reg->student->registration->id }}]" value="absent">
                                                 <label class="form-check-label">Absent</label>
                                             </div>
                                         </td>

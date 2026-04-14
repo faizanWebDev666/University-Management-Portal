@@ -20,6 +20,7 @@ class StudentsRegistration extends Model
         'state_province',
         'class_id',
         'user_id',
+        'password',
     ];
 
     public function image()
@@ -35,6 +36,11 @@ class StudentsRegistration extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class, 'student_registration_id');
     }
 }
 

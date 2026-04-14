@@ -9,11 +9,6 @@ use Symfony\Component\HttpFoundation\Response;
 class SessionInactivityTimeout
 {
     /**
-     * Session timeout in seconds (20 seconds total)
-     */
-    protected $sessionTimeout = 120; // 20 seconds total inactivity
-
-    /**
      * Handle an incoming request.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
@@ -25,8 +20,8 @@ class SessionInactivityTimeout
             $lastActivity = session()->get('last_activity', now()->timestamp);
             $now = now()->timestamp;
             
-            // Check if session has timed out
-            $timeout = $this->sessionTimeout; // Already in seconds
+            // Check if session has timed out (using config session lifetime in seconds)
+            $timeout = config('session.lifetime', 120) * 60;
             
             if ($now - $lastActivity > $timeout) {
                 // Session expired due to inactivity

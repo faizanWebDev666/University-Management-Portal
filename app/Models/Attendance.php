@@ -21,9 +21,9 @@ class Attendance extends Model
     // public $timestamps = false;
 
     // ✅ Define relationships (best practice)
-    public function student()
+    public function registration()
     {
-        return $this->belongsTo(User::class, 'student_registration_id', 'id');
+        return $this->belongsTo(StudentsRegistration::class, 'student_registration_id');
     }
 
     public function offerCourse()

@@ -37,17 +37,36 @@ public function offerCourses()
 }
 public function registeredCourses()
 {
-    return $this->belongsToMany(OfferCourse::class, 'student_course_registrations', 'student_id', 'offered_course_id');
+    return $this->belongsToMany(OfferCourse::class, 'student_course_registrations', 'student_id', 'offered_course_id')
+                ->withPivot('id')
+                ->withTimestamps();
 }
 // In User.php
 public function registration()
 {
-    return $this->hasOne(StudentsRegistration::class, 'email', 'email');
+    return $this->hasOne(StudentsRegistration::class, 'user_id');
 }
 
 public function submissions()
 {
     return $this->hasMany(StudentQuizSubmission::class, 'student_id');
+}
+
+public function attendances()
+ {
+     return $this->hasManyThrough(
+         Attendance::class,
+         StudentsRegistration::class,
+         'user_id',               // Foreign key on StudentsRegistration table
+         'student_registration_id', // Foreign key on Attendance table
+         'id',                    // Local key on User table
+         'id'                     // Local key on StudentsRegistration table
+     );
+ }
+
+public function courseRegistrations()
+{
+    return $this->hasMany(StudentCourseRegistration::class, 'student_id');
 }
 
 

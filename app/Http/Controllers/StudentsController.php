@@ -28,20 +28,22 @@ class StudentsController extends Controller
 
     $courses = $student->registeredCourses()->with(['course', 'class', 'professor'])->get();
 
+    $studentRegistration = $student->registration;
     $attendancePercentages = [];
 
     foreach ($courses as $course) {
-        $total = Attendance::where('student_registration_id', $studentId)
-            ->where('offer_course_id', $course->id)
-            ->count();
-
-        $present = Attendance::where('student_registration_id', $studentId)
-            ->where('offer_course_id', $course->id)
-            ->where('status', 'present')
-            ->count();
-
-        $percentage = $total > 0 ? round(($present / $total) * 100) : 0;
-
+        if ($studentRegistration) {
+            // Fetch attendances directly from DB using registration ID
+            $attendances = Attendance::where('student_registration_id', $studentRegistration->id)
+                ->where('offer_course_id', $course->id)
+                ->get();
+            
+            $total = $attendances->count();
+            $present = $attendances->where('status', 'present')->count();
+            $percentage = $total > 0 ? round(($present / $total) * 100) : 0;
+        } else {
+            $percentage = 0;
+        }
         $attendancePercentages[$course->id] = $percentage;
     }
 

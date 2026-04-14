@@ -18,20 +18,23 @@
                         <th>Teacher</th>
                         <th>Class</th>
                         <th>Attendance Summary</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
 
                 <tbody>
                 @forelse ($courses as $course)
-                    <tr class="clickable-row"
-                        data-href="{{ route('student.course.details', ['course_id' => $course->id]) }}">
+                    @php
+                        $detailsUrl = route('student.course.details', ['course_id' => $course->pivot->id]);
+                    @endphp
+                    <tr class="clickable-row" onclick="window.location='{{ $detailsUrl }}'">
 
                         <td data-label="Course No">
-                            {{ $course->course->course_code ?? 'N/A' }}
+                            <a href="{{ $detailsUrl }}" class="course-link">{{ $course->course->course_code ?? 'N/A' }}</a>
                         </td>
 
                         <td data-label="Course Name">
-                            {{ $course->course->course_name ?? 'N/A' }}
+                            <a href="{{ $detailsUrl }}" class="course-link">{{ $course->course->course_name ?? 'N/A' }}</a>
                         </td>
 
                         <td data-label="Credits">
@@ -74,21 +77,28 @@
                                 </div>
                             @endif
                         </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="6" class="text-center">
-                            No registered courses found.
+
+                        <td data-label="Action">
+                            <a href="{{ route('student.course.details', ['course_id' => $course->pivot->id]) }}" 
+                               class="btn btn-sm btn-info text-white" 
+                               style="background-color: #009A9A; border: none; border-radius: 5px;">
+                                <i class="bi bi-eye-fill me-1"></i> View Details
+                            </a>
                         </td>
                     </tr>
-                @endforelse
+@empty
+    <tr>
+        <td colspan="7" class="text-center">
+            No registered courses found.
+        </td>
+    </tr>
+@endforelse
                 </tbody>
 
             </table>
         </div>
     </div>
 </section>
-
 
 <style>
 /* ================= GENERAL ================= */
@@ -102,6 +112,18 @@
 }
 .clickable-row:hover {
     background-color: #f0f8ff;
+}
+
+.course-link {
+    text-decoration: none;
+    color: #000;
+    font-weight: 700;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.clickable-row:hover .course-link {
+    color: #009A9A;
 }
 
 .progress {

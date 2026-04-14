@@ -256,7 +256,7 @@ public function storeStudent(Request $request)
         $user = new User();
         $user->name = $validatedData['full_name'];
         $user->email = $validatedData['email'];
-        $user->password = $validatedData['password']; // 🔐 secure hashing
+        $user->password = Hash::make($validatedData['password']); // 🔐 secure hashing
         $user->type = 'student';
         $user->active_status = 1;
         $user->class_id = $validatedData['class_id'];
@@ -271,7 +271,7 @@ public function storeStudent(Request $request)
         $student->department = $validatedData['department'];
         $student->roll_no = $validatedData['roll_no'];
         $student->degree_program = $validatedData['degree_program'];
-        $student->password = $validatedData['password']; // 🔐 secure hashing
+        $student->password = Hash::make($validatedData['password']); // 🔐 secure hashing
         $student->address = $validatedData['address'];
         $student->country = $validatedData['country'];
         $student->city = $validatedData['city'];
@@ -353,7 +353,7 @@ public function storeTeacher(Request $request)
             'designation' => $validated['designation'],
             'joining_date' => $validated['joining_date'],
             'username' => $validated['username'],
-            'password' => $validated['password'],
+            'password' => Hash::make($validated['password']), // Hash password
             'role' => $validated['role'],
             'resume' => $resumePath,
             'address' => $validated['address'],
@@ -374,7 +374,7 @@ public function storeTeacher(Request $request)
         User::create([
             'name' => $validated['full_name'],
             'email' => $validated['email'],
-            'password' => $validated['password'], // You can hash if needed
+            'password' => $validated['password'], // Hash password
             'type' => 'professor',
             'active_status' => 1,
         ]);
@@ -384,7 +384,7 @@ public function storeTeacher(Request $request)
     $details = [
         'user_name' => $validated['full_name'],
         'email' => $validated['email'],
-        'password' => $request->password,
+        'password' => $validated['password'], // Plain password for email
     ];
 
     try {
@@ -393,7 +393,9 @@ public function storeTeacher(Request $request)
             $message->subject('Welcome to Online Portal - Login Details');
         });
     } catch (\Exception $e) {
-        dd('Mail Sending Failed: ' . $e->getMessage());
+        // Log the error instead of stopping execution
+        \Log::error('Mail Sending Failed: ' . $e->getMessage());
+        return redirect()->back()->with('success', 'Professor registered successfully, but welcome email could not be sent.');
     }
 
     return redirect()->back()->with('success', 'Professor registered successfully!');

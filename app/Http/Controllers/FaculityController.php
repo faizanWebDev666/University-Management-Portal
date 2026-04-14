@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Quiz;
 use App\Models\User;
+use App\Models\Attendance;
 use App\Models\LeaveRequest;
 use App\Models\OfferCourse;
+use App\Models\StudentsRegistration;
 use Illuminate\Http\Request;
 use App\Models\StudentCourseRegistration;
 use Illuminate\Support\Facades\Hash;
@@ -49,46 +51,39 @@ public function store(Request $request)
 }
 public function Students_Attendence(Request $request)
 {
-    $offeredCourses = OfferCourse::with(['course', 'class'])->get();
+    $userId = session('id');
+    $offeredCourses = OfferCourse::where('professor_id', $userId)->with(['course', 'class'])->get();
     $offeredCourseId = $request->offered_course_id;
-
-    $students = collect();
+    $registeredStudents = collect();
 
     if ($offeredCourseId) {
-
-        $students = ClassStudent::with([
+        $registeredStudents = StudentCourseRegistration::with([
             'student.registration',
-            'student.courseRegistrations' => function ($q) use ($offeredCourseId) {
-                $q->where('offered_course_id', $offeredCourseId);
-            },
-            'student.attendances' => function ($q) use ($offeredCourseId) {
-                $q->where('offer_course_id', $offeredCourseId);
-            }
+            'offeredCourse.class',
         ])
         ->where('offered_course_id', $offeredCourseId)
         ->get();
 
-        foreach ($students as $row) {
-            $attendances = $row->student->attendances;
-
-            $total = $attendances->count();
-            $present = $attendances->where('status', 'present')->count();
-
-            $row->attendance_percentage = $total > 0
-                ? round(($present / $total) * 100, 2)
-                : 0;
-
-            // Flag for UI
-            $row->is_registered = $row->student->courseRegistrations->isNotEmpty();
+        foreach ($registeredStudents as $row) {
+            $registrationId = $row->student->registration->id ?? null;
+            if ($registrationId) {
+                // Get attendances directly from DB to avoid collection filtering issues
+                $courseAttendances = Attendance::where('student_registration_id', $registrationId)
+                    ->where('offer_course_id', $offeredCourseId)
+                    ->get();
+                
+                $total = $courseAttendances->count();
+                $present = $courseAttendances->where('status', 'present')->count();
+                $row->attendance_percentage = $total > 0 ? round(($present / $total) * 100, 2) : 0;
+            } else {
+                $row->attendance_percentage = 0;
+            }
+            $row->is_registered = true; // Since they are in the StudentCourseRegistration table
         }
     }
 
-    return view(
-        'faculity_dashboard.Students_Attendence',
-        compact('offeredCourses', 'students', 'offeredCourseId')
-    );
+    return view('faculity_dashboard.Students_Attendence', compact('offeredCourses', 'registeredStudents', 'offeredCourseId'));
 }
-
     public function WelcomeProfessor()
     {
         $userId = session('id'); 

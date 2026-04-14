@@ -192,13 +192,26 @@ class InactivityTimeoutManager {
             clearInterval(this.countdownId);
         }
 
-        // Hide the modal
-        this.hideWarningModal();
+        // Make a request to the server to refresh the session
+        fetch('/session/keep-alive')
+            .then(response => response.json())
+            .then(data => {
+                console.log('[Inactivity Manager] Session refreshed on server');
+                
+                // Hide the modal
+                this.hideWarningModal();
 
-        // Reset the inactivity timer
-        this.startInactivityTimer();
-
-        console.log('[Inactivity Manager] User stayed active, timer reset');
+                // Reset the inactivity timer
+                this.startInactivityTimer();
+                
+                console.log('[Inactivity Manager] User stayed active, timer reset');
+            })
+            .catch(error => {
+                console.error('[Inactivity Manager] Error refreshing session:', error);
+                // Even if request fails, try to reset timer
+                this.hideWarningModal();
+                this.startInactivityTimer();
+            });
     }
 
     /**
@@ -241,11 +254,9 @@ class InactivityTimeoutManager {
 // Initialize on document ready
 document.addEventListener('DOMContentLoaded', function() {
     // Create and start the inactivity timeout manager
-    // Total timeout: 20 seconds
-    // - 10 seconds: inactivity detection
-    // - 10 seconds: warning countdown
+    // Pull from Laravel config or set a reasonable default (e.g., 120 minutes)
     window.inactivityManager = new InactivityTimeoutManager({
-        inactivityMinutes: 1,   // 20 seconds total (10 sec inactivity + 10 sec warning)
-        warningSeconds: 20          // Show warning countdown for 10 seconds
+        inactivityMinutes: 120,   // Match Laravel SESSION_LIFETIME (120 minutes)
+        warningSeconds: 60          // Show warning countdown for 60 seconds before logout
     });
 });

@@ -8,6 +8,18 @@
         </ul>
     </div>
 @endif
+
+@if (session('success'))
+    <div class="alert alert-success mx-auto my-4 w-75 rounded shadow-sm">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if (session('error'))
+    <div class="alert alert-danger mx-auto my-4 w-75 rounded shadow-sm">
+        {{ session('error') }}
+    </div>
+@endif
 <h2 class="main-title">New Student Registration</h2>
 
 <form action="{{ route('student.store') }}" method="POST" enctype="multipart/form-data">
