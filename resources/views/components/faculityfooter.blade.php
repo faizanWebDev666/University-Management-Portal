@@ -27,6 +27,54 @@
 		
 		<!-- Inactivity Timeout -->
 		<script src="{{ asset('js/inactivity-timeout.js') }}"></script>
+		<script>
+			(function () {
+				const sidebar = document.querySelector('.dash-aside-navbar');
+				const openBtn = document.getElementById('facultySidebarOpenBtn');
+				const overlay = document.getElementById('facultySidebarOverlay');
+				const closeBtn = document.querySelector('.dash-aside-navbar .close-btn');
+				const mobileQuery = window.matchMedia('(max-width: 991.98px)');
+
+				if (!sidebar || !openBtn || !overlay) {
+					return;
+				}
+
+				const openSidebar = function () {
+					if (!mobileQuery.matches) {
+						return;
+					}
+					sidebar.classList.add('sidebar-open');
+					overlay.classList.add('show');
+					document.body.classList.add('faculty-sidebar-open');
+				};
+
+				const closeSidebar = function () {
+					sidebar.classList.remove('sidebar-open');
+					overlay.classList.remove('show');
+					document.body.classList.remove('faculty-sidebar-open');
+				};
+
+				openBtn.addEventListener('click', openSidebar);
+				overlay.addEventListener('click', closeSidebar);
+				if (closeBtn) {
+					closeBtn.addEventListener('click', closeSidebar);
+				}
+
+				sidebar.querySelectorAll('a').forEach(function (link) {
+					link.addEventListener('click', function () {
+						if (mobileQuery.matches) {
+							closeSidebar();
+						}
+					});
+				});
+
+				window.addEventListener('resize', function () {
+					if (!mobileQuery.matches) {
+						closeSidebar();
+					}
+				});
+			})();
+		</script>
 	</div> <!-- /.main-page-wrapper -->
 	
 	<!-- Inactivity Modal -->

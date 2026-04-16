@@ -24,48 +24,173 @@
                     </div>
                 </div>
 
-                <h5 class="fw-bold text-dark mb-3">Student Submissions</h5>
-                @if ($assignment->submissions->count() > 0)
-                    <form action="{{ route('assignments.storeMarks', $assignment->id) }}" method="POST">
-                        @csrf
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle">
-                                <thead style="background-color: #f8f9fa;">
+                <h5 class="fw-bold text-dark mb-3">Class Gradebook</h5>
+                <div class="alert alert-info">
+                    Assign marks for all students in one screen. You can grade even if a student did not upload a file.
+                </div>
+                @php
+                    $totalStudents = $students->count();
+                    $submittedStudents = 0;
+                    $submittedList = collect();
+                    $notSubmittedList = collect();
+
+                    foreach ($students as $student) {
+                        $studentUserId = $student->user_id;
+                        $submission = $studentUserId ? ($submissions[$studentUserId] ?? null) : null;
+                        $hasRealSubmission = $submission && $submission->file_path && $submission->file_path !== 'NO_SUBMISSION';
+
+                        if ($hasRealSubmission) {
+                            $submittedStudents++;
+                            $submittedList->push($student);
+                        } else {
+                            $notSubmittedList->push($student);
+                        }
+                    }
+                @endphp
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="border rounded-3 p-3 bg-light h-100">
+                            <p class="small text-muted mb-1 fw-bold text-uppercase">Total Students</p>
+                            <h4 class="mb-0">{{ $totalStudents }}</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border rounded-3 p-3 bg-light h-100">
+                            <p class="small text-muted mb-1 fw-bold text-uppercase">Submitted</p>
+                            <h4 class="mb-2 text-success">{{ $submittedStudents }}</h4>
+                            <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#submittedStudentsModal">
+                                View Students
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border rounded-3 p-3 bg-light h-100">
+                            <p class="small text-muted mb-1 fw-bold text-uppercase">Not Submitted</p>
+                            <h4 class="mb-2 text-danger">{{ $totalStudents - $submittedStudents }}</h4>
+                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#notSubmittedStudentsModal">
+                                View Students
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <form action="{{ route('assignments.storeMarks', $assignment->id) }}" method="POST">
+                    @csrf
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead style="background-color: #f8f9fa;">
+                                <tr>
+                                    <th scope="col" class="fw-bold text-dark">Student Name</th>
+                                    <th scope="col" class="fw-bold text-dark">Roll No.</th>
+                                    <th scope="col" class="fw-bold text-dark">Submission</th>
+                                    <th scope="col" class="fw-bold text-dark">Submitted At</th>
+                                    <th scope="col" class="fw-bold text-dark">Marks / {{ $assignment->total_marks }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($students as $student)
+                                    @php
+                                        $studentUserId = $student->user_id;
+                                        $submission = $studentUserId ? ($submissions[$studentUserId] ?? null) : null;
+                                        $hasRealSubmission = $submission && $submission->file_path && $submission->file_path !== 'NO_SUBMISSION';
+                                    @endphp
                                     <tr>
-                                        <th scope="col" class="fw-bold text-dark">Student Name</th>
-                                        <th scope="col" class="fw-bold text-dark">Roll No.</th>
-                                        <th scope="col" class="fw-bold text-dark">Submission File</th>
-                                        <th scope="col" class="fw-bold text-dark">Submitted At</th>
-                                        <th scope="col" class="fw-bold text-dark">Marks</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($assignment->submissions as $submission)
-                                        <tr>
-                                            <td>{{ $submission->student->name ?? 'N/A' }}</td>
-                                            <td>{{ $submission->student->registration->roll_no ?? 'N/A' }}</td>
-                                            <td>
+                                        <td>{{ $student->user->name ?? $student->full_name ?? 'N/A' }}</td>
+                                        <td>{{ $student->roll_no ?? 'N/A' }}</td>
+                                        <td>
+                                            @if ($hasRealSubmission)
                                                 <a href="{{ asset('storage/' . $submission->file_path) }}" target="_blank" class="btn btn-sm btn-outline-primary">
                                                     <i class="fas fa-download me-1"></i> Download File
                                                 </a>
-                                            </td>
-                                            <td>{{ \Carbon\Carbon::parse($submission->created_at)->format('M d, Y H:i') }}</td>
-                                            <td>
-                                                <input type="number" name="marks[{{ $submission->id }}]" class="form-control form-control-sm" value="{{ $submission->marks }}" min="0" max="{{ $assignment->total_marks }}" style="width: 80px;">
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="text-end mt-4">
-                            <button type="submit" class="btn btn-primary px-4 rounded-pill">
-                                <i class="fas fa-save me-2"></i> Save Marks
-                            </button>
-                        </div>
-                    </form>
+                                            @else
+                                                <span class="badge bg-secondary-subtle text-secondary border">No Submission</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if ($submission?->submitted_at)
+                                                {{ \Carbon\Carbon::parse($submission->submitted_at)->format('M d, Y H:i') }}
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
+                                        <td style="width: 140px;">
+                                            @if ($studentUserId)
+                                                <input
+                                                    type="number"
+                                                    name="student_marks[{{ $studentUserId }}]"
+                                                    class="form-control form-control-sm"
+                                                    value="{{ $submission?->marks }}"
+                                                    min="0"
+                                                    max="{{ $assignment->total_marks }}"
+                                                    step="0.01"
+                                                >
+                                            @else
+                                                <span class="text-muted small">User not linked</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center">No students found in this class.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-end mt-4">
+                        <button type="submit" class="btn btn-primary px-4 rounded-pill">
+                            <i class="fas fa-save me-2"></i> Save All Marks
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="submittedStudentsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Students Who Submitted</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @if ($submittedList->count())
+                    <ul class="list-group">
+                        @foreach ($submittedList as $student)
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>{{ $student->user->name ?? $student->full_name ?? 'N/A' }}</span>
+                                <span class="text-muted">{{ $student->roll_no ?? 'N/A' }}</span>
+                            </li>
+                        @endforeach
+                    </ul>
                 @else
-                    <div class="alert alert-info text-center">No submissions for this assignment yet.</div>
+                    <p class="text-muted mb-0">No students have submitted yet.</p>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="notSubmittedStudentsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Students Who Did Not Submit</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @if ($notSubmittedList->count())
+                    <ul class="list-group">
+                        @foreach ($notSubmittedList as $student)
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>{{ $student->user->name ?? $student->full_name ?? 'N/A' }}</span>
+                                <span class="text-muted">{{ $student->roll_no ?? 'N/A' }}</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                @else
+                    <p class="text-muted mb-0">All students submitted.</p>
                 @endif
             </div>
         </div>

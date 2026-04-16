@@ -33,6 +33,7 @@
     .main-page-wrapper {
         display: flex;
         min-height: 100vh;
+        position: relative;
     }
 
     /* Sidebar Navigation */
@@ -48,6 +49,8 @@
         top: 0;
         height: 100vh;
         overflow-y: auto; /* Enable scrolling for long menus */
+        z-index: 1040;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
     .dash-aside-navbar .logo {
@@ -253,28 +256,165 @@
         flex-grow: 1;
         padding: 30px;
         background-color: #f0f2f5; /* Slightly darker background for content area */
+        min-width: 0;
+    }
+
+    .faculty-sidebar-overlay {
+        display: none;
+    }
+
+    .faculty-mobile-toggle {
+        display: none;
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 1051;
+        border: none;
+        background: #009A9A;
+        color: #fff;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+    }
+
+    .dash-aside-navbar .close-btn {
+        border: none;
+        background: transparent;
+        color: #666;
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 
     /* Responsive Adjustments */
-    @media (max-width: 768px) {
-        .dash-aside-navbar {
-            width: 100%;
-            height: auto;
-            position: relative;
-            box-shadow: none;
-            border-bottom: 1px solid #eee;
+    @media (max-width: 991.98px) {
+        .faculty-mobile-toggle {
+            display: inline-flex;
         }
+
+        .dash-aside-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: min(86vw, 320px);
+            height: 100vh;
+            transform: translateX(-105%);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border-bottom: none;
+            padding-top: 10px;
+        }
+
+        .dash-aside-navbar.sidebar-open {
+            transform: translateX(0);
+        }
+
+        .faculty-sidebar-overlay {
+            display: block;
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 20, 20, 0.5);
+            z-index: 1035;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .faculty-sidebar-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        body.faculty-sidebar-open {
+            overflow: hidden;
+        }
+
         .dash-aside-navbar .logo {
             text-align: left;
+            margin-bottom: 10px;
         }
+
         .dash-aside-navbar .user-data {
             display: none; /* Hide user data on small screens */
         }
+
         .dasboard-main-nav {
             padding: 0 10px;
         }
+
         .dashboard-body {
-            padding: 20px;
+            padding: 18px 14px;
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .dashboard-body {
+            padding: 14px 10px;
+        }
+
+        .dasboard-main-nav > ul > li > a,
+        .dasboard-main-nav .nav-link-item {
+            padding: 10px 12px;
+            font-size: 0.92rem;
+        }
+
+        .dasboard-main-nav .sub-menu li a {
+            font-size: 0.85rem;
+            padding: 7px 10px;
+        }
+    }
+
+    @media (max-width: 300px) {
+        .faculty-mobile-toggle {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            top: 6px;
+            left: 6px;
+        }
+
+        .dash-aside-navbar {
+            width: 92vw;
+            padding-top: 4px;
+        }
+
+        .dash-aside-navbar .logo {
+            padding: 0 12px 12px 12px;
+        }
+
+        .dash-aside-navbar .logo img {
+            max-width: 120px;
+        }
+
+        .dasboard-main-nav {
+            padding: 0 8px;
+        }
+
+        .dasboard-main-nav > ul > li > a,
+        .dasboard-main-nav .nav-link-item {
+            padding: 9px 8px;
+            font-size: 0.82rem;
+            border-radius: 6px;
+        }
+
+        .dasboard-main-nav > ul > li > a i,
+        .dasboard-main-nav .nav-link-item i {
+            width: 18px;
+            font-size: 0.85rem;
+            margin-right: 8px !important;
+        }
+
+        .dashboard-body {
+            padding: 10px 6px;
         }
     }
 </style>
@@ -347,12 +487,9 @@
                                 <span>Student Management</span>
                                 <i class="fas fa-chevron-down ms-auto collapse-icon"></i>
                             </a>
-                            <div class="collapse {{ isActive(['postedAssignments', 'teacher.leave', 'faculty.leave.index']) ? 'show' : '' }}" id="studentManagement">
+                            <div class="collapse {{ isActive(['teacher.leave', 'faculty.leave.index']) ? 'show' : '' }}" id="studentManagement">
                                 <ul class="style-none sub-menu">
-                                    <li><a href="{{ route('postedAssignments') }}" class="d-flex w-100 align-items-center {{ isActive('postedAssignments') }}">
-                                        <i class="fas fa-tasks me-3"></i>
-                                        <span>View Assignments</span>
-                                    </a></li>
+                                    
                                     <li><a href="{{ route('teacher.leave') }}" class="d-flex w-100 align-items-center {{ isActive('teacher.leave') }}">
                                         <i class="fas fa-calendar-times me-3"></i>
                                         <span>Leave Requests</span>
@@ -396,6 +533,10 @@
                 </a>
             </div>
         </aside>
+        <div class="faculty-sidebar-overlay" id="facultySidebarOverlay"></div>
 
         <div class="dashboard-body">
+            <button class="faculty-mobile-toggle" id="facultySidebarOpenBtn" type="button" aria-label="Open faculty menu">
+                <i class="fas fa-bars"></i>
+            </button>
             <div class="position-relative">

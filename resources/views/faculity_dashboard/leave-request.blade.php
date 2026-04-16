@@ -83,6 +83,60 @@
 
 <x-faculityfooter/>
 
+<style>
+    @media (max-width: 991.98px) {
+        .container.my-5 {
+            margin-top: 70px !important;
+            margin-bottom: 1rem !important;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .alert.mx-auto.w-75,
+        .container .card {
+            width: 100% !important;
+        }
+
+        .card-body {
+            padding: 1rem !important;
+        }
+
+        .card-header {
+            font-size: 1rem !important;
+            padding: 0.85rem 1rem !important;
+        }
+
+        .text-end {
+            text-align: center !important;
+        }
+
+        .text-end .btn {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 300px) {
+        .container.my-5 {
+            margin-top: 56px !important;
+            padding-left: 6px;
+            padding-right: 6px;
+        }
+
+        .card-body {
+            padding: 0.65rem !important;
+        }
+
+        .form-label,
+        .form-control,
+        .form-select,
+        .btn {
+            font-size: 0.8rem !important;
+        }
+    }
+</style>
+
 <!-- ✅ Client-Side Validation Script -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {

@@ -26,26 +26,43 @@ class RegistrationController extends Controller
         $totalCourses=Course::count();
         $totalClasses=Classes::count();
 
-    $allocations = OfferCourse::with([
-        'course', 
-        'professor' => function ($query) {
-            $query->where('type', 'professor');
-        }, 
-        'class'
-    ])->get();
-    
-    return view('faculity_dashboard.Registration_index', compact('totalStudents', 'totalTeachers', 'totalCourses', 'totalClasses','allocations'));
+        $allocations = OfferCourse::with([
+            'course', 
+            'professor' => function ($query) {
+                $query->where('type', 'professor');
+            }, 
+            'class'
+        ])->get();
+        
+        return view('faculity_dashboard.Registration_index', compact('totalStudents', 'totalTeachers', 'totalCourses', 'totalClasses','allocations'));
     }
-      public function delete()
+
+    public function TeacherCourseReport()
+    {
+        $teachers = User::where('type', 'professor')
+            ->withCount('offeredCourses')
+            ->with(['offeredCourses.course'])
+            ->orderByDesc('offered_courses_count')
+            ->get();
+
+        return view('faculity_dashboard.TeacherCourseReport', compact('teachers'));
+    }
+
+    public function delete()
     {
         return view('faculity_dashboard.Delete-Account');
     }
   
     public function OfferCoursesToClasses()
 {
-    $professors = User::where('type', 'professor')->get(); // Correct
+    $professors = User::where('type', 'professor')
+        ->withCount('offeredCourses')
+        ->get();
     $courses = Course::all();
-    $classes = Classes::orderBy('year', 'desc')->orderBy('semester')->get();
+    $classes = Classes::withCount('offeredCourses')
+        ->orderBy('year', 'desc')
+        ->orderBy('semester')
+        ->get();
 
     return view('faculity_dashboard.OfferCoursesToClasses', compact('professors', 'courses', 'classes'));
 }

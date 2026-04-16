@@ -6,6 +6,7 @@ use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
 use App\Models\OfferCourse;
 use App\Models\OfferCourses;
+use App\Models\StudentsRegistration;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -155,18 +156,23 @@ public function Assignmentsubmission(Request $request, $assignmentId)
 
     return back()->with('success', 'Assignment submitted successfully.');
 }
-public function PostedAssignments()
-{
-    $teacherId = session('id'); // or Auth::id() if you're using Auth
 
-    $assignments = Assignment::where('teacher_id', $teacherId)->get();
-
-    return view('faculity_dashboard.PostedAssignments', compact('assignments'));
-}
 public function viewSubmissions($assignmentId)
 {
-    $assignment = Assignment::with('submissions.student')->findOrFail($assignmentId);
-    return view('faculity_dashboard.viewAssignmentSubmissions', compact('assignment'));
+    $teacherId = session('id');
+    $assignment = Assignment::with('course')
+        ->where('teacher_id', $teacherId)
+        ->findOrFail($assignmentId);
+
+    $students = StudentsRegistration::where('class_id', $assignment->class_id)
+        ->with('user')
+        ->get();
+
+    $submissions = AssignmentSubmission::where('assignment_id', $assignment->id)
+        ->get()
+        ->keyBy('student_id');
+
+    return view('faculity_dashboard.viewAssignmentSubmissions', compact('assignment', 'students', 'submissions'));
 }
 
 public function storeMarks(Request $request, $assignmentId)
@@ -175,20 +181,44 @@ public function storeMarks(Request $request, $assignmentId)
     $assignment = Assignment::where('teacher_id', $teacherId)->findOrFail($assignmentId);
 
     $request->validate([
-        'marks.*' => 'nullable|integer|min:0',
+        'student_marks' => 'nullable|array',
+        'student_marks.*' => 'nullable|numeric|min:0|max:' . (float) $assignment->total_marks,
     ]);
 
-    foreach ($request->marks as $submissionId => $mark) {
-        if ($mark !== null && (int) $mark > (int) $assignment->total_marks) {
-            return back()->withErrors("Marks cannot exceed total marks ({$assignment->total_marks}).");
+    $allowedStudentIds = StudentsRegistration::where('class_id', $assignment->class_id)
+        ->whereNotNull('user_id')
+        ->pluck('user_id')
+        ->toArray();
+
+    $studentMarks = $request->input('student_marks', []);
+    foreach ($studentMarks as $studentId => $mark) {
+        if (!in_array((int) $studentId, $allowedStudentIds, true)) {
+            continue;
         }
 
-        AssignmentSubmission::where('id', $submissionId)
-            ->where('assignment_id', $assignment->id)
-            ->update(['marks' => $mark]);
+        if ($mark === null || $mark === '') {
+            continue;
+        }
+
+        $existingSubmission = AssignmentSubmission::where('assignment_id', $assignment->id)
+            ->where('student_id', $studentId)
+            ->first();
+
+        if ($existingSubmission) {
+            $existingSubmission->update(['marks' => $mark]);
+            continue;
+        }
+
+        AssignmentSubmission::create([
+            'assignment_id' => $assignment->id,
+            'student_id' => $studentId,
+            'file_path' => 'NO_SUBMISSION',
+            'marks' => $mark,
+            'submitted_at' => null,
+        ]);
     }
 
-    return back()->with('success', 'Marks updated successfully.');
+    return back()->with('success', 'Assignment marks saved successfully.');
 }
 
 public function updateMeta(Request $request, $assignmentId)

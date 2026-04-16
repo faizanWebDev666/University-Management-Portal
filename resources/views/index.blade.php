@@ -283,7 +283,13 @@
                         <a href="#" class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#loginModal" data-role="professor">
                             <i class="fas fa-chalkboard-teacher me-2"></i>Faculty Login
                         </a>
-                        <a href="#" class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#loginModal" data-role="admin">
+                        <a href="#" class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#loginModal" data-role="finance">
+                            <i class="fas fa-money-bill-wave me-2"></i>Finance Login
+                        </a>
+                         <a href="#" class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#loginModal" data-role="registration">
+                            <i class="fas fa-user-plus me-2"></i>Registration Login
+                        </a>
+                        <a href="{{ route('Admin.signin') }}" class="btn btn-primary-custom"  data-bs-target="#loginModal" data-role="admin">
                             <i class="fas fa-cog me-2"></i>Admin Login
                         </a>
                     </div>

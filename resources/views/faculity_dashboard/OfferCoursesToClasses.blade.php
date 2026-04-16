@@ -14,7 +14,9 @@
                     <select class="nice-select" name="professor_id" required>
                         <option value="" disabled selected>Select Professor</option>
                         @foreach($professors as $professor)
-                            <option value="{{ $professor->id }}">{{ $professor->name }}</option>
+                            <option value="{{ $professor->id }}">
+                                {{ $professor->name }} @if($professor->offered_courses_count > 0) ( Teach => {{ $professor->offered_courses_count }} Course ) @else (0 assigned) @endif
+                            </option>
                         @endforeach
                     </select>
                 </div>
@@ -40,6 +42,7 @@
                             @foreach($classes as $class)
                                  <option value="{{ $class->id }}">
                                 {{ strtoupper(substr($class->semester, 0, 2)) }}{{ substr($class->year, -2) }}-{{ strtoupper(substr($class->degree_program, 0, 1)) }}{{ strtoupper($class->department) }}-{{ strtoupper($class->section) }}
+                                ( Read => {{ $class->offered_courses_count }} Course )
                             </option>
                             @endforeach
                         </select>

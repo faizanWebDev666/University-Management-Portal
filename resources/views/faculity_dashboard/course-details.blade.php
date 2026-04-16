@@ -207,19 +207,17 @@
                                     <label for="time_slot" class="form-label fw-semibold">Time Slot</label>
                                     <select class="form-select" id="time_slot" name="time_slot" required>
                                         <option value="">Select Time Slot</option>
-                                        <option value="Morning" {{ old('time_slot') == 'Morning' ? 'selected' : '' }}>Morning</option>
-                                        <option value="Afternoon" {{ old('time_slot') == 'Afternoon' ? 'selected' : '' }}>Afternoon</option>
-                                        <option value="Evening" {{ old('time_slot') == 'Evening' ? 'selected' : '' }}>Evening</option>
+                                        <option value="1st Slot" {{ old('time_slot') == '1st Slot' ? 'selected' : '' }}>1st Slot</option>
+                                        <option value="2nd Slot" {{ old('time_slot') == '2nd Slot' ? 'selected' : '' }}>2nd Slot</option>
+                                        <option value="3rd Slot" {{ old('time_slot') == '3rd Slot' ? 'selected' : '' }}>3rd Slot</option>
+                                        <option value="4th Slot" {{ old('time_slot') == '4th Slot' ? 'selected' : '' }}>4th Slot</option>
+                                      <option value="5th Slot" {{ old('time_slot') == '5th Slot' ? 'selected' : '' }}>5th Slot</option>
+
+
                                     </select>
                                 </div>
                             </div>
-                            <div id="attendanceEditModeAlert" class="alert alert-primary d-flex justify-content-between align-items-center mb-3" style="display: none;">
-                                <div>
-                                    <i class="fas fa-edit me-2"></i>
-                                    <strong>Edit Mode:</strong> You are editing a selected attendance session.
-                                </div>
-                                <button type="button" id="cancelAttendanceEditBtn" class="btn btn-outline-secondary btn-sm">Cancel Edit</button>
-                            </div>
+                          
 
                             <h5 class="fw-bold text-dark mb-3">Mark Students:</h5>
                             @if ($registeredStudents->count() > 0)
@@ -809,6 +807,61 @@
 
     /* Responsive */
     @media (max-width: 768px) {
+        .course-details-wrapper {
+            padding: 56px 0 12px !important;
+        }
+
+        .course-details-wrapper .container-xxl {
+            padding-left: 8px;
+            padding-right: 8px;
+        }
+
+        .course-details-wrapper .d-flex.justify-content-between.align-items-center.mb-5 {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 0.75rem;
+            margin-bottom: 1rem !important;
+        }
+
+        .course-details-wrapper .user-data {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .course-details-wrapper .nav.nav-tabs.nav-fill {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .course-details-wrapper .nav.nav-tabs.nav-fill .nav-item {
+            flex: 0 0 auto;
+        }
+
+        .course-details-wrapper .nav.nav-tabs.nav-fill .nav-link {
+            min-width: 135px;
+        }
+
+        .course-details-wrapper .tab-content {
+            padding: 0.9rem !important;
+        }
+
+        .course-details-wrapper .card-body.p-4,
+        .course-details-wrapper .card-body.p-lg-5 {
+            padding: 0.9rem !important;
+        }
+
+        .course-details-wrapper .d-flex.gap-2.mb-3 {
+            flex-wrap: wrap;
+        }
+
+        .course-details-wrapper .d-flex.gap-2.mb-3 .btn {
+            flex: 1 1 auto;
+            min-width: 140px;
+        }
+
         .main-title {
             font-size: 1.8rem;
         }
@@ -825,6 +878,61 @@
         .btn-lg {
             padding: 0.75rem 1rem;
             font-size: 0.95rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .course-details-wrapper h1 {
+            font-size: 1.35rem !important;
+        }
+
+        .course-details-wrapper h4 {
+            font-size: 1rem !important;
+        }
+
+        .course-details-wrapper .btn,
+        .course-details-wrapper .form-control,
+        .course-details-wrapper .form-select,
+        .course-details-wrapper .form-label {
+            font-size: 0.85rem;
+        }
+
+        .course-details-wrapper .table {
+            font-size: 0.78rem;
+        }
+
+        .course-details-wrapper .table th,
+        .course-details-wrapper .table td {
+            white-space: nowrap;
+            padding: 0.4rem;
+        }
+    }
+
+    @media (max-width: 300px) {
+        .course-details-wrapper {
+            padding: 50px 0 8px !important;
+        }
+
+        .course-details-wrapper .container-xxl {
+            padding-left: 4px;
+            padding-right: 4px;
+        }
+
+        .course-details-wrapper .tab-content,
+        .course-details-wrapper .card-body {
+            padding: 0.55rem !important;
+        }
+
+        .course-details-wrapper .nav.nav-tabs.nav-fill .nav-link {
+            min-width: 100px;
+            padding: 0.5rem 0.35rem !important;
+            font-size: 0.72rem !important;
+        }
+
+        .course-details-wrapper .btn,
+        .course-details-wrapper .form-control,
+        .course-details-wrapper .form-select {
+            font-size: 0.72rem !important;
         }
     }
 

@@ -6,6 +6,7 @@ use App\Models\OfferCourse;
 use App\Models\Quiz;
 use App\Models\StudentCourseRegistration;
 use App\Models\StudentQuizSubmission;
+use App\Models\StudentsRegistration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
@@ -64,11 +65,19 @@ class QuizzesController extends Controller
     public function viewSubmissions($quizId)
     {
         $professorId = session('id');
-        $quiz = Quiz::with(['course', 'submissions.studentRegistration.user'])
+        $quiz = Quiz::with('course')
             ->where('teacher_id', $professorId)
             ->findOrFail($quizId);
 
-        return view('faculity_dashboard.viewQuizSubmissions', compact('quiz'));
+        $students = StudentsRegistration::where('class_id', $quiz->class_id)
+            ->with('user')
+            ->get();
+
+        $submissions = StudentQuizSubmission::where('quiz_id', $quiz->id)
+            ->get()
+            ->keyBy('student_id');
+
+        return view('faculity_dashboard.viewQuizSubmissions', compact('quiz', 'students', 'submissions'));
     }
 
     public function storeMarks(Request $request, $quizId)
@@ -77,18 +86,32 @@ class QuizzesController extends Controller
         $quiz = Quiz::where('teacher_id', $professorId)->findOrFail($quizId);
 
         $request->validate([
-            'marks' => 'nullable|array',
-            'marks.*' => 'nullable|numeric|min:0',
+            'student_marks' => 'nullable|array',
+            'student_marks.*' => 'nullable|numeric|min:0',
         ]);
 
-        $marks = $request->input('marks', []);
-        foreach ($marks as $submissionId => $mark) {
-            StudentQuizSubmission::where('quiz_id', $quiz->id)
-                ->where('id', $submissionId)
-                ->update(['marks' => $mark]);
+        $allowedStudentIds = StudentsRegistration::where('class_id', $quiz->class_id)
+            ->whereNotNull('user_id')
+            ->pluck('user_id')
+            ->toArray();
+
+        $marks = $request->input('student_marks', []);
+        foreach ($marks as $studentId => $mark) {
+            if (!in_array((int) $studentId, $allowedStudentIds, true)) {
+                continue;
+            }
+
+            if ($mark === null || $mark === '') {
+                continue;
+            }
+
+            StudentQuizSubmission::updateOrCreate(
+                ['quiz_id' => $quiz->id, 'student_id' => $studentId],
+                ['marks' => $mark]
+            );
         }
 
-        return back()->with('success', 'Marks updated successfully.');
+        return back()->with('success', 'Quiz marks saved successfully.');
     }
 
     public function updateTimeline(Request $request, $quizId)

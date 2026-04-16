@@ -4,10 +4,9 @@
     <div class="container-fluid">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
             <div>
-                <h2 class="main-title mb-2">Registration Dashboard</h2>
-                <p class="text-muted mb-0">A clean overview of registered students, teachers, classes and course allocations.</p>
+                <h2 class="main-title mb-2">Teacher Course Report</h2>
+                <p class="text-muted mb-0">Review how many courses each teacher is assigned and the course names they teach.</p>
             </div>
-
             <div class="user-data d-flex align-items-center gap-3">
                 <div class="user-avatar position-relative rounded-circle">
                     <img src="{{ asset('frontend/images/Person.png') }}" alt="User Avatar" 
@@ -37,47 +36,24 @@
         </div>
 
         <div class="row g-4 mb-5">
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-4 col-md-6">
                 <div class="registration-card rounded-4 p-4 text-center h-100">
-                    <div class="icon mb-3">
-                        <i class="bi bi-people-fill fs-1"></i>
+                    <div class="icon mb-3" style="background: rgba(13, 110, 253, 0.1);">
+                        <i class="bi bi-people-fill fs-1" style="color: #0d6efd;"></i>
                     </div>
-                    <h4 class="mb-1 fw-bold text-dark">{{ $totalStudents }}</h4>
-                    <p class="text-muted mb-3">Registered Students</p>
-                    <a href="{{ url('RegisterStudents') }}" class="btn btn-sm btn-registration px-4">View Details</a>
+                    <h4 class="mb-1 fw-bold text-dark">{{ $teachers->count() }}</h4>
+                    <p class="text-muted mb-3">Teachers with assigned courses</p>
+                    <a href="{{ url('Registration_index') }}" class="btn btn-sm btn-registration px-4">Back to Dashboard</a>
                 </div>
             </div>
-
-            <div class="col-lg-3 col-md-6">
+            <div class="col-lg-4 col-md-6">
                 <div class="registration-card rounded-4 p-4 text-center h-100">
-                    <div class="icon mb-3" style="background: rgba(76, 175, 80, 0.1);">
-                        <i class="bi bi-person-badge-fill fs-1" style="color: #4CAF50;"></i>
+                    <div class="icon mb-3" style="background: rgba(255, 193, 7, 0.1);">
+                        <i class="bi bi-journal-bookmark-fill fs-1" style="color: #ffc107;"></i>
                     </div>
-                    <h4 class="mb-1 fw-bold text-dark">{{ $totalTeachers }}</h4>
-                    <p class="text-muted mb-3">Registered Teachers</p>
-                    <a href="{{ url('RegisterTeachers') }}" class="btn btn-sm btn-registration px-4">View Details</a>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6">
-                <div class="registration-card rounded-4 p-4 text-center h-100">
-                    <div class="icon mb-3" style="background: rgba(255, 152, 0, 0.1);">
-                        <i class="bi bi-building fs-1" style="color: #FF9800;"></i>
-                    </div>
-                    <h4 class="mb-1 fw-bold text-dark">{{ $totalClasses }}</h4>
-                    <p class="text-muted mb-3">Registered Classes</p>
-                    <a href="{{ url('RegisterNewClasses') }}" class="btn btn-sm btn-registration px-4">View Details</a>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6">
-                <div class="registration-card rounded-4 p-4 text-center h-100">
-                    <div class="icon mb-3" style="background: rgba(124, 58, 237, 0.1);">
-                        <i class="bi bi-journal-bookmark-fill fs-1" style="color: #7C3AED;"></i>
-                    </div>
-                    <h4 class="mb-1 fw-bold text-dark">{{ $totalCourses }}</h4>
-                    <p class="text-muted mb-3">Registered Courses</p>
-                    <a href="{{ url('NewCourseRegistration') }}" class="btn btn-sm btn-registration px-4">View Details</a>
+                    <h4 class="mb-1 fw-bold text-dark">{{ $teachers->sum('offered_courses_count') }}</h4>
+                    <p class="text-muted mb-3">Total offered course assignments</p>
+                    <a href="{{ URL::to('OfferCoursesToClasses') }}" class="btn btn-sm btn-registration px-4">Manage Allocations</a>
                 </div>
             </div>
         </div>
@@ -86,38 +62,51 @@
             <div class="col-12">
                 <div class="table-card rounded-4 shadow-sm p-4 bg-white">
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h4 class="mb-0 text-dark">Course Allocation</h4>
-                        <span class="badge badge-info" style="background: rgba(0, 102, 204, 0.1); color: #0066cc;">{{ $allocations->count() }} Allocations</span>
+                        <div>
+                            <h4 class="mb-0 text-dark">Assigned Teachers</h4>
+                            <p class="text-muted mb-0">Each row shows a teacher, the number of courses they teach, and the course names.</p>
+                        </div>
                     </div>
                     <div class="table-responsive">
                         <table class="table table-bordered text-center align-middle mb-0">
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Course Name</th>
-                                    <th>Professor Name</th>
-                                    <th>Batch Name</th>
-                                    <th>Year</th>
-                                    <th>Degree</th>
-                                    <th>Department</th>
-                                    <th>Section</th>
+                                    <th>Teacher</th>
+                                    <th>Assigned Courses</th>
+                                    <th>Details</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($allocations as $index => $allocation)
+                                @forelse ($teachers as $index => $teacher)
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
-                                        <td>{{ $allocation->course->course_name ?? 'N/A' }}</td>
-                                        <td>{{ $allocation->professor->name ?? 'N/A' }}</td>
-                                        <td>{{ $allocation->class->semester ?? '' }}</td>
-                                        <td>{{ $allocation->class->year ?? '' }}</td>
-                                        <td>{{ $allocation->class->degree_program ?? '' }}</td>
-                                        <td>{{ $allocation->class->department ?? '' }}</td>
-                                        <td>{{ $allocation->class->section ?? '' }}</td>
+                                        <td class="text-start">
+                                            <div class="fw-semibold">{{ $teacher->name }}</div>
+                                            <div class="text-muted small">{{ $teacher->email }}</div>
+                                        </td>
+                                        <td>{{ $teacher->offered_courses_count }}</td>
+                                        <td class="text-start">
+                                            @php
+                                                $courseNames = $teacher->offeredCourses->pluck('course.course_name')
+                                                    ->filter()
+                                                    ->unique()
+                                                    ->values();
+                                            @endphp
+                                            @if ($courseNames->isEmpty())
+                                                <span class="text-muted">No assigned courses</span>
+                                            @else
+                                                <div class="d-flex flex-wrap gap-2 justify-content-start">
+                                                    @foreach ($courseNames as $courseName)
+                                                        <span class="badge bg-primary text-white">{{ $courseName }}</span>
+                                                    @endforeach
+                                                </div>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="8" class="text-muted py-4">No course allocations found.</td>
+                                        <td colspan="4" class="text-muted py-4">No teachers have assigned courses yet.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -167,11 +156,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: rgba(0, 102, 204, 0.08);
-    }
-
-    .registration-card .icon i {
-        color: #0066cc;
     }
 
     .btn-registration {
@@ -227,6 +211,12 @@
         background-color: #0066cc !important;
         color: #fff !important;
         border-color: #0066cc !important;
+    }
+
+    .badge {
+        font-size: 0.82rem;
+        padding: 0.55rem 0.8rem;
+        border-radius: 12px;
     }
 
     @media (max-width: 767px) {

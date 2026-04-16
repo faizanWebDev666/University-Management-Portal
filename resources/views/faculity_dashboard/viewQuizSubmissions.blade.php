@@ -24,27 +24,83 @@
                     </div>
                 </div>
 
-                <h5 class="fw-bold text-dark mb-3">Student Submissions</h5>
-                @if ($quiz->submissions->count() > 0)
-                    <form action="{{ route('quizzes.storeMarks', $quiz->id) }}" method="POST">
-                        @csrf
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle">
-                                <thead style="background-color: #f8f9fa;">
+                <h5 class="fw-bold text-dark mb-3">Class Gradebook</h5>
+                <div class="alert alert-info">
+                    Grade all students in one table. You can assign marks even when a student has not submitted.
+                </div>
+                @php
+                    $totalStudents = $students->count();
+                    $submittedStudents = 0;
+                    $submittedList = collect();
+                    $notSubmittedList = collect();
+
+                    foreach ($students as $student) {
+                        $studentUserId = $student->user_id;
+                        $submission = $studentUserId ? ($submissions[$studentUserId] ?? null) : null;
+                        $hasRealSubmission = $submission && (
+                            ($quiz->quiz_type === 'file' && !empty($submission->answer_file)) ||
+                            ($quiz->quiz_type === 'mcq' && !empty($submission->mcq_answers)) ||
+                            ($quiz->quiz_type === 'written' && !empty($submission->written_answer))
+                        );
+
+                        if ($hasRealSubmission) {
+                            $submittedStudents++;
+                            $submittedList->push($student);
+                        } else {
+                            $notSubmittedList->push($student);
+                        }
+                    }
+                @endphp
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="border rounded-3 p-3 bg-light h-100">
+                            <p class="small text-muted mb-1 fw-bold text-uppercase">Total Students</p>
+                            <h4 class="mb-0">{{ $totalStudents }}</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border rounded-3 p-3 bg-light h-100">
+                            <p class="small text-muted mb-1 fw-bold text-uppercase">Submitted</p>
+                            <h4 class="mb-2 text-success">{{ $submittedStudents }}</h4>
+                            <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#quizSubmittedStudentsModal">
+                                View Students
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border rounded-3 p-3 bg-light h-100">
+                            <p class="small text-muted mb-1 fw-bold text-uppercase">Not Submitted</p>
+                            <h4 class="mb-2 text-danger">{{ $totalStudents - $submittedStudents }}</h4>
+                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#quizNotSubmittedStudentsModal">
+                                View Students
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <form action="{{ route('quizzes.storeMarks', $quiz->id) }}" method="POST">
+                    @csrf
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead style="background-color: #f8f9fa;">
+                                <tr>
+                                    <th scope="col" class="fw-bold text-dark">Student Name</th>
+                                    <th scope="col" class="fw-bold text-dark">Roll No.</th>
+                                    <th scope="col" class="fw-bold text-dark">Submission</th>
+                                    <th scope="col" class="fw-bold text-dark">Submitted At</th>
+                                    <th scope="col" class="fw-bold text-dark">Marks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($students as $student)
+                                    @php
+                                        $studentUserId = $student->user_id;
+                                        $submission = $studentUserId ? ($submissions[$studentUserId] ?? null) : null;
+                                    @endphp
                                     <tr>
-                                        <th scope="col" class="fw-bold text-dark">Student Name</th>
-                                        <th scope="col" class="fw-bold text-dark">Roll No.</th>
-                                        <th scope="col" class="fw-bold text-dark">Submission</th>
-                                        <th scope="col" class="fw-bold text-dark">Submitted At</th>
-                                        <th scope="col" class="fw-bold text-dark">Marks</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($quiz->submissions as $submission)
-                                        <tr>
-                                            <td>{{ $submission->studentRegistration->user->name ?? 'N/A' }}</td>
-                                            <td>{{ $submission->studentRegistration->roll_no ?? 'N/A' }}</td>
-                                            <td>
+                                        <td>{{ $student->user->name ?? $student->full_name ?? 'N/A' }}</td>
+                                        <td>{{ $student->roll_no ?? 'N/A' }}</td>
+                                        <td>
+                                            @if ($submission)
                                                 @if ($quiz->quiz_type === 'file' && $submission->answer_file)
                                                     <a href="{{ asset('storage/' . $submission->answer_file) }}" target="_blank" class="btn btn-sm btn-outline-primary">
                                                         <i class="fas fa-download me-1"></i> Download File
@@ -53,76 +109,138 @@
                                                     <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#mcqAnswersModal{{ $submission->id }}">
                                                         <i class="fas fa-eye me-1"></i> View Answers
                                                     </button>
-                                                    <!-- MCQ Answers Modal -->
-                                                    <div class="modal fade" id="mcqAnswersModal{{ $submission->id }}" tabindex="-1" aria-labelledby="mcqAnswersModalLabel{{ $submission->id }}" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title" id="mcqAnswersModalLabel{{ $submission->id }}">MCQ Answers for {{ $submission->studentRegistration->user->name ?? 'N/A' }}</h5>
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    @php
-                                                                        $studentAnswers = json_decode($submission->mcq_answers, true);
-                                                                        $quizQuestions = json_decode($quiz->quiz_data, true);
-                                                                    @endphp
-                                                                    @if ($quizQuestions)
-                                                                        @foreach ($quizQuestions as $qIndex => $question)
-                                                                            <div class="mb-3">
-                                                                                <p class="fw-bold">Q{{ $qIndex + 1 }}: {{ $question['question'] }}</p>
-                                                                                <p>Your Answer: {{ $studentAnswers[$qIndex] ?? 'N/A' }}</p>
-                                                                                <p>Correct Answer: {{ $question['correct_option'] ?? 'N/A' }}</p>
-                                                                            </div>
-                                                                        @endforeach
-                                                                    @else
-                                                                        <p>No quiz questions found.</p>
-                                                                    @endif
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
                                                 @elseif ($quiz->quiz_type === 'written' && $submission->written_answer)
                                                     <button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#writtenAnswerModal{{ $submission->id }}">
                                                         <i class="fas fa-eye me-1"></i> View Answer
                                                     </button>
-                                                    <!-- Written Answer Modal -->
-                                                    <div class="modal fade" id="writtenAnswerModal{{ $submission->id }}" tabindex="-1" aria-labelledby="writtenAnswerModalLabel{{ $submission->id }}" aria-hidden="true">
-                                                        <div class="modal-dialog modal-lg">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title" id="writtenAnswerModalLabel{{ $submission->id }}">Written Answer for {{ $submission->studentRegistration->user->name ?? 'N/A' }}</h5>
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    <p class="fw-bold">Questions:</p>
-                                                                    <pre class="bg-light p-3 rounded border mb-3">{{ $quiz->written_questions }}</pre>
-                                                                    <p class="fw-bold">Student's Answer:</p>
-                                                                    <pre class="bg-light p-3 rounded border">{{ $submission->written_answer }}</pre>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
                                                 @else
-                                                    N/A
+                                                    <span class="badge bg-secondary-subtle text-secondary border">No Submission</span>
                                                 @endif
-                                            </td>
-                                            <td>{{ \Carbon\Carbon::parse($submission->submitted_at)->format('M d, Y H:i') }}</td>
-                                            <td>
-                                                <input type="number" name="marks[{{ $submission->id }}]" class="form-control form-control-sm" value="{{ $submission->marks }}" min="0" style="width: 80px;">
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="text-end mt-4">
-                            <button type="submit" class="btn btn-primary px-4 rounded-pill">
-                                <i class="fas fa-save me-2"></i> Save Marks
-                            </button>
-                        </div>
-                    </form>
+                                            @else
+                                                <span class="badge bg-secondary-subtle text-secondary border">No Submission</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            {{ $submission?->submitted_at ? \Carbon\Carbon::parse($submission->submitted_at)->format('M d, Y H:i') : '-' }}
+                                        </td>
+                                        <td style="width: 120px;">
+                                            @if ($studentUserId)
+                                                <input type="number" name="student_marks[{{ $studentUserId }}]" class="form-control form-control-sm" value="{{ $submission?->marks }}" min="0" step="0.01">
+                                            @else
+                                                <span class="text-muted small">User not linked</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+
+                                    @if ($submission && $quiz->quiz_type === 'mcq' && $submission->mcq_answers)
+                                        <div class="modal fade" id="mcqAnswersModal{{ $submission->id }}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">MCQ Answers</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        @php
+                                                            $studentAnswers = is_array($submission->mcq_answers) ? $submission->mcq_answers : json_decode($submission->mcq_answers, true);
+                                                            $quizQuestions = json_decode($quiz->quiz_data, true);
+                                                        @endphp
+                                                        @if ($quizQuestions)
+                                                            @foreach ($quizQuestions as $qIndex => $question)
+                                                                <div class="mb-3">
+                                                                    <p class="fw-bold mb-1">Q{{ $qIndex + 1 }}: {{ $question['question'] }}</p>
+                                                                    <p class="mb-1">Student Answer: {{ $studentAnswers[$qIndex] ?? 'N/A' }}</p>
+                                                                    <p class="mb-0">Correct Answer: {{ $question['correct_option'] ?? 'N/A' }}</p>
+                                                                </div>
+                                                            @endforeach
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    @if ($submission && $quiz->quiz_type === 'written' && $submission->written_answer)
+                                        <div class="modal fade" id="writtenAnswerModal{{ $submission->id }}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Written Answer</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p class="fw-bold mb-1">Questions:</p>
+                                                        <pre class="bg-light p-3 rounded border mb-3">{{ $quiz->written_questions }}</pre>
+                                                        <p class="fw-bold mb-1">Student's Answer:</p>
+                                                        <pre class="bg-light p-3 rounded border">{{ $submission->written_answer }}</pre>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center">No students found in this class.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-end mt-4">
+                        <button type="submit" class="btn btn-primary px-4 rounded-pill">
+                            <i class="fas fa-save me-2"></i> Save All Marks
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="quizSubmittedStudentsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Students Who Submitted</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @if ($submittedList->count())
+                    <ul class="list-group">
+                        @foreach ($submittedList as $student)
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>{{ $student->user->name ?? $student->full_name ?? 'N/A' }}</span>
+                                <span class="text-muted">{{ $student->roll_no ?? 'N/A' }}</span>
+                            </li>
+                        @endforeach
+                    </ul>
                 @else
-                    <div class="alert alert-info text-center">No submissions for this quiz yet.</div>
+                    <p class="text-muted mb-0">No students have submitted yet.</p>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="quizNotSubmittedStudentsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Students Who Did Not Submit</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @if ($notSubmittedList->count())
+                    <ul class="list-group">
+                        @foreach ($notSubmittedList as $student)
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>{{ $student->user->name ?? $student->full_name ?? 'N/A' }}</span>
+                                <span class="text-muted">{{ $student->roll_no ?? 'N/A' }}</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                @else
+                    <p class="text-muted mb-0">All students submitted.</p>
                 @endif
             </div>
         </div>

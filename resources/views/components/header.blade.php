@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -135,115 +136,127 @@
 </head>
 
 <body>
-@php
-    use Illuminate\Support\Facades\Session;
-    use App\Models\StudentsRegistration;
 
-    $student = null;
-    if (Session::has('id')) {
-        $student = StudentsRegistration::with('image')->where('user_id', Session::get('id'))->first();
-    }
-@endphp
 
-<!-- ===== TOP BAR ===== -->
-<div class="top-bar">
-    Welcome: {{ $student->full_name -- }} {{ $student->degree_program }}{{ $student->department }}-{{ $student->roll_no -- }}
-</div>
+    <script type="module">
+        import Chatbot from "https://cdn.jsdelivr.net/npm/flowise-embed/dist/web.js"
+        Chatbot.init({
+            chatflowid: "d7147d5f-b306-44bb-a874-6babb8da68e4",
+            apiHost: "https://cloud.flowiseai.com",
+        })
+    </script>
+    @php
+        use Illuminate\Support\Facades\Session;
+        use App\Models\StudentsRegistration;
 
-<!-- ===== NAV HEADER ===== -->
-<div class="nav-container">
-    <div class="nav-inner">
+        $student = null;
+        if (Session::has('id')) {
+            $student = StudentsRegistration::with('image')->where('user_id', Session::get('id'))->first();
+        }
+    @endphp
 
-        <!-- University Info -->
-        <div class="university-info">
-            <img src="{{ asset('frontend/images/logo/logo_01.png') }}">
-            <div class="text">
-                University Of<br>Albourne
-            </div>
-        </div>
-
-        <!-- Mobile Toggle -->
-        <button class="menu-toggle" onclick="toggleMenu()">
-            <i class="fas fa-bars"></i>
-        </button>
-
-        <!-- Nav Links -->
-        <div class="nav-links" id="navMenu">
-            <a href="{{ route('Students.dashboard') }}" class="nav-btn"><i class="fas fa-home"></i>Dashboard</a>
-            <a href="{{ route('Student.offerCourses') }}" class="nav-btn"><i class="fas fa-id-card"></i>Registration</a>
-            <a href="{{ route('quizzes.list') }}" class="nav-btn"><i class="fas fa-list-alt"></i>Quizzes</a>
-            <a href="#" class="nav-btn"><i class="fas fa-money-bill-wave"></i>Fees</a>
-            <a href="#" class="nav-btn"><i class="fas fa-chart-bar"></i>Results</a>
-            <a href="{{ route('assignments.student') }}" class="nav-btn"><i class="fas fa-user"></i>Assignments</a>
-            <a href="{{ route('student.hostel.request') }}" class="nav-btn">
-    <i class="fas fa-bed"></i>Hostel Request
-</a>
-
-            <a href="{{ route('logout') }}" class="nav-btn"><i class="fas fa-sign-out-alt"></i>Logout</a>
-        </div>
-
-        <!-- Student Image -->
-        <div class="student-image">
-            @if ($student && $student->image)
-                <img src="{{ Storage::url($student->image->image_path) }}">
-            @else
-                <img src="{{ asset('frontend/images/Person.png') }}">
-            @endif
-        </div>
-
+    <!-- ===== TOP BAR ===== -->
+    <div class="top-bar">
+        Welcome: {{ $student->full_name-- }}
+        {{ $student->degree_program }}{{ $student->department }}-{{ $student->roll_no-- }}
     </div>
-</div>
 
-<script>
-function toggleMenu() {
-    document.getElementById('navMenu').classList.toggle('active');
-}
-</script>
+    <!-- ===== NAV HEADER ===== -->
+    <div class="nav-container">
+        <div class="nav-inner">
+
+            <!-- University Info -->
+            <div class="university-info">
+                <img src="{{ asset('frontend/images/logo/logo_01.png') }}">
+                <div class="text">
+                    University Of<br>Albourne
+                </div>
+            </div>
+
+            <!-- Mobile Toggle -->
+            <button class="menu-toggle" onclick="toggleMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <!-- Nav Links -->
+            <div class="nav-links" id="navMenu">
+                <a href="{{ route('Students.dashboard') }}" class="nav-btn"><i class="fas fa-home"></i>Dashboard</a>
+                <a href="{{ route('Student.offerCourses') }}" class="nav-btn"><i
+                        class="fas fa-id-card"></i>Registration</a>
+                <a href="{{ route('quizzes.list') }}" class="nav-btn"><i class="fas fa-list-alt"></i>Quizzes</a>
+                <a href="#" class="nav-btn"><i class="fas fa-money-bill-wave"></i>Fees</a>
+                <a href="#" class="nav-btn"><i class="fas fa-chart-bar"></i>Results</a>
+                <a href="{{ route('assignments.student') }}" class="nav-btn"><i class="fas fa-user"></i>Assignments</a>
+                <a href="{{ route('student.hostel.request') }}" class="nav-btn">
+                    <i class="fas fa-bed"></i>Hostel Request
+                </a>
+
+                <a href="{{ route('logout') }}" class="nav-btn"><i class="fas fa-sign-out-alt"></i>Logout</a>
+            </div>
+
+            <!-- Student Image -->
+            <div class="student-image">
+                @if ($student && $student->image)
+                    <img src="{{ Storage::url($student->image->image_path) }}">
+                @else
+                    <img src="{{ asset('frontend/images/Person.png') }}">
+                @endif
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            document.getElementById('navMenu').classList.toggle('active');
+        }
+    </script>
 
 
-<!-- searching page script -->
+    <!-- searching page script -->
 
 
-<script>
-let timer = null;
+    <script>
+        let timer = null;
 
-document.getElementById('globalSearch')?.addEventListener('keyup', function () {
-    clearTimeout(timer);
-    const query = this.value;
-    const page = this.dataset.page;
+        document.getElementById('globalSearch')?.addEventListener('keyup', function() {
+            clearTimeout(timer);
+            const query = this.value;
+            const page = this.dataset.page;
 
-    let url = '';
-    let tableBodyId = '';
+            let url = '';
+            let tableBodyId = '';
 
-    // Map page to AJAX URL and table body ID
-    switch(page) {
-        case 'users':
-            url = "{{ route('admin.users.search') }}";
-            tableBodyId = 'usersTableBody';
-            break;
-        case 'professors':
-            url = "{{ route('admin.professors.search') }}";
-            tableBodyId = 'professorsTableBody';
-            break;
-        case 'students':
-            url = "";
-            tableBodyId = 'studentsTableBody';
-            break;
-        default:
-            return; // unknown page
-    }
+            // Map page to AJAX URL and table body ID
+            switch (page) {
+                case 'users':
+                    url = "{{ route('admin.users.search') }}";
+                    tableBodyId = 'usersTableBody';
+                    break;
+                case 'professors':
+                    url = "{{ route('admin.professors.search') }}";
+                    tableBodyId = 'professorsTableBody';
+                    break;
+                case 'students':
+                    url = "";
+                    tableBodyId = 'studentsTableBody';
+                    break;
+                default:
+                    return; // unknown page
+            }
 
-    if(!query) return;
+            if (!query) return;
 
-    timer = setTimeout(() => {
-        fetch(url + '?q=' + query)
-            .then(res => res.text())
-            .then(html => {
-                document.getElementById(tableBodyId).innerHTML = html;
-            });
-    }, 300);
-});
-</script>
+            timer = setTimeout(() => {
+                fetch(url + '?q=' + query)
+                    .then(res => res.text())
+                    .then(html => {
+                        document.getElementById(tableBodyId).innerHTML = html;
+                    });
+            }, 300);
+        });
+    </script>
 
 </body>
+
 </html>

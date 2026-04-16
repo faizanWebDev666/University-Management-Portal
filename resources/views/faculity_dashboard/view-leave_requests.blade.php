@@ -120,4 +120,57 @@
     .badge {
         font-size: 0.85rem;
     }
+
+    @media (max-width: 991.98px) {
+        .container.my-5 {
+            margin-top: 70px !important;
+            margin-bottom: 1rem !important;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .container.my-5 {
+            padding-left: 8px;
+            padding-right: 8px;
+        }
+
+        .card-body {
+            padding: 0.8rem !important;
+        }
+
+        .table {
+            font-size: 0.8rem;
+        }
+
+        .table th,
+        .table td {
+            white-space: nowrap;
+            padding: 0.45rem;
+        }
+
+        .table td .btn {
+            display: block;
+            width: 100%;
+            margin-bottom: 0.35rem;
+        }
+    }
+
+    @media (max-width: 300px) {
+        .container.my-5 {
+            margin-top: 56px !important;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+
+        .card-header {
+            font-size: 0.9rem !important;
+            padding: 0.65rem !important;
+        }
+
+        .table {
+            font-size: 0.72rem;
+        }
+    }
 </style>

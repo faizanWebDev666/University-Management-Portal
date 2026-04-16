@@ -12,6 +12,8 @@
 		<script src="backend_faculity/vendor/validator.js"></script>
 
 		<script src="backend_faculity/js/theme.js"></script>
-	</div> 
+	</div>
+	</div>
+	</div>
 </body>
 </html>

@@ -20,7 +20,41 @@
     <link rel="icon" type="image/png" sizes="56x56" href="frontend/images/icon/icon.png">
     <link rel="stylesheet" type="text/css" href="{{ URL::asset('backend_faculity/css/bootstrap.min.css') }}"media="all">
     <link rel="stylesheet" type="text/css" href="{{ URL::asset('backend_faculity/css/style.min.css') }}" media="all">
-    <link rel="stylesheet" type="text/css" href="{{ URL::asset('backend_faculity/css/responsive.css') }}"media="all">
+    <link rel="stylesheet" type="text/css" href="{{ URL::asset('backend_faculity/css/responsive.css') }}" media="all">
+    <style>
+        .main-page-wrapper {
+            display: flex !important;
+            flex-direction: row !important;
+            min-height: 100vh !important;
+            background-color: #ecf3f1;
+        }
+
+        .dash-aside-navbar {
+            width: 280px !important;
+            flex-shrink: 0 !important;
+            background-color: #ffffff !important;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05) !important;
+            min-height: 100vh !important;
+            position: relative !important;
+            z-index: 20;
+        }
+
+        .dashboard-body {
+            flex-grow: 1 !important;
+            min-width: 0;
+            padding: 30px !important;
+            background-color: #ecf3f1;
+        }
+
+        .dashboard-body .position-relative {
+            position: relative;
+        }
+
+        .dash-aside-navbar .logo img {
+            max-width: 180px;
+            height: auto;
+        }
+    </style>
 </head>
 
 <body>
@@ -98,25 +132,29 @@
                                 <img src="../backend_faculity/images/lazy.svg"
                                     data-src="backend_faculity/images/icon/icon_2.svg" alt=""
                                     class="lazy-img">
-                                <span>Students Hostal Requests</span></li>
+                                <span>Students Hostal Requests</span>
+                            </a></li>
 
                         <li><a href="{{ route('hostel.allocation') }}" class="d-flex w-100 align-items-center">
                                 <img src="../backend_faculity/images/lazy.svg"
                                     data-src="backend_faculity/images/icon/icon_2.svg" alt=""
                                     class="lazy-img">
-                                <span>Allocate Rooms to Students</span></li>
+                                <span>Allocate Rooms to Students</span>
+                            </a></li>
 
                         <li><a href="{{ route('hostel.create') }}" class="d-flex w-100 align-items-center">
                                 <img src="../backend_faculity/images/lazy.svg"
                                     data-src="backend_faculity/images/icon/icon_2.svg" alt=""
                                     class="lazy-img">
-                                <span>Add Hostals</span></li>
+                                <span>Add Hostals</span>
+                            </a></li>
 
                         <li><a href="{{ route('hostel.show') }}" class="d-flex w-100 align-items-center">
                                 <img src="../backend_faculity/images/lazy.svg"
                                     data-src="backend_faculity/images/icon/icon_2.svg" alt=""
                                     class="lazy-img">
-                                <span>Available Hostels</span></li>
+                                <span>Available Hostels</span>
+                            </a></li>
                     </ul>
                 </nav>
                 <div class="profile-complete-status">

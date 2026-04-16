@@ -67,6 +67,7 @@ class Kernel extends HttpKernel
         'update.permission' => \App\Http\Middleware\CheckUpdatePermission::class,
         // Custom middleware
         'auth.check' => \App\Http\Middleware\AuthMiddleware::class,
+        'finance.auth' => \App\Http\Middleware\FinanceAuthMiddleware::class,
         
         // ✅ Add Chatify Authentication Middleware here
         'chatify.auth' => \App\Http\Middleware\ChatifyAuthMiddleware::class,

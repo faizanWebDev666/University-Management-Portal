@@ -19,6 +19,36 @@
     <link rel="stylesheet" type="text/css" href="backend_faculity/css/bootstrap.min.css" media="all">
     <link rel="stylesheet" type="text/css" href="backend_faculity/css/style.min.css" media="all">
     <link rel="stylesheet" type="text/css" href="backend_faculity/css/responsive.css" media="all">
+    <style>
+        .main-page-wrapper {
+            display: flex !important;
+            flex-direction: row !important;
+            min-height: 100vh;
+            background-color: #f0f2f5;
+        }
+
+        .dashboard-body {
+            flex-grow: 1 !important;
+            min-width: 0;
+            padding: 30px !important;
+            background-color: #f0f2f5;
+        }
+
+        .dash-aside-navbar {
+            width: 280px !important;
+            flex-shrink: 0 !important;
+            background-color: #ffffff !important;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05) !important;
+            min-height: 100vh !important;
+            position: relative !important;
+            z-index: 20;
+        }
+
+        .dashboard-body .registration-dashboard {
+            margin: 0;
+            width: 100%;
+        }
+    </style>
 
 </head>
 
@@ -31,9 +61,6 @@
                         <img src="frontend/images/logo/3rdlogo.png" alt="">
                     </a>
                     <button class="close-btn d-block d-md-none"><i class="bi bi-x-lg"></i></button>
-                </div>
-                
-                
                 </div>
 
                 <nav class="dasboard-main-nav">
@@ -101,6 +128,12 @@ function sendUpdateRequest() {
                                     data-src="backend_faculity/images/icon/icon_7.svg" alt=""
                                     class="lazy-img">
                                 <span>Courses Allocation</span>
+                            </a></li>
+                        <li><a href="{{ URL::to('teacher-course-report') }}" class="d-flex w-100 align-items-center">
+                                <img src="../backend_faculity/images/lazy.svg"
+                                    data-src="backend_faculity/images/icon/icon_9.svg" alt=""
+                                    class="lazy-img">
+                                <span>Teacher Course Report</span>
                             </a></li>
                         <li><a href="{{ route('delete.accounts') }}" class="d-flex w-100 align-items-center">
                                 <img src="../backend_faculity/images/lazy.svg"

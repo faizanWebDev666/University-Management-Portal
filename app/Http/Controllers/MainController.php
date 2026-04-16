@@ -90,7 +90,7 @@ public function loginUser(Request $data)
         session()->put('type', $user->type);
         session()->put('name', $user->name);
 
-        SendLoginNotificationJob::dispatch(
+        SendLoginNotificationJob::dispatch( 
             $user->email,
             [
                 'name' => $user->name,
@@ -103,8 +103,10 @@ public function loginUser(Request $data)
             return redirect()->route('Students.dashboard');
         } elseif ($user->type === 'professor') {
             return redirect('/faculityAdmin');
-        } elseif ($user->type === 'registrationoffice') {
+        } elseif ($user->type === 'registration') {
             return redirect('/Registration_index');
+        } elseif ($user->type === 'finance') {
+            return redirect()->route('finance.dashboard');
         } elseif ($user->type === 'admin') {
             return redirect('/admin/dashboard');
         }

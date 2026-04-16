@@ -25,6 +25,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentsController;
 use App\Http\Controllers\StudentUpdateRequest;
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\FinanceController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -151,6 +152,7 @@ Route::middleware(['session.inactivity'])->group(function () {
     //Registration Branch
     Route::get('OfferCoursesToClasses', [RegistrationController::class, 'OfferCoursesToClasses']);
     Route::get('Registration_index', [RegistrationController::class, 'Registration_index']);
+    Route::get('teacher-course-report', [RegistrationController::class, 'TeacherCourseReport'])->name('teacher.course.report');
     Route::get('RegisterStudents', [RegistrationController::class, 'RegisterStudents'])->name('students.register');
     Route::get('Registration-profile', [RegistrationController::class, 'RegistrationProfFile'])->name('Registration.profile');
     Route::post('RegisterStudents/update/{id}', [RegistrationController::class, 'update'])->name('update.students');
@@ -181,4 +183,9 @@ Route::middleware(['session.inactivity'])->group(function () {
     Route::get('/hostels', [HostelController::class, 'show'])->name('hostel.show');
     Route::get('/hostel/create', [HostelController::class, 'create'])->name('hostel.create');
     Route::post('/hostel/store', [HostelController::class, 'store'])->name('hostel.store');
+
+    // Finance / Fees Management Routes
+    Route::get('/Fees/index', [FinanceController::class, 'index'])->name('finance.dashboard');
+    Route::get('/finance/index', [FinanceController::class, 'index']);
+    Route::get('/Finance/index', [FinanceController::class, 'index']);
 });

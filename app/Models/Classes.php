@@ -30,7 +30,7 @@ public function offerCourses()
 }
 public function offeredCourses()
 {
-    return $this->hasMany(OfferCourse::class);
+    return $this->hasMany(OfferCourse::class, 'class_id');
 }
 // App\Models\Classroom.php
 

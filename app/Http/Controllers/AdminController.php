@@ -112,7 +112,11 @@ public function display_professors()
     
             if (strtolower($user->type) === 'admin') {
                 return redirect()->route('Admin.Dashboard');
-            } elseif (strtolower($user->type) === 'professor') {
+            }
+            elseif (strtolower($user->type) === 'finance') {
+                return redirect('/faculityAdmin');
+            }
+            elseif (strtolower($user->type) === 'professor') {
                 return redirect('/faculityAdmin');
             }
         }
