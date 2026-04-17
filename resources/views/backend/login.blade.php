@@ -22,21 +22,16 @@
                     <div class="text-center">
                         <a class="header-brand" href="index.html"><i class="fa fa-graduation-cap brand-logo"></i></a>
                         <div class="card-title mt-3">Login to your account</div>
-                        <button type="button" class="btn btn-facebook">
-                            <i class="fa fa-facebook mr-2"></i>Facebook
-                        </button>
-                        <button type="button" class="btn btn-google">
-                            <i class="fa fa-google mr-2"></i>Google
-                        </button>
-                        <h6 class="mt-3 mb-3">Or</h6>
+                       
                     </div>
 
                     <!-- START FORM -->
                     <form method="POST" action="{{ route('Admin.signin.submit') }}">
                         @csrf
+                        <x-flash-messages />
 
                         <div class="form-group">
-                            <input type="email" name="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" required>
+                            <input type="email" name="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" value="{{ old('email') }}" required>
                         </div>
 
                         <div class="form-group">
@@ -80,6 +75,5 @@
         </div>
     </div>
 
-    <x-admin-footer/>
 
 

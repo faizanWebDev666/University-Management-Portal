@@ -1,139 +1,115 @@
 <x-faculityheader />
 
-<div class="professor-dashboard" style="background-color: #f0f2f5; min-height: 100%; padding: 0;">
-    <!-- Animated Professional Background Elements -->
-    <div class="background-decorations">
-        <div class="floating-shape shape-1"></div>
-        <div class="floating-shape shape-2"></div>
-        <div class="floating-shape shape-3"></div>
-    </div>
-    
-    <div class="container-fluid position-relative z-2" style="padding: 20px 30px;">
-        <!-- Header Section with Profile -->
+<div class="professor-dashboard" style="background-color: #f8fafc; min-height: 100vh; padding: 2rem;">
+    <div class="container-fluid">
+        <!-- Header Section -->
         <div class="row align-items-center mb-5">
             <div class="col-lg-8">
-                <div class="d-flex align-items-center gap-4 mb-4">
-                    <div class="position-relative profile-avatar-container">
-                        <div class="avatar-glow"></div>
-                        <img src="{{ asset('frontend/images/Person.png') }}" alt="Professor Avatar"
-                            class="rounded-circle shadow-lg professor-avatar"
-                            style="width: 120px; height: 120px; object-fit: cover; border: 5px solid #00D4FF; position: relative; z-index: 2;">
-                        <span class="position-absolute bottom-0 end-0 translate-middle-y p-2 bg-success border-4 border-dark rounded-circle status-badge"
-                            style="width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-check text-white" style="font-size: 14px;"></i>
-                        </span>
-                    </div>
-                    <div class="text-dark">
-                        <h1 class="fw-bold mb-1" style="font-size: 2.5rem; color: #1a1a1a; text-shadow: 0 1px 2px rgba(0,0,0,0.05);">Welcome, {{ session('name', 'Professor') }}!</h1>
-                        <p class="mb-2" style="font-size: 1.1rem; color: #0066cc; font-weight: 500;">Faculty Member</p>
-                        <div class="d-flex gap-2 mt-3 flex-wrap">
-                            <span class="badge-custom px-3 py-2" style="background: rgba(0, 102, 204, 0.1); border: 1px solid #0066cc; color: #0066cc; border-radius: 20px;">
-                                <i class="fas fa-book me-1"></i> {{ !empty($professor->offeredCourses) ? count($professor->offeredCourses) : 0 }} Courses
-                            </span>
-                            <span class="badge-custom px-3 py-2" style="background: rgba(76, 175, 80, 0.1); border: 1px solid #4CAF50; color: #4CAF50; border-radius: 20px;">
-                                <i class="fas fa-calendar me-1"></i> {{ date('Y') }} Academic Year
-                            </span>
-                            <span class="badge-custom px-3 py-2" style="background: rgba(76, 175, 80, 0.1); border: 1px solid #4CAF50; color: #4CAF50; border-radius: 20px;">
-                                <i class="fas fa-circle-check me-1"></i> Active
-                            </span>
-                        </div>
-                    </div>
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <div class="brand-accent"></div>
+                    <h2 class="main-title mb-0">Faculty Portal</h2>
                 </div>
+                <p class="text-muted fs-5 mb-0">Welcome back, Professor. Manage your courses, students, and academic activities.</p>
             </div>
-            <div class="col-lg-4 text-lg-end text-center mt-3 mt-lg-0">
-                <div class="dropdown">
-                    <button class="btn btn-lg btn-primary-edu rounded-pill shadow px-5 dropdown-toggle fw-bold" 
-                        type="button" id="profile-dropdown" data-bs-toggle="dropdown" aria-expanded="false"
-                        style="background: linear-gradient(135deg, #0066cc, #0052a3); border: none;">
-                        <i class="fas fa-user-circle me-2"></i> Profile
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow-lg" style="border-radius: 15px; border: 1px solid #e0e0e0; background: #ffffff;" aria-labelledby="profile-dropdown">
-                        <li><a class="dropdown-item py-2 text-dark" href="{{ route('Registration.profile') }}">
-                            <i class="fas fa-user-edit me-2" style="color: #0066cc;"></i> View Profile
-                        </a></li>
-                        <li><a class="dropdown-item py-2 text-dark" href="{{ route('teacher.change.password') }}">
-                            <i class="fas fa-key me-2" style="color: #FF9800;"></i> Change Password
-                        </a></li>
-                        <li><hr class="dropdown-divider my-2" style="border-color: #e0e0e0;"></li>
-                        <li><a class="dropdown-item py-2 text-danger" href="{{ route('logout') }}">
-                            <i class="fas fa-sign-out-alt me-2"></i> Logout
-                        </a></li>
-                    </ul>
+
+            <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+                <div class="d-inline-flex align-items-center p-2 bg-white rounded-pill shadow-sm border">
+                    <div class="profile-img-container me-3">
+                        @if($teacherReg && $teacherReg->image)
+                            <img src="{{ asset('storage/' . $teacherReg->image->image_path) }}" alt="Profile" class="rounded-circle shadow-sm">
+                        @else
+                            <img src="{{ asset('frontend/images/Person.png') }}" alt="Profile" class="rounded-circle shadow-sm">
+                        @endif
+                        <span class="status-dot"></span>
+                    </div>
+                    <div class="text-start me-3 d-none d-sm-block">
+                        <h6 class="mb-0 fw-bold">{{ session('name', 'Professor') }}</h6>
+                        <small class="text-muted">{{ $teacherReg->designation ?? 'Faculty Member' }}</small>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-icon-only rounded-circle border-0 bg-light" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3">
+                            <li><a class="dropdown-item py-2" href="{{ route('faculty.profile') }}"><i class="bi bi-person me-2"></i> Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item py-2 text-danger" href="{{ route('logout') }}"><i class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Statistics Cards -->
+        <!-- Statistics Grid -->
         <div class="row g-4 mb-5">
-            <div class="col-lg-3 col-md-6">
-                <div class="stat-card-advanced rounded-4 border-0 shadow p-4 overflow-hidden" 
-                    style="background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%); border-left: 5px solid #0066cc;">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <p class="text-muted mb-2" style="font-size: 0.95rem;">Total Courses</p>
-                            <h3 class="fw-bold mb-2 text-dark" style="font-size: 2.5rem;">{{ !empty($professor->offeredCourses) ? count($professor->offeredCourses) : 0 }}</h3>
-                            <small class="text-muted"><i class="fas fa-arrow-up me-1" style="color: #4CAF50;"></i> Active</small>
+            <div class="col-xl-3 col-md-6">
+                <div class="modern-stat-card card-courses-stat">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="stat-icon-box">
+                                <i class="bi bi-journal-bookmark"></i>
+                            </div>
+                            <span class="trend-indicator pos">Active</span>
                         </div>
-                        <div class="stat-icon" style="font-size: 2.5rem; opacity: 0.2; color: #0066cc;">
-                            <i class="fas fa-book-open"></i>
+                        <h3 class="stat-value">{{ !empty($professor->offeredCourses) ? count($professor->offeredCourses) : 0 }}</h3>
+                        <p class="stat-label">Total Courses</p>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: 75%"></div>
                         </div>
-                    </div>
-                    <div class="progress mt-3" style="height: 4px; background: #e8e8e8;">
-                        <div class="progress-bar" style="width: 75%; background: linear-gradient(90deg, #0066cc, #0052a3);"></div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="stat-card-advanced rounded-4 border-0 shadow p-4 overflow-hidden" 
-                    style="background: linear-gradient(135deg, #ffffff 0%, #f9fff8 100%); border-left: 5px solid #4CAF50;">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <p class="text-muted mb-2" style="font-size: 0.95rem;">Active Classes</p>
-                            <h3 class="fw-bold mb-2 text-dark" style="font-size: 2.5rem;">{{ !empty($professor->offeredCourses) ? $professor->offeredCourses->filter(fn($c) => $c->class)->count() : 0 }}</h3>
-                            <small class="text-muted"><i class="fas fa-users me-1" style="color: #FF9800;"></i> Students</small>
+
+            <div class="col-xl-3 col-md-6">
+                <div class="modern-stat-card card-classes-stat">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="stat-icon-box">
+                                <i class="bi bi-easel"></i>
+                            </div>
+                            <span class="trend-indicator pos">Scheduled</span>
                         </div>
-                        <div class="stat-icon" style="font-size: 2.5rem; opacity: 0.2; color: #4CAF50;">
-                            <i class="fas fa-chalkboard-user"></i>
+                        <h3 class="stat-value">{{ !empty($professor->offeredCourses) ? $professor->offeredCourses->filter(fn($c) => $c->class)->count() : 0 }}</h3>
+                        <p class="stat-label">Active Classes</p>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: 60%"></div>
                         </div>
-                    </div>
-                    <div class="progress mt-3" style="height: 4px; background: #e8e8e8;">
-                        <div class="progress-bar" style="width: 60%; background: linear-gradient(90deg, #4CAF50, #45a049);"></div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="stat-card-advanced rounded-4 border-0 shadow p-4 overflow-hidden" 
-                    style="background: linear-gradient(135deg, #ffffff 0%, #fffbf8 100%); border-left: 5px solid #FF9800;">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <p class="text-muted mb-2" style="font-size: 0.95rem;">Assignments</p>
-                            <h3 class="fw-bold mb-2 text-dark" style="font-size: 2.5rem;">12</h3>
-                            <small class="text-muted"><i class="fas fa-fire me-1" style="color: #FF7043;"></i> Pending</small>
+
+            <div class="col-xl-3 col-md-6">
+                <div class="modern-stat-card card-assignments-stat">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="stat-icon-box">
+                                <i class="bi bi-file-earmark-text"></i>
+                            </div>
+                            <span class="trend-indicator warning">Pending</span>
                         </div>
-                        <div class="stat-icon" style="font-size: 2.5rem; opacity: 0.2; color: #FF9800;">
-                            <i class="fas fa-tasks"></i>
+                        <h3 class="stat-value">12</h3>
+                        <p class="stat-label">New Submissions</p>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: 85%"></div>
                         </div>
-                    </div>
-                    <div class="progress mt-3" style="height: 4px; background: #e8e8e8;">
-                        <div class="progress-bar" style="width: 85%; background: linear-gradient(90deg, #FF9800, #F57C00);"></div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="stat-card-advanced rounded-4 border-0 shadow p-4 overflow-hidden" 
-                    style="background: linear-gradient(135deg, #ffffff 0%, #fef8ff 100%); border-left: 5px solid #7C3AED;">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <p class="text-muted mb-2" style="font-size: 0.95rem;">Students Taught</p>
-                            <h3 class="fw-bold mb-2 text-dark" style="font-size: 2.5rem;">{{ !empty($professor->offeredCourses) ? $professor->offeredCourses->sum(fn($c) => $c->class ? 30 : 0) : 0 }}</h3>
-                            <small class="text-muted"><i class="fas fa-graduation-cap me-1" style="color: #7C3AED;"></i> Total</small>
+
+            <div class="col-xl-3 col-md-6">
+                <div class="modern-stat-card card-students-stat">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="stat-icon-box">
+                                <i class="bi bi-people"></i>
+                            </div>
+                            <span class="trend-indicator pos">Total</span>
                         </div>
-                        <div class="stat-icon" style="font-size: 2.5rem; opacity: 0.2; color: #7C3AED;">
-                            <i class="fas fa-user-graduate"></i>
+                        <h3 class="stat-value">{{ !empty($professor->offeredCourses) ? $professor->offeredCourses->sum(fn($c) => $c->class ? 30 : 0) : 0 }}</h3>
+                        <p class="stat-label">Students Taught</p>
+                        <div class="progress-container">
+                            <div class="progress-bar" style="width: 90%"></div>
                         </div>
-                    </div>
-                    <div class="progress mt-3" style="height: 4px; background: #e8e8e8;">
-                        <div class="progress-bar" style="width: 70%; background: linear-gradient(90deg, #7C3AED, #6D28D9);"></div>
                     </div>
                 </div>
             </div>
@@ -142,135 +118,74 @@
         <!-- Quick Actions -->
         <div class="row g-4 mb-5">
             <div class="col-12">
-                <h5 class="fw-bold text-dark mb-4" style="font-size: 1.3rem;">
-                    <i class="fas fa-lightning me-2" style="color: #FF9800;"></i> Quick Actions
+                <h5 class="fw-bold text-dark mb-4">
+                    <i class="bi bi-lightning-charge-fill me-2 text-warning"></i> Quick Actions
                 </h5>
                 <div class="d-flex flex-wrap gap-3">
-                    <a href="{{ route('teacher.leave') }}" class="action-btn px-4 py-2 rounded-pill fw-semibold"
-                        style="background: rgba(255, 152, 0, 0.1); border: 2px solid #FF9800; color: #FF9800; transition: all 0.3s;">
-                        <i class="fas fa-calendar-times me-2"></i> Request Leave
+                    <a href="{{ route('teacher.leave') }}" class="btn btn-action shadow-sm">
+                        <i class="bi bi-calendar-event me-2"></i> Request Leave
                     </a>
-                    <a href="#coursesSection" class="action-btn px-4 py-2 rounded-pill fw-semibold"
-                        style="background: rgba(0, 102, 204, 0.1); border: 2px solid #0066cc; color: #0066cc; transition: all 0.3s;">
-                        <i class="fas fa-book-open me-2"></i> View Courses
+                    <a href="{{ route('postedAssignments') }}" class="btn btn-action shadow-sm">
+                        <i class="bi bi-upload me-2"></i> Upload Assignment
                     </a>
-                    <a href="{{ route('faculty.course.details', $professor->offeredCourses->first()?->course?->uuid ?? '#') }}" class="action-btn px-4 py-2 rounded-pill fw-semibold"
-                        style="background: rgba(76, 175, 80, 0.1); border: 2px solid #4CAF50; color: #4CAF50; transition: all 0.3s;">
-                        <i class="fas fa-tasks me-2"></i> Manage Courses
+                    <a href="{{ route('teacher.assignments.list') }}" class="btn btn-action shadow-sm">
+                        <i class="bi bi-check2-square me-2"></i> Grade Work
                     </a>
-                    <a href="{{ route('teacher.change.password') }}" class="action-btn px-4 py-2 rounded-pill fw-semibold"
-                        style="background: rgba(124, 58, 237, 0.1); border: 2px solid #7C3AED; color: #7C3AED; transition: all 0.3s;">
-                        <i class="fas fa-lock me-2"></i> Security
+                    <a href="{{ route('teacher.change.password') }}" class="btn btn-action shadow-sm">
+                        <i class="bi bi-shield-lock me-2"></i> Change Password
                     </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Content: Courses Section -->
-        <div class="row g-0 mb-5">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="fw-bold text-dark" style="font-size: 1.3rem;">
-                        <i class="fas fa-book me-2" style="color: #0066cc;"></i> My Courses
-                    </h5>
-                    <span class="badge-custom" style="background: rgba(0, 102, 204, 0.1); border: 1px solid #0066cc; color: #0066cc; border-radius: 20px; padding: 0.5rem 1rem;">
-                        {{ !empty($professor->offeredCourses) ? count($professor->offeredCourses) : 0 }} Total
-                    </span>
                 </div>
             </div>
         </div>
 
         <!-- Courses Grid -->
+        <div class="row mb-4">
+            <div class="col-12 d-flex justify-content-between align-items-center">
+                <h4 class="fw-bold text-dark mb-0">My Assigned Courses</h4>
+                <span class="badge rounded-pill bg-white border text-dark px-3 py-2 shadow-sm">
+                    {{ !empty($professor->offeredCourses) ? count($professor->offeredCourses) : 0 }} Courses
+                </span>
+            </div>
+        </div>
+
         @if (!empty($professor->offeredCourses) && count($professor->offeredCourses) > 0)
-        <div class="row g-4" id="coursesSection">
+        <div class="row g-4">
             @foreach ($professor->offeredCourses as $offered)
-            <div class="col-lg-4 col-md-6 col-sm-12">
-                <div class="course-card-edu border-0 rounded-4 shadow-lg overflow-hidden h-100 transition-all pos-rel"
-                    style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(0, 102, 204, 0.15); cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);">
-                    
-                    <!-- Course Header with Gradient -->
-                    <div class="course-header-edu p-4" style="background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%); color: white; position: relative; overflow: hidden; border-bottom: 2px solid rgba(0, 102, 204, 0.4);">
-                        <div class="course-header-anime"></div>
-                        <div class="position-relative z-1">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <div class="course-icon-edu rounded-3 p-3" style="background: rgba(255, 255, 255, 0.2);">
-                                    <i class="fas fa-book-open" style="font-size: 1.5rem; color: #ffffff;"></i>
-                                </div>
-                                <span class="badge-custom" style="background: rgba(255, 255, 255, 0.25); border: 1px solid rgba(255, 255, 255, 0.4); color: #ffffff; border-radius: 8px; padding: 0.3rem 0.7rem;">
-                                    @if ($offered->class)
-                                        {{ strtoupper(substr($offered->class->semester, 0, 1)) }}-{{ substr($offered->class->year, -2) }}
-                                    @else
-                                        N/A
-                                    @endif
-                                </span>
+            <div class="col-lg-4 col-md-6">
+                <div class="modern-course-card h-100">
+                    <div class="card-header-gradient p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="course-code-pill">{{ $offered->course->course_code }}</div>
+                            <div class="semester-tag">
+                                {{ $offered->class ? strtoupper(substr($offered->class->semester, 0, 1)) . '-' . substr($offered->class->year, -2) : 'N/A' }}
                             </div>
-                            <h6 class="fw-bold mb-2" style="font-size: 1.2rem; line-height: 1.4; color: #ffffff;">{{ $offered->course->course_name }}</h6>
-                            <p class="mb-0" style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.9);">Code: <strong>{{ $offered->course->course_code }}</strong></p>
                         </div>
+                        <h5 class="course-title">{{ $offered->course->course_name }}</h5>
                     </div>
-
-                    <!-- Course Body -->
-                    <div class="p-4">
-                        <!-- Course Details -->
-                        <div class="mb-4">
-                            @if ($offered->class)
-                            <div class="row g-2">
-                                <div class="col-6">
-                                    <small class="text-muted d-block mb-1" style="font-size: 0.8rem;">DEPARTMENT</small>
-                                    <span class="badge-custom" style="background: rgba(0, 102, 204, 0.1); border: 1px solid rgba(0, 102, 204, 0.5); color: #0066cc; border-radius: 6px; padding: 0.35rem 0.7rem; font-size: 0.8rem;">
-                                        {{ $offered->class->department }}
-                                    </span>
-                                </div>
-                                <div class="col-6">
-                                    <small class="text-muted d-block mb-1" style="font-size: 0.8rem;">SECTION</small>
-                                    <span class="badge-custom" style="background: rgba(76, 175, 80, 0.1); border: 1px solid rgba(76, 175, 80, 0.5); color: #4CAF50; border-radius: 6px; padding: 0.35rem 0.7rem; font-size: 0.8rem;">
-                                        {{ $offered->class->section }}
-                                    </span>
-                                </div>
-                                <div class="col-6">
-                                    <small class="text-muted d-block mb-1" style="font-size: 0.8rem;">CREDIT HOURS</small>
-                                    <span class="badge-custom" style="background: rgba(255, 152, 0, 0.1); border: 1px solid rgba(255, 152, 0, 0.5); color: #FF9800; border-radius: 6px; padding: 0.35rem 0.7rem; font-size: 0.8rem;">
-                                        {{ $offered->course->credit_hours }} hrs
-                                    </span>
-                                </div>
-                                <div class="col-6">
-                                    <small class="text-muted d-block mb-1" style="font-size: 0.8rem;">DEGREE</small>
-                                    <span class="badge-custom" style="background: rgba(124, 58, 237, 0.1); border: 1px solid rgba(124, 58, 237, 0.5); color: #7C3AED; border-radius: 6px; padding: 0.35rem 0.7rem; font-size: 0.8rem;">
-                                        {{ substr($offered->class->degree_program, 0, 8) }}
-                                    </span>
-                                </div>
+                    <div class="card-body p-4">
+                        <div class="course-meta-grid mb-4">
+                            <div class="meta-item">
+                                <small>Department</small>
+                                <span>{{ $offered->class->department ?? 'N/A' }}</span>
                             </div>
-                            @endif
-                        </div>
-
-                        <!-- Quick Stats -->
-                        <div class="d-flex justify-content-around text-center mb-4 pb-4" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
-                            <div>
-                                <div class="text-muted small mb-2" style="font-size: 0.85rem;">STUDENTS</div>
-                                <strong class="d-block fw-bold" style="color: #0066cc; font-size: 1.4rem;">{{ $offered->class ? '30+' : '0' }}</strong>
+                            <div class="meta-item">
+                                <small>Section</small>
+                                <span>{{ $offered->class->section ?? 'N/A' }}</span>
                             </div>
-                            <div style="width: 1px; background: rgba(0, 0, 0, 0.1);"></div>
-                            <div>
-                                <div class="text-muted small mb-2" style="font-size: 0.85rem;">ASSIGNMENTS</div>
-                                <strong class="d-block fw-bold" style="color: #4CAF50; font-size: 1.4rem;">5</strong>
+                            <div class="meta-item">
+                                <small>Credits</small>
+                                <span>{{ $offered->course->credit_hours }} hrs</span>
                             </div>
-                            <div style="width: 1px; background: rgba(0, 0, 0, 0.1);"></div>
-                            <div>
-                                <div class="text-muted small mb-2" style="font-size: 0.85rem;">QUIZZES</div>
-                                <strong class="d-block fw-bold" style="color: #FF9800; font-size: 1.4rem;">3</strong>
+                            <div class="meta-item">
+                                <small>Class Size</small>
+                                <span>30+</span>
                             </div>
                         </div>
-
-                        <!-- Action Buttons -->
+                        
                         <div class="d-grid gap-2">
-                            <a href="{{ route('faculty.course.details', $offered->course->uuid) }}" 
-                                class="btn btn-primary-edu rounded-3 py-2 fw-semibold text-white" style="background: linear-gradient(135deg, #0066cc, #0052a3); border: none;">
-                                <i class="fas fa-cog me-2"></i> Manage Course
+                            <a href="{{ route('faculty.course.details', $offered->course->uuid) }}" class="btn btn-primary-pgu rounded-3 py-2 fw-bold">
+                                <i class="bi bi-gear-fill me-2"></i> Manage Course
                             </a>
-                            <button class="btn btn-outline-custom rounded-3 py-2 fw-semibold" 
-                                style="border: 2px solid #0066cc; color: #0066cc; background: transparent; transition: all 0.3s;">
-                                <i class="fas fa-eye me-2"></i> View Details
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -280,11 +195,13 @@
         @else
         <div class="row">
             <div class="col-12">
-                <div class="alert-custom border-0 rounded-4 shadow-lg p-5 text-center" 
-                    style="background: rgba(0, 102, 204, 0.08); backdrop-filter: blur(10px); border: 1px solid rgba(0, 102, 204, 0.2);">
-                    <i class="fas fa-inbox" style="font-size: 3rem; color: #0066cc; mb-3;"></i>
-                    <h5 class="fw-bold mt-3 text-dark">No Assigned Courses</h5>
-                    <p class="text-muted">You don't have any courses assigned yet. Please contact administration.</p>
+                <div class="empty-state-container p-5 text-center bg-white rounded-4 border shadow-sm">
+                    <div class="empty-icon-box mb-4 mx-auto">
+                        <i class="bi bi-journal-x"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark">No Assigned Courses</h5>
+                    <p class="text-muted">You don't have any courses assigned to you for the current semester.</p>
+                    <button class="btn btn-primary-pgu rounded-pill px-4 mt-3">Contact Administration</button>
                 </div>
             </div>
         </div>
@@ -295,491 +212,241 @@
 <x-faculityfooter />
 
 <style>
+    /* Color Palette derived from site identity */
     :root {
-        --primary-color: #3f634d;
-        --secondary-color: #2F4F4F;
-        --light-bg: #F4F8F5;
-        --border-radius: 12px;
-        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        --cyan-primary: #00D4FF;
-        --success-green: #4CAF50;
-        --warning-gold: #FFB700;
-        --purple-accent: #9C27B0;
+        --pgu-primary: #f35d85; /* Blush theme */
+        --pgu-primary-dark: #d64a6d;
+        --pgu-secondary: #188ccc; /* Cyan/Blue */
+        --pgu-success: #10b981;
+        --pgu-warning: #f59e0b;
+        --pgu-danger: #ef4444;
+        --pgu-bg: #f8fafc;
+        --pgu-text-dark: #1e293b;
+        --pgu-text-muted: #64748b;
+        --pgu-card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
     }
 
     body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #f0f2f5;
+        font-family: 'Inter', 'Segoe UI', sans-serif;
+        background-color: var(--pgu-bg);
+        color: var(--pgu-text-dark);
     }
 
-    .professor-dashboard {
-        background-color: #f0f2f5;
+    .brand-accent {
+        width: 8px;
+        height: 32px;
+        background: var(--pgu-primary);
+        border-radius: 4px;
+    }
+
+    .main-title {
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: #0f172a;
+    }
+
+    /* Modern Profile Section */
+    .profile-img-container {
+        position: relative;
+        width: 44px;
+        height: 44px;
+    }
+    .profile-img-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border: 2px solid #fff;
+    }
+    .status-dot {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        width: 10px;
+        height: 10px;
+        background: var(--pgu-success);
+        border: 2px solid #fff;
+        border-radius: 50%;
+    }
+
+    /* Modern Stat Cards */
+    .modern-stat-card {
+        background: #fff;
+        border-radius: 20px;
+        border: 1px solid rgba(0,0,0,0.04);
+        box-shadow: var(--pgu-card-shadow);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
         overflow: hidden;
-        width: 100%;
+    }
+    .modern-stat-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
     }
 
-    /* Animated Background Elements */
-    .background-decorations {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 0;
-        pointer-events: none;
-    }
-
-    .floating-shape {
-        position: absolute;
-        border-radius: 50%;
-        opacity: 0.05;
-        mix-blend-mode: screen;
-    }
-
-    .shape-1 {
-        width: 400px;
-        height: 400px;
-        background: #00D4FF;
-        top: -100px;
-        right: -50px;
-        animation: float 6s ease-in-out infinite;
-    }
-
-    .shape-2 {
-        width: 300px;
-        height: 300px;
-        background: #4CAF50;
-        bottom: -50px;
-        left: 50px;
-        animation: float 8s ease-in-out infinite reverse;
-    }
-
-    .shape-3 {
-        width: 250px;
-        height: 250px;
-        background: #9C27B0;
-        top: 50%;
-        left: 10%;
-        animation: float 7s ease-in-out infinite;
-    }
-
-    .grid-pattern {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background-image: 
-            linear-gradient(0deg, transparent 24%, rgba(0, 212, 255, 0.03) 25%, rgba(0, 212, 255, 0.03) 26%, transparent 27%, transparent 74%, rgba(0, 212, 255, 0.03) 75%, rgba(0, 212, 255, 0.03) 76%, transparent 77%, transparent),
-            linear-gradient(90deg, transparent 24%, rgba(0, 212, 255, 0.03) 25%, rgba(0, 212, 255, 0.03) 26%, transparent 27%, transparent 74%, rgba(0, 212, 255, 0.03) 75%, rgba(0, 212, 255, 0.03) 76%, transparent 77%, transparent);
-        background-size: 50px 50px;
-    }
-
-    @keyframes float {
-        0%, 100% { transform: translateY(0px) translateX(0px); }
-        50% { transform: translateY(30px) translateX(10px); }
-    }
-
-    .z-2 {
-        position: relative;
-        z-index: 2;
-    }
-
-    .text-white-70 {
-        color: rgba(255, 255, 255, 0.7);
-    }
-
-    /* Profile Avatar */
-    .profile-avatar-container {
-        position: relative;
-    }
-
-    .avatar-glow {
-        position: absolute;
-        width: 130px;
-        height: 130px;
-        background: radial-gradient(circle, rgba(0, 212, 255, 0.3) 0%, transparent 70%);
-        border-radius: 50%;
-        animation: pulse 3s ease-in-out infinite;
-    }
-
-    .professor-avatar {
-        position: relative;
-        z-index: 2;
-    }
-
-    .status-badge {
-        position: relative;
-        z-index: 3;
-    }
-
-    @keyframes pulse {
-        0%, 100% { transform: scale(1); opacity: 0.5; }
-        50% { transform: scale(1.1); opacity: 0.8; }
-    }
-
-    /* Stat Cards */
-    .stat-card-advanced {
-        transition: var(--transition);
-        position: relative;
-        overflow: hidden;
-        background: rgba(255, 255, 255, 0.08) !important;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(0, 212, 255, 0.2) !important;
-    }
-
-    .stat-card-advanced::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-        transition: left 0.6s ease;
-    }
-
-    .stat-card-advanced:hover::before {
-        left: 100%;
-    }
-
-    .stat-card-advanced:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 20px 48px rgba(0, 212, 255, 0.3) !important;
-        background: rgba(255, 255, 255, 0.12) !important;
-    }
-
-    .stat-icon {
-        font-size: 2.5rem;
-        opacity: 0.4;
-    }
-
-    /* Card Advanced */
-    .card-advanced {
-        background: rgba(255, 255, 255, 0.05) !important;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        transition: var(--transition);
-    }
-
-    .card-advanced:hover {
-        background: rgba(255, 255, 255, 0.08) !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    }
-
-    /* Course Card Modern */
-    .course-card-edu {
+    .stat-icon-box {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
         display: flex;
-        flex-direction: column;
-        height: 100%;
-        transition: var(--transition);
-        background: rgba(255, 255, 255, 0.08) !important;
-        backdrop-filter: blur(10px);
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
     }
 
-    .course-card-edu:hover {
-        transform: translateY(-12px);
-        box-shadow: 0 30px 60px rgba(0, 212, 255, 0.25) !important;
-        background: rgba(255, 255, 255, 0.12) !important;
+    .stat-value {
+        font-size: 2.25rem;
+        font-weight: 800;
+        margin-bottom: 0.25rem;
+        color: #0f172a;
+    }
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--pgu-text-muted);
+        font-weight: 500;
+        margin-bottom: 1.25rem;
     }
 
-    .course-header-edu {
-        position: relative;
+    .trend-indicator {
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 20px;
+    }
+    .trend-indicator.pos { background: rgba(16, 185, 129, 0.1); color: #059669; }
+    .trend-indicator.warning { background: rgba(245, 158, 11, 0.1); color: #d97706; }
+
+    .progress-container {
+        height: 6px;
+        background: #f1f5f9;
+        border-radius: 10px;
         overflow: hidden;
-        background: linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(76, 175, 80, 0.2) 100%) !important;
+    }
+    .progress-bar {
+        height: 100%;
+        border-radius: 10px;
     }
 
-    .course-header-anime {
-        position: absolute;
-        top: -50%;
-        right: -50%;
-        width: 200px;
-        height: 200px;
-        background: radial-gradient(circle, rgba(0, 212, 255, 0.3) 0%, transparent 70%);
-        border-radius: 50%;
-        animation: float 4s ease-in-out infinite;
+    /* Stat Card Themes */
+    .card-courses-stat .stat-icon-box { background: rgba(24, 140, 204, 0.1); color: var(--pgu-secondary); }
+    .card-courses-stat .progress-bar { background: var(--pgu-secondary); }
+
+    .card-classes-stat .stat-icon-box { background: rgba(124, 58, 237, 0.1); color: #7c3aed; }
+    .card-classes-stat .progress-bar { background: #7c3aed; }
+
+    .card-assignments-stat .stat-icon-box { background: rgba(245, 158, 11, 0.1); color: var(--pgu-warning); }
+    .card-assignments-stat .progress-bar { background: var(--pgu-warning); }
+
+    .card-students-stat .stat-icon-box { background: rgba(243, 93, 133, 0.1); color: var(--pgu-primary); }
+    .card-students-stat .progress-bar { background: var(--pgu-primary); }
+
+    /* Action Buttons */
+    .btn-action {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.75rem 1.25rem;
+        color: var(--pgu-text-dark);
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    .btn-action:hover {
+        border-color: var(--pgu-primary);
+        color: var(--pgu-primary);
+        transform: translateY(-2px);
     }
 
-    .course-icon-edu {
+    /* Modern Course Cards */
+    .modern-course-card {
+        background: #fff;
+        border-radius: 24px;
+        overflow: hidden;
+        border: 1px solid rgba(0,0,0,0.04);
+        box-shadow: var(--pgu-card-shadow);
+        transition: all 0.3s ease;
+    }
+    .modern-course-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+    }
+
+    .card-header-gradient {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        color: white;
+    }
+    .course-code-pill {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(4px);
+        padding: 4px 12px;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .semester-tag {
+        font-size: 0.75rem;
+        font-weight: 700;
+        opacity: 0.8;
+    }
+    .course-title {
+        font-weight: 700;
+        line-height: 1.4;
+        margin: 0;
+    }
+
+    .course-meta-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem;
+    }
+    .meta-item small {
+        display: block;
+        color: var(--pgu-text-muted);
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.25rem;
+    }
+    .meta-item span {
+        font-weight: 700;
+        color: #0f172a;
+        font-size: 0.9rem;
+    }
+
+    .btn-primary-pgu {
+        background-color: var(--pgu-primary);
+        border: none;
+        color: #fff;
+        transition: all 0.2s;
+    }
+    .btn-primary-pgu:hover {
+        background-color: var(--pgu-primary-dark);
+        transform: scale(1.02);
+    }
+
+    /* Empty State */
+    .empty-icon-box {
+        width: 80px;
+        height: 80px;
+        background: #f8fafc;
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: var(--pgu-text-muted);
+    }
+
+    .btn-icon-only {
+        width: 36px;
+        height: 36px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
     }
 
-    /* Primary Buttons */
-    .btn-primary-edu {
-        background: linear-gradient(135deg, #00D4FF, #66BBFF) !important;
-        border: none !important;
-        transition: var(--transition);
-    }
-
-    .btn-primary-edu:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 24px rgba(0, 212, 255, 0.4) !important;
-    }
-
-    .btn-outline-custom {
-        transition: var(--transition);
-    }
-
-    .btn-outline-custom:hover {
-        background-color: rgba(0, 212, 255, 0.1) !important;
-        border-color: #00D4FF !important;
-        color: #00D4FF !important;
-    }
-
-    /* Badge Custom */
-    .badge-custom {
-        display: inline-block;
-        font-weight: 500;
-        transition: var(--transition);
-    }
-
-    .badge-custom:hover {
-        transform: translateY(-2px);
-    }
-
-    /* Alert Custom */
-    .alert-custom {
-        background: rgba(0, 212, 255, 0.08) !important;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(0, 212, 255, 0.2) !important;
-        color: #00D4FF;
-    }
-
-    /* Action Buttons */
-    .action-btn {
-        display: inline-flex;
-        align-items: center;
-        transition: var(--transition);
-    }
-
-    .action-btn:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
-    }
-
-    .action-btn:hover {
-        color: inherit;
-        text-decoration: none;
-    }
-
-    /* Activity List */
-    .activity-list, .events-list {
-        max-height: 400px;
-        overflow-y: auto;
-    }
-
-    .activity-item, .event-item {
-        transition: var(--transition);
-    }
-
-    .activity-item:hover, .event-item:hover {
-        transform: translateX(5px);
-    }
-
-    /* Responsive Adjustments */
-    @media (max-width: 1200px) {
-        .container-fluid {
-            padding: 20px !important;
-        }
-
-        .stat-card-advanced {
-            margin-bottom: 1rem;
-        }
-    }
-
     @media (max-width: 768px) {
-        .professor-dashboard {
-            padding: 0;
-        }
-
-        .container-fluid {
-            padding: 15px !important;
-        }
-
-        .profile-avatar-container {
-            margin-bottom: 1.5rem;
-        }
-
-        .avatar-glow {
-            width: 100px;
-            height: 100px;
-        }
-
-        .professor-avatar {
-            width: 100px !important;
-            height: 100px !important;
-        }
-
-        h1 {
-            font-size: 1.8rem !important;
-        }
-
-        .stat-card-advanced {
-            padding: 1.5rem !important;
-        }
-
-        .course-card-edu {
-            margin-bottom: 1.5rem;
-        }
-
-        .d-flex.gap-2, .d-flex.gap-3, .d-flex.gap-4 {
-            flex-wrap: wrap;
-        }
-
-        .action-btn {
-            font-size: 0.9rem;
-            padding: 0.5rem 1.5rem !important;
-        }
-
-        .professor-dashboard .container-fluid {
-            padding-top: 56px !important;
-        }
-
-        .professor-dashboard .row.align-items-center.mb-5 {
-            margin-bottom: 1.5rem !important;
-        }
-
-        .professor-dashboard .d-flex.align-items-center.gap-4.mb-4 {
-            flex-direction: column;
-            align-items: flex-start !important;
-            gap: 1rem !important;
-        }
-
-        .professor-dashboard .text-lg-end.text-center.mt-3.mt-lg-0 {
-            text-align: left !important;
-        }
-
-        .professor-dashboard .btn.btn-lg.btn-primary-edu {
-            width: 100%;
-            max-width: 320px;
-            padding-left: 1rem !important;
-            padding-right: 1rem !important;
-            font-size: 0.95rem;
-        }
-
-        .professor-dashboard .d-flex.justify-content-between.align-items-center.mb-4 {
-            flex-direction: column;
-            align-items: flex-start !important;
-            gap: 0.75rem;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .row {
-            margin: 0;
-        }
-
-        .col-lg-8, .col-lg-4, .col-lg-6, .col-lg-3, .col-md-6 {
-            padding: 0.5rem;
-        }
-
-        h5 {
-            font-size: 1rem !important;
-        }
-
-        .stat-card-advanced h3 {
-            font-size: 2rem !important;
-        }
-
-        .professor-dashboard .action-btn {
-            width: 100%;
-            justify-content: center;
-            padding: 0.65rem 1rem !important;
-            font-size: 0.85rem;
-        }
-
-        .professor-dashboard .course-card-edu .d-grid.gap-2 .btn {
-            width: 100%;
-            font-size: 0.85rem;
-            padding-left: 0.75rem !important;
-            padding-right: 0.75rem !important;
-        }
-    }
-
-    @media (max-width: 300px) {
-        .professor-dashboard .container-fluid {
-            padding: 50px 6px 10px !important;
-        }
-
-        .professor-dashboard h1 {
-            font-size: 1.15rem !important;
-        }
-
-        .professor-dashboard .badge-custom {
-            font-size: 0.7rem !important;
-            padding: 0.25rem 0.45rem !important;
-        }
-
-        .professor-dashboard .stat-card-advanced {
-            padding: 0.8rem !important;
-        }
-
-        .professor-dashboard .stat-card-advanced h3 {
-            font-size: 1.25rem !important;
-        }
-
-        .professor-dashboard .course-header-edu,
-        .professor-dashboard .course-card-edu .p-4 {
-            padding: 0.75rem !important;
-        }
-    }
-
-    /* Transition Classes */
-    .transition-all {
-        transition: var(--transition);
-    }
-
-    /* Shadow Classes */
-    .shadow-lg {
-        box-shadow: 0 20px 48px rgba(0, 0, 0, 0.2) !important;
-    }
-
-    .shadow-xl {
-        box-shadow: 0 25px 60px rgba(0, 212, 255, 0.25) !important;
-    }
-
-    .pos-rel {
-        position: relative;
-    }
-
-    .z-1 {
-        position: relative;
-        z-index: 1;
+        .professor-dashboard { padding: 1.25rem; }
     }
 </style>
-
-<script>
-    // Initialize tooltips
-    document.addEventListener('DOMContentLoaded', function() {
-        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
-
-        // Add smooth scroll
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                const href = this.getAttribute('href');
-                if (href !== '#' && document.querySelector(href)) {
-                    e.preventDefault();
-                    document.querySelector(href).scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // Responsive sidebar toggle (if needed)
-        const closeBtn = document.querySelector('.close-btn');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', function() {
-                const sidebar = document.querySelector('.dash-aside-navbar');
-                if (sidebar) {
-                    sidebar.classList.toggle('show');
-                }
-            });
-        }
-    });
-</script>

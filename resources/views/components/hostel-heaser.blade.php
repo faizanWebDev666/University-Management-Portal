@@ -174,4 +174,5 @@
         </aside>
 
         <div class="dashboard-body">
+            <x-flash-messages />
             <div class="position-relative">

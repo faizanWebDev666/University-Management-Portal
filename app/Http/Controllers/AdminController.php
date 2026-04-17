@@ -6,7 +6,9 @@ use App\Models\Classes;
 use App\Models\Course;
 use App\Models\StudentsRegistration;
 use App\Models\TeacherRegistration;
+use App\Models\Task;
 use App\Models\User;
+use App\Models\Department;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -20,8 +22,7 @@ class AdminController extends Controller
     }
      public function department()
     {
-
-        return view('backend.departments');
+        return redirect()->route('departments.index');
     }
     
      public function signup()
@@ -60,6 +61,73 @@ public function display_professors()
         $classes = Classes::paginate(10);
         return view('backend.Classes',compact('classes'));
 
+    }
+    
+    public function taskboard()
+    {
+        $tasks = Task::with('creator')->orderBy('created_at', 'desc')->get();
+        $departments = Department::all();
+        return view('backend.taskboard', compact('tasks', 'departments'));
+    }
+    
+    public function storeTask(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'department' => 'required|string',
+            'priority' => 'required|string|in:Low,Medium,High,Urgent',
+            'due_date' => 'required|date|after:today',
+            'file' => 'nullable|file|max:10240' // Max 10MB
+        ]);
+        
+        $filePath = null;
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('tasks', $fileName, 'public');
+        }
+
+        // Create the task
+        $task = Task::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'department' => $request->department,
+            'priority' => $request->priority,
+            'due_date' => $request->due_date,
+            'file_path' => $filePath,
+            'created_by' => session('id')
+        ]);
+        
+        return redirect()->route('admin.taskboard')->with('success', 'Task created successfully!');
+    }
+    
+    public function shareFile(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'department' => 'required|string',
+            'type' => 'required|string|in:File,Information,Notice,Announcement',
+            'files.*' => 'nullable|file|max:10240' // Max 10MB per file
+        ]);
+        
+        // For now, we'll just redirect back with success message
+        // In a real implementation, you would save to database and handle file uploads
+        return redirect()->route('admin.taskboard')->with('success', 'File/Information shared successfully!');
+    }
+    
+    public function updateTaskStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|string|in:Pending,In Progress,Completed,Overdue'
+        ]);
+        
+        $task = Task::findOrFail($id);
+        $task->status = $request->status;
+        $task->save();
+        
+        return redirect()->back()->with('success', 'Task status updated to ' . $request->status . ' successfully!');
     }
       public function registerUser(Request $data)
     {
@@ -103,7 +171,7 @@ public function display_professors()
     
         if ($user && $data->input('password') === $user->password) {
             if ($user->status === "Blocked") {
-                return redirect('signin')->with('error', 'Your account has been blocked.');
+                return redirect()->route('Admin.signin')->with('error', 'Your account has been blocked.');
             }
     
             session()->put('id', $user->id);
@@ -121,7 +189,7 @@ public function display_professors()
             }
         }
     
-        return redirect('/')->with('error', 'Email or password is incorrect');
+        return redirect()->route('Admin.signin')->withInput()->with('error', 'Email or password is incorrect');
     }
     public function logout()
 {

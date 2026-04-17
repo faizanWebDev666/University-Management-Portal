@@ -233,25 +233,8 @@
         <div class="col-lg-7">
             <div class="contact-form-container">
                 <h3 class="mb-4">Send Us a Message</h3>
-                <!-- Success Message -->
-                @if (session('success'))
-                    <div class="alert alert-success">
-                        <ul class="mb-0">
-                            <li>{{ session('success') }}</li>
-                        </ul>
-                    </div>
-                @endif
-
-                <!-- Error Messages -->
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul class="mb-0">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
+                <!-- Flash Messages -->
+                <x-flash-messages />
                 <form id="contactForm" action="{{ route('contact.store') }}" method="POST">
                     <div id="form-messages"></div> <!-- Success/Error messages will appear here -->
                     @csrf

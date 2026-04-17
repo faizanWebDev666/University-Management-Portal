@@ -1,25 +1,30 @@
 <x-registrationheader/>
-@if ($errors->any())
-    <div class="alert alert-danger mx-auto my-4 w-75 rounded shadow-sm">
-        <ul class="mb-0">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
 
-@if (session('success'))
-    <div class="alert alert-success mx-auto my-4 w-75 rounded shadow-sm">
-        {{ session('success') }}
+<div class="bg-white card-box border-20 mb-40">
+    <h4 class="dash-title-three">Bulk Teacher Registration</h4>
+    <p class="text-muted mb-20">Download the template, fill it with teacher details, and upload it to register multiple teachers at once.</p>
+    
+    <div class="row align-items-end">
+        <div class="col-md-6">
+            <form action="{{ route('register.teacher.bulk') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="dash-input-wrapper mb-20">
+                    <label for="">Upload Excel File (.xlsx, .xls, .csv)</label>
+                    <input type="file" name="excel_file" accept=".xlsx, .xls, .csv" required>
+                </div>
+                <button type="submit" class="dash-btn-two tran3s">Upload & Register</button>
+            </form>
+        </div>
+        <div class="col-md-6">
+            <div class="text-md-end mt-20 mt-md-0">
+                <a href="{{ route('teacher.template.download') }}" class="btn btn-outline-success rounded-pill px-4 py-2">
+                    <i class="bi bi-download me-2"></i> Download Template
+                </a>
+            </div>
+        </div>
     </div>
-@endif
+</div>
 
-@if (session('error'))
-    <div class="alert alert-danger mx-auto my-4 w-75 rounded shadow-sm">
-        {{ session('error') }}
-    </div>
-@endif
 <h2 class="main-title">Add New Professor</h2>
 
 <form action="{{ route('register.teacher') }}" method="POST" enctype="multipart/form-data">

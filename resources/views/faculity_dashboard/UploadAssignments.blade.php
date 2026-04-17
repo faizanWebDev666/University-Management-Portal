@@ -1,15 +1,5 @@
 <x-faculityheader/>
 
-@if ($errors->any())
-    <div class="alert alert-danger mx-auto my-4 w-75 rounded shadow-sm">
-        <ul class="mb-0">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
 <div class="container my-5">
     <div class="card shadow-lg border-0 rounded-4">
         <div class="card-header bg-dark text-white fw-bold fs-5 px-4 py-3">

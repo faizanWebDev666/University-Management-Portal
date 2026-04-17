@@ -24,74 +24,162 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
-    /* General Body and Layout */
+    /* Professional Sidebar Redesign Styles */
+    :root {
+        --sidebar-bg: #ffffff;
+        --sidebar-text: #475569;
+        --sidebar-text-muted: #94a3b8;
+        --primary-teal: #009A9A;
+        --primary-teal-light: #f0fdfd;
+        --primary-teal-dark: #007a7a;
+        --sidebar-active-bg: #f0fdfd;
+        --sidebar-hover-bg: #f8fafc;
+        --border-color: #f1f5f9;
+        --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --sidebar-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    }
+
     body {
-        font-family: 'Inter', sans-serif;
-        background-color: #f8f9fa; /* Light background for the whole page */
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        background-color: #f0f2f5; /* Unified background color */
+        color: #1e293b;
+        margin: 0;
+        padding: 0;
     }
 
     .main-page-wrapper {
         display: flex;
         min-height: 100vh;
         position: relative;
+        background-color: #f0f2f5; /* Match body */
     }
 
-    /* Sidebar Navigation */
+    /* Sidebar Navigation - Independent Scroll Fix */
     .dash-aside-navbar {
         width: 280px;
         flex-shrink: 0;
-        background-color: #ffffff; /* White background for sidebar */
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
-        padding: 20px 0;
+        background-color: var(--sidebar-bg);
+        border-right: none !important; /* Remove border to eliminate gap */
+        padding: 0;
         display: flex;
         flex-direction: column;
-        position: sticky;
+        position: fixed;
+        left: 0;
         top: 0;
+        bottom: 0;
         height: 100vh;
-        overflow-y: auto; /* Enable scrolling for long menus */
+        overflow-y: auto;
+        overflow-x: hidden;
         z-index: 1040;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        transition: var(--transition-smooth);
+        box-shadow: none !important; /* Remove shadow that might look like a gap */
+    }
+
+    /* Prevent scrollbar from affecting the dashboard page layout */
+    .dash-aside-navbar::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    .dash-aside-navbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .dash-aside-navbar::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+    }
+
+    .dash-aside-navbar::-webkit-scrollbar-thumb:hover {
+        background: var(--primary-teal);
+    }
+
+    /* Dashboard Content Area - Balanced Spacing */
+    .dashboard-body {
+        flex-grow: 1;
+        margin-left: 280px !important; /* Strict alignment */
+        padding: 25px 35px;
+        background-color: #f0f2f5;
+        min-height: 100vh;
+        width: calc(100% - 280px) !important;
+        transition: var(--transition-smooth);
+        border-left: 1px solid #e2e8f0 !important; /* Add border here instead of sidebar */
     }
 
     .dash-aside-navbar .logo {
-        padding: 0 20px 20px 20px;
-        border-bottom: 1px solid #eee;
-        margin-bottom: 20px;
+        padding: 24px 20px;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff;
     }
 
     .dash-aside-navbar .logo img {
-        max-width: 150px;
+        max-width: 140px;
+        height: auto;
+        transition: var(--transition-smooth);
     }
 
-    .dash-aside-navbar .user-data {
-        padding: 0 20px 20px 20px;
-        margin-bottom: 20px;
+    /* User Profile Section */
+    .user-profile-card {
+        padding: 24px 20px;
+        text-align: center;
+        background: linear-gradient(to bottom, #fff, #f8fafc);
+        border-bottom: 1px solid var(--border-color);
     }
 
-    .dash-aside-navbar .user-avatar {
-        margin: 0 auto 10px auto;
-        border: 3px solid #009A9A; /* Accent color border */
+    .user-avatar-wrapper {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 16px;
     }
 
-    .dash-aside-navbar .user-avatar img {
-        width: 70px;
-        height: 70px;
+    .user-avatar-wrapper .avatar-inner {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        padding: 3px;
+        background: linear-gradient(135deg, var(--primary-teal), #2dd4bf);
+        box-shadow: 0 4px 12px rgba(0, 154, 154, 0.2);
+    }
+
+    .user-avatar-wrapper img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
         object-fit: cover;
+        border: 2px solid #fff;
     }
 
-    .dash-aside-navbar .user-data h5 {
-        color: #333;
-        font-size: 1.1rem;
+    .user-avatar-wrapper .status-indicator {
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+        width: 14px;
+        height: 14px;
+        background: #22c55e;
+        border: 2px solid #fff;
+        border-radius: 50%;
     }
 
-    .dash-aside-navbar .user-data span {
-        color: #777;
-        font-size: 0.85rem;
+    .user-profile-card h5 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 4px;
     }
 
+    .user-profile-card span {
+        font-size: 0.8125rem;
+        color: var(--sidebar-text-muted);
+        font-weight: 500;
+    }
+
+    /* Main Navigation Override */
     .dasboard-main-nav {
         flex-grow: 1;
-        padding: 0 20px;
+        padding: 20px 12px;
     }
 
     .dasboard-main-nav ul {
@@ -100,321 +188,268 @@
         margin: 0;
     }
 
-    .dasboard-main-nav > ul > li {
-        margin-bottom: 5px;
+    .dasboard-main-nav ul li {
+        margin-bottom: 4px !important;
     }
 
-    .dasboard-main-nav > ul > li > a,
-    .dasboard-main-nav .nav-link-item {
+    .dasboard-main-nav ul li a,
+    .nav-link-item {
+        display: flex !important;
+        align-items: center !important;
+        padding: 12px 16px !important;
+        color: var(--sidebar-text) !important;
+        font-size: 0.9375rem !important;
+        font-weight: 500 !important;
+        text-decoration: none !important;
+        border-radius: 12px !important;
+        background-color: transparent !important;
+        transition: var(--transition-smooth) !important;
+        position: relative !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+
+    .nav-link-item i, 
+    .dasboard-main-nav ul li a i:not(.collapse-icon) {
+        font-size: 1.1rem !important;
+        width: 24px !important;
+        margin-right: 12px !important;
+        color: var(--sidebar-text-muted) !important;
+        transition: var(--transition-smooth) !important;
+    }
+
+    /* Hover State */
+    .nav-link-item:hover, 
+    .dasboard-main-nav ul li a:hover {
+        background-color: var(--sidebar-hover-bg) !important;
+        color: var(--primary-teal) !important;
+    }
+
+    .nav-link-item:hover i, 
+    .dasboard-main-nav ul li a:hover i {
+        color: var(--primary-teal) !important;
+    }
+
+    /* Active State */
+    .nav-link-item.active, 
+    .dasboard-main-nav ul li a.active {
+        background-color: var(--sidebar-active-bg) !important;
+        color: var(--primary-teal) !important;
+        font-weight: 600 !important;
+    }
+
+    .nav-link-item.active i, 
+    .dasboard-main-nav ul li a.active i {
+        color: var(--primary-teal) !important;
+    }
+
+    /* Vertical Indicator for Active Link */
+    .nav-link-item.active::before, 
+    .dasboard-main-nav > ul > li > a.active::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 4px;
+        height: 20px;
+        background: var(--primary-teal);
+        border-radius: 0 4px 4px 0;
+    }
+
+    /* Sub-menu Styling Override */
+    .collapse-icon {
+        font-size: 0.75rem;
+        transition: transform 0.3s ease;
+        opacity: 0.5;
+    }
+
+    .nav-link-item[aria-expanded="true"] .collapse-icon {
+        transform: rotate(180deg);
+        opacity: 1;
+    }
+
+    .sub-menu {
+        margin-top: 4px !important;
+        padding-left: 20px !important;
+        position: relative !important;
+        background-color: transparent !important;
+        border: none !important;
+    }
+
+    .sub-menu::before {
+        content: '';
+        position: absolute;
+        left: 28px;
+        top: 0;
+        bottom: 10px;
+        width: 1px;
+        background: var(--border-color);
+    }
+
+    .sub-menu li {
+        margin-bottom: 2px !important;
+    }
+
+    .sub-menu li a {
+        padding: 8px 16px !important;
+        font-size: 0.875rem !important;
+        border-radius: 8px !important;
         display: flex;
         align-items: center;
-        padding: 12px 15px;
-        color: #555;
-        font-size: 1rem;
-        font-weight: 500;
+        color: var(--sidebar-text);
         text-decoration: none;
-        border-radius: 8px;
-        transition: all 0.3s ease;
+        transition: var(--transition-smooth);
     }
 
-    .dasboard-main-nav > ul > li > a i,
-    .dasboard-main-nav .nav-link-item i {
-        font-size: 1.1rem;
-        width: 25px; /* Fixed width for icons */
-        text-align: center;
-        color: #777;
+    .sub-menu li a:hover {
+        background-color: var(--sidebar-hover-bg) !important;
+        color: var(--primary-teal) !important;
     }
 
-    .dasboard-main-nav > ul > li > a:hover,
-    .dasboard-main-nav .nav-link-item:hover {
-        background-color: #e6f5f5; /* Light teal hover */
-        color: #007a7a; /* Darker teal text */
+    .sub-menu li a.active {
+        background-color: transparent !important;
+        color: var(--primary-teal) !important;
+        font-weight: 600 !important;
     }
 
-    .dasboard-main-nav > ul > li > a.active,
-    .dasboard-main-nav .nav-link-item.active {
-        background-color: #009A9A; /* Primary teal background */
-        color: #ffffff;
-        font-weight: 600;
-        box-shadow: 0 4px 10px rgba(0, 154, 154, 0.2);
+    .sub-menu li a.active::before {
+        display: none !important;
     }
 
-    .dasboard-main-nav > ul > li > a.active i,
-    .dasboard-main-nav .nav-link-item.active i {
-        color: #ffffff;
-    }
-
-    /* Collapse/Expand Styling */
-    .nav-link-item .collapse-icon {
-        transition: transform 0.3s ease;
-    }
-
-    .nav-link-item.collapsed .collapse-icon {
-        transform: rotate(-90deg);
-    }
-
-    .dasboard-main-nav .sub-menu {
-        padding: 5px 0 5px 20px; /* Indent sub-menu items */
-        margin-top: 5px;
-        border-left: 2px solid #eee; /* Visual indicator for sub-menu */
-    }
-
-    .dasboard-main-nav .sub-menu li a {
-        padding: 8px 15px;
-        color: #666;
-        font-size: 0.9rem;
-        font-weight: 400;
-        text-decoration: none;
-        border-radius: 6px;
-        transition: all 0.3s ease;
-    }
-
-    .dasboard-main-nav .sub-menu li a i {
-        font-size: 0.9rem;
-        width: 20px;
-        text-align: center;
-        color: #888;
-    }
-
-    .dasboard-main-nav .sub-menu li a:hover {
-        background-color: #f0fafa;
-        color: #007a7a;
-    }
-
-    .dasboard-main-nav .sub-menu li a.active {
-        background-color: #e6f5f5;
-        color: #007a7a;
-        font-weight: 500;
-    }
-
-    .dasboard-main-nav .sub-menu li a.active i {
-        color: #007a7a;
-    }
-
-    /* Profile Complete Status */
-    .profile-complete-status {
+    /* Profile Completion Section */
+    .sidebar-footer {
         padding: 20px;
-        margin-top: auto; /* Pushes it to the bottom */
+        border-top: 1px solid var(--border-color);
+        background: #fff;
     }
 
-    .profile-complete-status .progress-value {
-        font-size: 1.1rem;
-        color: #009A9A;
-        margin-bottom: 5px;
+    .profile-progress-wrapper {
+        background: #f8fafc;
+        padding: 12px;
+        border-radius: 12px;
+        margin-bottom: 16px;
     }
 
-    .profile-complete-status .progress-line {
+    .progress-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .progress-info span {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--sidebar-text);
+    }
+
+    .progress-info .percentage {
+        color: var(--primary-teal);
+    }
+
+    .progress-bar-container {
         height: 6px;
-        background-color: #e0e0e0;
-        border-radius: 3px;
+        background: #e2e8f0;
+        border-radius: 10px;
         overflow: hidden;
     }
 
-    .profile-complete-status .inner-line {
+    .progress-bar-fill {
         height: 100%;
-        background-color: #009A9A;
-        border-radius: 3px;
-    }
-
-    .profile-complete-status p {
-        font-size: 0.8rem;
-        color: #777;
-        margin-top: 10px;
+        background: linear-gradient(90deg, var(--primary-teal), #2dd4bf);
+        border-radius: 10px;
+        transition: width 1s ease-in-out;
     }
 
     /* Logout Button */
-    .logout-btn {
+    .logout-btn-wrapper {
+        padding: 0 12px 20px;
+    }
+
+    .logout-link {
         display: flex;
         align-items: center;
-        padding: 12px 20px;
-        color: #dc3545; /* Red for logout */
-        font-size: 1rem;
-        font-weight: 500;
+        padding: 12px 16px;
+        color: #ef4444;
+        font-size: 0.9375rem;
+        font-weight: 600;
         text-decoration: none;
-        border-top: 1px solid #eee;
-        transition: all 0.3s ease;
+        border-radius: 10px;
+        transition: var(--transition-smooth);
+        background: #fef2f2;
     }
 
-    .logout-btn i {
+    .logout-link i {
+        margin-right: 12px;
         font-size: 1.1rem;
-        width: 25px;
-        text-align: center;
-        color: #dc3545;
     }
 
-    .logout-btn:hover {
-        background-color: #ffebeb; /* Light red hover */
-        color: #c82333;
+    .logout-link:hover {
+        background: #fee2e2;
+        transform: translateY(-1px);
     }
 
-    .logout-btn:hover i {
-        color: #c82333;
-    }
-
-    /* Dashboard Body Content */
-    .dashboard-body {
-        flex-grow: 1;
-        padding: 30px;
-        background-color: #f0f2f5; /* Slightly darker background for content area */
-        min-width: 0;
-    }
-
-    .faculty-sidebar-overlay {
-        display: none;
-    }
-
+    /* Mobile Toggle & Overlay */
     .faculty-mobile-toggle {
         display: none;
         position: fixed;
-        top: 10px;
-        left: 10px;
+        top: 12px;
+        left: 12px;
         z-index: 1051;
-        border: none;
-        background: #009A9A;
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        background: var(--primary-teal);
         color: #fff;
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        border: none;
+        box-shadow: 0 4px 12px rgba(0, 154, 154, 0.3);
         align-items: center;
         justify-content: center;
-        font-size: 1rem;
+        cursor: pointer;
     }
 
-    .dash-aside-navbar .close-btn {
-        border: none;
-        background: transparent;
-        color: #666;
-        width: 34px;
-        height: 34px;
-        border-radius: 8px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
+    .faculty-sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.4);
+        backdrop-filter: blur(4px);
+        z-index: 1035;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .faculty-sidebar-overlay.show {
+        opacity: 1;
+        visibility: visible;
     }
 
     /* Responsive Adjustments */
     @media (max-width: 991.98px) {
         .faculty-mobile-toggle {
-            display: inline-flex;
+            display: flex;
         }
 
         .dash-aside-navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            width: min(86vw, 320px);
-            height: 100vh;
-            transform: translateX(-105%);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            border-bottom: none;
-            padding-top: 10px;
+            transform: translateX(-100%);
+            box-shadow: 20px 0 25px -5px rgb(0 0 0 / 0.1);
         }
 
         .dash-aside-navbar.sidebar-open {
             transform: translateX(0);
         }
 
-        .faculty-sidebar-overlay {
-            display: block;
-            position: fixed;
-            inset: 0;
-            background: rgba(10, 20, 20, 0.5);
-            z-index: 1035;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.25s ease;
-        }
-
-        .faculty-sidebar-overlay.show {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        body.faculty-sidebar-open {
-            overflow: hidden;
-        }
-
-        .dash-aside-navbar .logo {
-            text-align: left;
-            margin-bottom: 10px;
-        }
-
-        .dash-aside-navbar .user-data {
-            display: none; /* Hide user data on small screens */
-        }
-
-        .dasboard-main-nav {
-            padding: 0 10px;
-        }
-
         .dashboard-body {
-            padding: 18px 14px;
+            margin-left: 0; /* No offset on mobile */
             width: 100%;
+            padding: 70px 16px 24px;
         }
     }
 
     @media (max-width: 575.98px) {
-        .dashboard-body {
-            padding: 14px 10px;
-        }
-
-        .dasboard-main-nav > ul > li > a,
-        .dasboard-main-nav .nav-link-item {
-            padding: 10px 12px;
-            font-size: 0.92rem;
-        }
-
-        .dasboard-main-nav .sub-menu li a {
-            font-size: 0.85rem;
-            padding: 7px 10px;
-        }
-    }
-
-    @media (max-width: 300px) {
-        .faculty-mobile-toggle {
-            width: 34px;
-            height: 34px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            top: 6px;
-            left: 6px;
-        }
-
         .dash-aside-navbar {
-            width: 92vw;
-            padding-top: 4px;
-        }
-
-        .dash-aside-navbar .logo {
-            padding: 0 12px 12px 12px;
-        }
-
-        .dash-aside-navbar .logo img {
-            max-width: 120px;
-        }
-
-        .dasboard-main-nav {
-            padding: 0 8px;
-        }
-
-        .dasboard-main-nav > ul > li > a,
-        .dasboard-main-nav .nav-link-item {
-            padding: 9px 8px;
-            font-size: 0.82rem;
-            border-radius: 6px;
-        }
-
-        .dasboard-main-nav > ul > li > a i,
-        .dasboard-main-nav .nav-link-item i {
-            width: 18px;
-            font-size: 0.85rem;
-            margin-right: 8px !important;
-        }
-
-        .dashboard-body {
-            padding: 10px 6px;
+            width: 260px;
         }
     }
 </style>
@@ -429,9 +464,11 @@
         $professor = null;
         $student = null;
         if (Session::has('id')) {
-            $professor = User::where('id', Session::get('id'))->where('type', 'professor')->first();
-
-            $student = TeacherRegistration::with('image')->where('id', Session::get('id'))->first();
+            $user = User::where('id', Session::get('id'))->first();
+            if ($user && $user->type === 'professor') {
+                $professor = $user;
+                $teacherReg = TeacherRegistration::with('image')->where('email', $user->email)->first();
+            }
         }
 
         // Helper function to check if a route is active
@@ -454,48 +491,46 @@
                     <button class="close-btn d-block d-md-none"><i class="bi bi-x-lg"></i></button>
                 </div>
 
-               
+                <div class="user-profile-card d-none d-md-block">
+                    <div class="user-avatar-wrapper">
+                        <div class="avatar-inner">
+                            @if($teacherReg && $teacherReg->image)
+                                <img src="{{ asset('storage/' . $teacherReg->image->image_path) }}" alt="Avatar" class="lazy-img">
+                            @else
+                                <img src="{{ asset('frontend/images/Person.png') }}" alt="Avatar" class="lazy-img">
+                            @endif
+                        </div>
+                        <div class="status-indicator"></div>
+                    </div>
+                    <div class="user-info">
+                        <h5 class="mb-0">{{ session('name', 'Professor') }}</h5>
+                        <span>{{ $teacherReg->designation ?? 'Faculty Member' }}</span>
+                    </div>
+                </div>
 
-                <nav class="dasboard-main-nav pt-4">
+                <nav class="dasboard-main-nav">
                     <ul class="style-none">
                         <li>
-                            <a href="{{ route('faculity.dashboard') }}" class="d-flex w-100 align-items-center {{ isActive('faculity.dashboard') }}">
-                                <i class="fas fa-tachometer-alt me-3"></i>
+                            <a href="{{ route('faculity.dashboard') }}" class="{{ isActive('faculity.dashboard') }}">
+                                <i class="fas fa-tachometer-alt"></i>
                                 <span>Dashboard</span>
                             </a>
                         </li>
 
-                        <li class="nav-item-wrapper">
-                            <a class="nav-link-item d-flex w-100 align-items-center collapsed {{ isActive(['faculity.dashboard', 'faculty.course.details']) ? 'active' : '' }}" data-bs-toggle="collapse" href="#courseManagement" role="button" aria-expanded="{{ isActive(['faculity.dashboard', 'faculty.course.details']) ? 'true' : 'false' }}" aria-controls="courseManagement">
-                                <i class="fas fa-book-open me-3"></i>
-                                <span>Course Management</span>
-                                <i class="fas fa-chevron-down ms-auto collapse-icon"></i>
-                            </a>
-                            <div class="collapse {{ isActive(['faculity.dashboard', 'faculty.course.details']) ? 'show' : '' }}" id="courseManagement">
-                                <ul class="style-none sub-menu">
-                                    <li><a href="{{ route('faculity.dashboard') }}" class="d-flex w-100 align-items-center {{ isActive('faculity.dashboard') }}">
-                                        <i class="fas fa-chalkboard-teacher me-3"></i>
-                                        <span>My Courses</span>
-                                    </a></li>
-                                </ul>
-                            </div>
-                        </li>
+                       
 
                         <li class="nav-item-wrapper">
-                            <a class="nav-link-item d-flex w-100 align-items-center collapsed {{ isActive(['postedAssignments', 'teacher.leave', 'faculty.leave.index']) ? 'active' : '' }}" data-bs-toggle="collapse" href="#studentManagement" role="button" aria-expanded="{{ isActive(['postedAssignments', 'teacher.leave', 'faculty.leave.index']) ? 'true' : 'false' }}" aria-controls="studentManagement">
-                                <i class="fas fa-users me-3"></i>
-                                <span>Student Management</span>
+                            <a class="nav-link-item {{ isActive(['postedAssignments']) ? 'active' : '' }}" data-bs-toggle="collapse" href="#studentManagement" role="button" aria-expanded="{{ isActive(['postedAssignments', 'teacher.leave', 'faculty.leave.index']) ? 'true' : 'false' }}" aria-controls="studentManagement">
+                                <i class="fas fa-users"></i>
+                                <span>Leave Management</span>
                                 <i class="fas fa-chevron-down ms-auto collapse-icon"></i>
                             </a>
                             <div class="collapse {{ isActive(['teacher.leave', 'faculty.leave.index']) ? 'show' : '' }}" id="studentManagement">
                                 <ul class="style-none sub-menu">
-                                    
-                                    <li><a href="{{ route('teacher.leave') }}" class="d-flex w-100 align-items-center {{ isActive('teacher.leave') }}">
-                                        <i class="fas fa-calendar-times me-3"></i>
+                                    <li><a href="{{ route('teacher.leave') }}" class="{{ isActive('teacher.leave') }}">
                                         <span>Leave Requests</span>
                                     </a></li>
-                                    <li><a href="{{ route('faculty.leave.index') }}" class="d-flex w-100 align-items-center {{ isActive('faculty.leave.index') }}">
-                                        <i class="fas fa-file-alt me-3"></i>
+                                    <li><a href="{{ route('faculty.leave.index') }}" class="{{ isActive('faculty.leave.index') }}">
                                         <span>My Applications</span>
                                     </a></li>
                                 </ul>
@@ -503,39 +538,49 @@
                         </li>
 
                         <li class="nav-item-wrapper">
-                            <a class="nav-link-item d-flex w-100 align-items-center collapsed {{ isActive(['teacher.change.password']) ? 'active' : '' }}" data-bs-toggle="collapse" href="#settings" role="button" aria-expanded="{{ isActive(['teacher.change.password']) ? 'true' : 'false' }}" aria-controls="settings">
-                                <i class="fas fa-cog me-3"></i>
-                                <span>Settings</span>
+                            <a class="nav-link-item" data-bs-toggle="collapse" href="#profileSettings" role="button" aria-expanded="{{ isActive(['faculty.profile', 'teacher.change.password']) ? 'true' : 'false' }}" aria-controls="profileSettings">
+                                <i class="fas fa-user-cog"></i>
+                                <span>Profile Settings</span>
                                 <i class="fas fa-chevron-down ms-auto collapse-icon"></i>
                             </a>
-                            <div class="collapse {{ isActive(['teacher.change.password']) ? 'show' : '' }}" id="settings">
+                            <div class="collapse {{ isActive(['faculty.profile', 'teacher.change.password']) ? 'show' : '' }}" id="profileSettings">
                                 <ul class="style-none sub-menu">
-                                    <li><a href="{{ route('teacher.change.password') }}" class="d-flex w-100 align-items-center {{ isActive('teacher.change.password') }}">
-                                        <i class="fas fa-key me-3"></i>
-                                        <span>Update Password</span>
+                                    <li><a href="{{ route('faculty.profile') }}" class="{{ isActive('faculty.profile') }}">
+                                        <span>Manage Profile</span>
+                                    </a></li>
+                                    <li><a href="{{ route('teacher.change.password') }}" class="{{ isActive('teacher.change.password') }}">
+                                        <span>Change Password</span>
                                     </a></li>
                                 </ul>
                             </div>
                         </li>
                     </ul>
                 </nav>
-                <div class="profile-complete-status mt-5 pt-4 border-top text-center">
-                    <div class="progress-value fw-500">87%</div>
-                    <div class="progress-line position-relative">
-                        <div class="inner-line" style="width:80%;"></div>
+
+                <div class="sidebar-footer">
+                    <div class="profile-progress-wrapper">
+                        <div class="progress-info">
+                            <span>Profile Completion</span>
+                            <span class="percentage">87%</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" style="width: 87%;"></div>
+                        </div>
                     </div>
-                    <p>Profile Complete</p>
                 </div>
 
-                <a href="{{ route('logout') }}" class="d-flex w-100 align-items-center logout-btn">
-                    <i class="fas fa-sign-out-alt me-3"></i>
-                    <span>Logout</span>
-                </a>
+                <div class="logout-btn-wrapper">
+                    <a href="{{ route('logout') }}" class="logout-link">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
             </div>
         </aside>
         <div class="faculty-sidebar-overlay" id="facultySidebarOverlay"></div>
 
         <div class="dashboard-body">
+            <x-flash-messages />
             <button class="faculty-mobile-toggle" id="facultySidebarOpenBtn" type="button" aria-label="Open faculty menu">
                 <i class="fas fa-bars"></i>
             </button>

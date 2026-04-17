@@ -9044,7 +9044,36 @@ a:hover {
 }
 
 .auth.option2 {
-    background: #E8E9E9
+    position: relative;
+    overflow: hidden;
+}
+
+/* Background image */
+.auth.option2::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url("/backend/images/bg2.jpg") center/cover no-repeat;
+    
+    filter: blur(3px);
+    transform: scale(1);
+    
+    z-index: 0;
+}
+
+/* Light overlay (NOT full black) */
+.auth.option2::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3); /* reduce darkness */
+    z-index: 1;
+}
+
+/* Content stays above */
+.auth.option2 > * {
+    position: relative;
+    z-index: 2;
 }
 
 .auth.option2 .auth_left {

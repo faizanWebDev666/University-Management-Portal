@@ -3,16 +3,6 @@
 <div class="container mt-5">
     <h2>Edit Teacher</h2>
 
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul class="mb-0">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
     <form action="{{ route('admin.teachers.update', $teacher->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
 <div class="col-md-6 mb-3">

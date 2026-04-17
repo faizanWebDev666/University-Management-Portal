@@ -325,19 +325,6 @@
 </style>
 
 <div class="container my-5">
-    {{-- Success/Error Messages --}}
-    @if (session('success'))
-        <div class="alert alert-success">
-            ✓ {{ session('success') }}
-        </div>
-    @endif
-
-    @if (session('error'))
-        <div class="alert alert-error">
-            ✗ {{ session('error') }}
-        </div>
-    @endif
-
     {{-- Stats --}}
     <div class="stats-row">
         <div class="stat-card">

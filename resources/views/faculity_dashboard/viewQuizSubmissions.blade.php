@@ -1,12 +1,19 @@
+@if(!request()->ajax())
 <x-faculityheader />
 
 <div class="course-details-wrapper" style="background-color: #F4F8F5; min-height: 100vh; padding: 40px 0;">
     <div class="container-xxl">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="text-dark fw-bold mb-0">Quiz Submissions: {{ $quiz->quiz_title }}</h1>
+@endif
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+            <h4 class="text-dark fw-bold mb-0">
+                <i class="fas fa-question-circle me-2" style="color: #3f634d;"></i>
+                Quiz Submissions: {{ $quiz->quiz_title }}
+            </h4>
+            @if(!request()->ajax())
             <a href="{{ route('faculty.course.details', $quiz->course->uuid) }}#quizzes-pane" class="btn btn-outline-secondary rounded-3 px-4 py-2">
                 <i class="fas fa-arrow-left me-2"></i> Back to Course
             </a>
+            @endif
         </div>
 
         <div class="card shadow-sm border-0 rounded-3 mb-5">
@@ -244,7 +251,9 @@
                 @endif
             </div>
         </div>
+@if(!request()->ajax())
     </div>
 </div>
 
 <x-faculityfooter />
+@endif

@@ -267,15 +267,9 @@
                     </div>
                     <h1 class="hero-title">Empowering Education Through Innovation</h1>
                     <p class="hero-subtitle">Access comprehensive academic resources, connect with faculty, and streamline your educational journey with our modern university portal designed for excellence.</p>
-                    @if ($errors->any())
-                        <div class="alert alert-danger mt-4">
-                            <ul class="mb-0">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
+                    
+                    <x-flash-messages />
+                    
                     <div class="d-flex flex-wrap justify-content-center">
                         <a href="#" class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#loginModal" data-role="student">
                             <i class="fas fa-user-graduate me-2"></i>Student Login

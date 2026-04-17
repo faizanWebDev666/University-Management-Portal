@@ -1065,6 +1065,11 @@
                         method: 'GET',
                         success: function(response) {
                             marksSubmissionArea.html(response);
+                            // Re-initialize tooltips for the new content
+                            var tooltipTriggerList = [].slice.call(marksSubmissionArea[0].querySelectorAll('[data-bs-toggle="tooltip"]'))
+                            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                                return new bootstrap.Tooltip(tooltipTriggerEl)
+                            });
                         },
                         error: function() {
                             marksSubmissionArea.html('<div class="alert alert-danger text-center">Error loading submissions. Please try again.</div>');

@@ -148,17 +148,27 @@
     @php
         use Illuminate\Support\Facades\Session;
         use App\Models\StudentsRegistration;
+        use App\Models\User;
 
         $student = null;
+        $user = null;
         if (Session::has('id')) {
-            $student = StudentsRegistration::with('image')->where('user_id', Session::get('id'))->first();
+            $userId = Session::get('id');
+            $user = User::find($userId);
+            $student = StudentsRegistration::with('image')->where('user_id', $userId)->first();
         }
     @endphp
 
     <!-- ===== TOP BAR ===== -->
     <div class="top-bar">
-        Welcome: {{ $student->full_name-- }}
-        {{ $student->degree_program }}{{ $student->department }}-{{ $student->roll_no-- }}
+        @if($student)
+            Welcome: {{ $student->full_name }}
+            {{ $student->degree_program }}{{ $student->department }}-{{ $student->roll_no }}
+        @elseif($user)
+            Welcome: {{ $user->name }}
+        @else
+            Welcome to LMS Portal
+        @endif
     </div>
 
     <!-- ===== NAV HEADER ===== -->
@@ -204,6 +214,10 @@
             </div>
 
         </div>
+    </div>
+
+    <div class="container mt-3">
+        <x-flash-messages />
     </div>
 
     <script>

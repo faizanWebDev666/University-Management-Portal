@@ -12,18 +12,106 @@ use App\Models\StudentsRegistration;
 use Illuminate\Http\Request;
 use App\Models\StudentCourseRegistration;
 use Illuminate\Support\Facades\Hash;
+use App\Models\TeacherRegistration;
+use App\Models\TeacherImage;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 class FaculityController extends Controller
 {
+public function profile()
+{
+    $userId = session('id');
+    $user = User::findOrFail($userId);
+    
+    $professor = TeacherRegistration::where('email', $user->email)->with('image')->first();
+    
+    if (!$professor) {
+        return redirect()->back()->with('error', 'Professor profile not found.');
+    }
+    
+    return view('faculity_dashboard.profile', compact('professor', 'user'));
+}
+
+public function updateProfile(Request $request)
+{
+    $userId = session('id');
+    $user = User::findOrFail($userId);
+    $professor = TeacherRegistration::where('email', $user->email)->firstOrFail();
+
+    $request->validate([
+        'full_name' => 'required|string|max:255',
+        'phone' => 'required|string|max:15',
+        'address' => 'required|string',
+        'city' => 'required|string',
+        'country' => 'required|string',
+        'teacher_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        'resume' => 'nullable|mimes:pdf,doc,docx|max:2048',
+    ]);
+
+    DB::transaction(function () use ($request, $user, $professor) {
+        // Update Teacher Registration
+        $professor->update([
+            'full_name' => $request->full_name,
+            'phone' => $request->phone,
+            'address' => $request->address,
+            'city' => $request->city,
+            'country' => $request->country,
+        ]);
+
+        // Update User name
+        $user->update(['name' => $request->full_name]);
+
+        // Handle Image Upload
+        if ($request->hasFile('teacher_image')) {
+            $imageFile = $request->file('teacher_image');
+            $imageName = Str::uuid() . '.' . $imageFile->getClientOriginalExtension();
+            $imagePath = $imageFile->storeAs('teacher_images', $imageName, 'public');
+
+            // Delete old image if exists
+            $oldImage = TeacherImage::where('Teacher_id', $professor->id)->first();
+            if ($oldImage) {
+                Storage::disk('public')->delete($oldImage->image_path);
+                $oldImage->update(['image_path' => $imagePath]);
+            } else {
+                TeacherImage::create([
+                    'Teacher_id' => $professor->id,
+                    'image_path' => $imagePath,
+                ]);
+            }
+        }
+
+        // Handle Resume Upload
+        if ($request->hasFile('resume')) {
+            // Delete old resume if exists
+            if ($professor->resume) {
+                Storage::disk('public')->delete($professor->resume);
+            }
+
+            $file = $request->file('resume');
+            $resumeName = Str::uuid() . '.' . $file->getClientOriginalExtension();
+            $resumePath = $file->storeAs('teacher_resumes', $resumeName, 'public');
+            
+            $professor->update(['resume' => $resumePath]);
+        }
+    });
+
+    return redirect()->back()->with('success', 'Profile updated successfully!');
+}
+
 public function index()
 {
     $userId = session('id'); 
+    $user = User::findOrFail($userId);
 
     $professor = User::where('id', $userId)
         ->with(['offeredCourses.course', 'offeredCourses.class'])
         ->where('type', 'professor')
         ->first();
+    
+    $teacherReg = TeacherRegistration::where('email', $user->email)->with('image')->first();
    
-    return view('faculity_dashboard.index', compact('professor'));
+    return view('faculity_dashboard.index', compact('professor', 'teacherReg'));
 }
 public function leave()
 {

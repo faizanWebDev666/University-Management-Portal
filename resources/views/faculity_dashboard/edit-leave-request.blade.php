@@ -7,16 +7,6 @@
         </div>
 
         <div class="card-body px-4 py-4">
-            @if ($errors->any())
-                <div class="alert alert-danger mb-3">
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
             <form action="{{ route('faculty.leave.update', $leave->id) }}" method="POST">
                 @csrf
                 @method('PUT')

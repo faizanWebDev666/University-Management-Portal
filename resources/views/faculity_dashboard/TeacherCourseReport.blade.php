@@ -82,7 +82,7 @@
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
                                         <td class="text-start">
-                                            <div class="fw-semibold">{{ $teacher->name }}</div>
+                                            <div class="fw-semibold">{{ $teacher->full_name }}</div>
                                             <div class="text-muted small">{{ $teacher->email }}</div>
                                         </td>
                                         <td>{{ $teacher->offered_courses_count }}</td>

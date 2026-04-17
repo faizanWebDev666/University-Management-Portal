@@ -62,16 +62,28 @@
                     </a>
                     <button class="close-btn d-block d-md-none"><i class="bi bi-x-lg"></i></button>
                 </div>
-
                 <nav class="dasboard-main-nav">
                     <ul class="style-none">
-                        <li><a href="{{ 'Registration_index' }}" class="d-flex w-100 align-items-center active">
+                        <li><a href="{{ route('Registration.index') }}" class="d-flex w-100 align-items-center {{ request()->routeIs('Registration.index') ? 'active' : '' }}">
                                 <img src="../backend_faculity/images/lazy.svg"
                                     data-src="backend_faculity/images/icon/icon_1_active.svg" alt=""
                                     class="lazy-img">
                                 <span>Dashboard</span>
                             </a></li>
-                        <li><a href="{{ URL::to('RegisterStudents') }}" class="d-flex w-100 align-items-center">
+                        <li><a href="{{ route('Registration.taskboard') }}" class="d-flex w-100 align-items-center justify-content-between {{ request()->routeIs('Registration.taskboard') ? 'active' : '' }}">
+                                <div class="d-flex align-items-center">
+                                    <img src="../backend_faculity/images/lazy.svg"
+                                        data-src="backend_faculity/images/icon/icon_4.svg" alt=""
+                                        class="lazy-img">
+                                    <span>Taskboard</span>
+                                </div>
+                                @if(isset($pendingTaskCount) && $pendingTaskCount > 0)
+                                    <span class="badge rounded-pill bg-danger" style="font-size: 0.65rem; padding: 0.25em 0.6em;">
+                                        {{ $pendingTaskCount }}
+                                    </span>
+                                @endif
+                            </a></li>
+                        <li><a href="{{ URL::to('RegisterStudents') }}" class="d-flex w-100 align-items-center {{ request()->is('RegisterStudents') ? 'active' : '' }}">
                                 <img src="../backend_faculity/images/lazy.svg"
                                     data-src="backend_faculity/images/icon/icon_2.svg" alt="" class="lazy-img">
                                 <span>Register Students</span>
@@ -160,5 +172,6 @@ function sendUpdateRequest() {
         </aside>
 
         <div class="dashboard-body">
+            <x-flash-messages />
             <div class="position-relative">
                

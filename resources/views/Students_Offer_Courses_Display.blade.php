@@ -6,12 +6,6 @@
             <h2 class="text-white py-3" style="background-color: #009A9A; font-size: 30px;">Offer Courses List</h2>
         </div>
 
-        @if (session('success'))
-            <div class="alert alert-success text-center">
-                {{ session('success') }}
-            </div>
-        @endif
-
         <div class="table-responsive">
             <table class="table table-bordered text-center align-middle">
                 <thead class="bg-dark text-white">

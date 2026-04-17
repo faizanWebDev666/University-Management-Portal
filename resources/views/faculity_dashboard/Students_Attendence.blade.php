@@ -1,17 +1,6 @@
 <x-faculityheader />
 
 <div class="container my-5">
-    @if (session('success'))
-        <div class="alert alert-success mx-auto my-4 w-100 rounded shadow-sm">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if (session('error'))
-        <div class="alert alert-danger mx-auto my-4 w-100 rounded shadow-sm">
-            {{ session('error') }}
-        </div>
-    @endif
 
     <div class="card shadow-lg border-0">
         <div class="card-header bg-dark text-white fw-bold fs-5">

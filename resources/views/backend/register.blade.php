@@ -38,6 +38,7 @@
                     <!-- START FORM -->
                     <form action="{{ route('Admin.signup.submit') }}" method="POST">
                         @csrf
+                        <x-flash-messages />
 
                         <div class="form-group">
                             <label class="form-label">Name</label>

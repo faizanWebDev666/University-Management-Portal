@@ -32,7 +32,7 @@ class TeacherRegistration extends Model
     ];
     public function image()
 {
-    return $this->hasOne(TeacherImage::class, 'teacher_id', 'id');
+    return $this->hasOne(TeacherImage::class, 'Teacher_id', 'id');
 }
 // In TeacherRegistration.php
 public function images()

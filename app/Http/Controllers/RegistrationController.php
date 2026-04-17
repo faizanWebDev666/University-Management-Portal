@@ -7,6 +7,7 @@ use App\Models\Classes;
     use App\Models\OfferCourse;
     use App\Models\StudentImage;
     use App\Models\StudentsRegistration;
+    use App\Models\Task;
     use App\Models\TeacherImage;
     use App\Models\TeacherRegistration;
     use App\Models\User;
@@ -16,9 +17,42 @@ use App\Models\Classes;
     use Illuminate\Support\Facades\Mail;
     use Illuminate\Support\Facades\Storage;
     use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\TeachersImport;
+use App\Exports\TeachersTemplateExport;
 
 class RegistrationController extends Controller
 {
+    public function bulkTeacherRegistration(Request $request)
+    {
+        $request->validate([
+            'excel_file' => 'required|mimes:xlsx,xls,csv|max:2048',
+        ]);
+
+        try {
+            Excel::import(new TeachersImport, $request->file('excel_file'));
+            return redirect()->back()->with('success', 'Teachers imported successfully!');
+        } catch (\Error $e) {
+            if (str_contains($e->getMessage(), 'ZipArchive')) {
+                return redirect()->back()->with('error', 'Import failed: The PHP "zip" extension is not enabled on your server. Please enable it in Laragon (Menu > PHP > Extensions > zip) and restart Laragon.');
+            }
+            return redirect()->back()->with('error', 'Import failed: ' . $e->getMessage());
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            $errors = [];
+            foreach ($failures as $failure) {
+                $errors[] = "Row {$failure->row()}: " . implode(', ', $failure->errors());
+            }
+            return redirect()->back()->with('error', 'Import failed: ' . implode(' | ', $errors));
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Import failed: ' . $e->getMessage());
+        }
+    }
+
+    public function downloadTeacherTemplate()
+    {
+        return Excel::download(new TeachersTemplateExport, 'teacher_registration_template.xlsx');
+    }
     public function Registration_index()
     {
         $totalStudents=StudentsRegistration::count();
@@ -35,6 +69,15 @@ class RegistrationController extends Controller
         ])->get();
         
         return view('faculity_dashboard.Registration_index', compact('totalStudents', 'totalTeachers', 'totalCourses', 'totalClasses','allocations'));
+    }
+
+    public function taskboard()
+    {
+        // Fetch tasks for the taskboard (Only Registration tasks)
+        $tasks = Task::with('creator')->where('department', 'Registration')->orderBy('created_at', 'desc')->get();
+        $pendingCount = $tasks->whereIn('status', ['Pending', 'In Progress'])->count();
+        
+        return view('faculity_dashboard.RegistrationTaskboard', compact('tasks', 'pendingCount'));
     }
 
     public function TeacherCourseReport()

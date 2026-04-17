@@ -52,14 +52,14 @@ Route::middleware(['session.inactivity'])->group(function () {
     Route::post('/admin/update-requests/{id}/reject', [StudentUpdateRequest::class, 'reject'])->name('admin.update.requests.reject');
     Route::get('admin/settings', [SettingsConroller::class, 'settings'])->name('admin.settings');
 
-    Route::prefix('department')->group(function () {
-        Route::get('/', [DepartmentController::class, 'index']);
-        Route::get('/create', [DepartmentController::class, 'create']);
-        Route::post('/', [DepartmentController::class, 'store']);
-        Route::get('/{name}', [DepartmentController::class, 'show']);
-        Route::get('/{name}/edit', [DepartmentController::class, 'edit']);
-        Route::put('/{name}', [DepartmentController::class, 'update']);
-        Route::delete('/{name}', [DepartmentController::class, 'destroy']);
+    Route::prefix('department')->middleware('adminauth')->group(function () {
+        Route::get('/', [DepartmentController::class, 'index'])->name('departments.index');
+        Route::get('/create', [DepartmentController::class, 'create'])->name('departments.create');
+        Route::post('/', [DepartmentController::class, 'store'])->name('departments.store');
+        Route::get('/{name}', [DepartmentController::class, 'show'])->name('departments.show');
+        Route::get('/{name}/edit', [DepartmentController::class, 'edit'])->name('departments.edit');
+        Route::put('/{id}', [DepartmentController::class, 'update'])->name('departments.update');
+        Route::delete('/{id}', [DepartmentController::class, 'destroy'])->name('departments.destroy');
     });
 
     //search filters in admin side only one search bar in admin header exists
@@ -102,6 +102,10 @@ Route::middleware(['session.inactivity'])->group(function () {
     Route::get('admin/Students', [AdminController::class, 'display_students'])->name('display.students');
     Route::get('admin/Courses', [AdminController::class, 'Courses'])->name('display.Courses');
     Route::get('admin/classes', [AdminController::class, 'Classes'])->name('display.Classes');
+    Route::get('admin/taskboard', [AdminController::class, 'taskboard'])->middleware('adminauth')->name('admin.taskboard');
+    Route::post('admin/task/store', [AdminController::class, 'storeTask'])->middleware('adminauth')->name('admin.task.store');
+    Route::patch('admin/task/{id}/status', [AdminController::class, 'updateTaskStatus'])->middleware('adminauth')->name('admin.task.updateStatus');
+    Route::post('admin/file/share', [AdminController::class, 'shareFile'])->middleware('adminauth')->name('admin.file.share');
 
     //students Routes:
     Route::get('Students_Dashboard', [StudentsController::class, 'Students_Dashboard'])->name('Students.dashboard');
@@ -123,6 +127,8 @@ Route::middleware(['session.inactivity'])->group(function () {
     Route::get('faculityAdmin', [FaculityController::class, 'index'])->name('faculity.dashboard');
     Route::get('/faculty/course/{uuid}', [FaculityController::class, 'courseDetails'])->name('faculty.course.details');
     Route::get('WelcomeProfessor', [FaculityController::class, 'WelcomeProfessor'])->name('WelcomeProfessor');
+    Route::get('faculity/profile', [FaculityController::class, 'profile'])->name('faculty.profile');
+    Route::post('faculity/profile/update', [FaculityController::class, 'updateProfile'])->name('faculty.profile.update');
     Route::get('faculity/leave-request', [FaculityController::class, 'leave'])->name('teacher.leave');
     Route::post('/faculty/leave-request', [FaculityController::class, 'store'])->name('faculty.leave.store');
     Route::get('faculity/change-password', [FaculityController::class, 'changePassword'])->name('teacher.change.password');
@@ -151,13 +157,16 @@ Route::middleware(['session.inactivity'])->group(function () {
 
     //Registration Branch
     Route::get('OfferCoursesToClasses', [RegistrationController::class, 'OfferCoursesToClasses']);
-    Route::get('Registration_index', [RegistrationController::class, 'Registration_index']);
+    Route::get('Registration_index', [RegistrationController::class, 'Registration_index'])->name('Registration.index');
+    Route::get('Registration_taskboard', [RegistrationController::class, 'taskboard'])->name('Registration.taskboard');
     Route::get('teacher-course-report', [RegistrationController::class, 'TeacherCourseReport'])->name('teacher.course.report');
     Route::get('RegisterStudents', [RegistrationController::class, 'RegisterStudents'])->name('students.register');
     Route::get('Registration-profile', [RegistrationController::class, 'RegistrationProfFile'])->name('Registration.profile');
     Route::post('RegisterStudents/update/{id}', [RegistrationController::class, 'update'])->name('update.students');
     Route::delete('RegisterStudents/delete/{id}', [RegistrationController::class, 'destroy'])->name('students.delete');
     Route::get('RegisterTeachers', [RegistrationController::class, 'RegisterTeachers'])->name('teachers.register');
+    Route::post('register-teacher/bulk', [RegistrationController::class, 'bulkTeacherRegistration'])->name('register.teacher.bulk');
+    Route::get('register-teacher/template', [RegistrationController::class, 'downloadTeacherTemplate'])->name('teacher.template.download');
     Route::post('/register-student', [RegistrationController::class, 'storeStudent'])->name('student.store');
     Route::post('/register-teacher', [RegistrationController::class, 'storeTeacher'])->name('register.teacher');
     Route::get('AllocateCoursesToProfessorsForm', [ProfessorCourseController::class, 'AllocateCoursesToProfessorsForm']);

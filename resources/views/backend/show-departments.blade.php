@@ -1,145 +1,94 @@
 <x-admin-header />
 
 <div class="container mt-5">
-    <h2 class="mb-4">Department: {{ $name }}</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1" style="color: #f35d85;">{{ $department->name }} ({{ $department->code }})</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ route('departments.index') }}" style="color: #188ccc;">Departments</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Details</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="btn-group">
+            <a href="{{ route('departments.edit', $department->name) }}" class="btn btn-outline-info rounded-pill px-4 me-2">
+                <i class="fa fa-edit mr-1"></i> Edit
+            </a>
+            <form action="{{ route('departments.destroy', $department->id) }}" method="POST" onsubmit="return confirm('Are you sure?');" class="d-inline">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-outline-danger rounded-pill px-4">
+                    <i class="fa fa-trash mr-1"></i> Delete
+                </button>
+            </form>
+        </div>
+    </div>
 
-    {{-- Summary Section --}}
-    <div class="row mb-4">
+    <div class="row">
+        <!-- Teachers Column -->
         <div class="col-md-4">
-            <div class="card text-center shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Total Classes</h5>
-                    <h3 class="text-primary">{{ count($classes) }}
-</h3>
+            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                <div class="card-header border-0 bg-light py-3">
+                    <h5 class="mb-0 fw-bold text-dark"><i class="fa fa-user-md mr-2" style="color: #188ccc;"></i> Teachers</h5>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        @forelse($teachers as $teacher)
+                            <li class="list-group-item px-4 py-3 border-0 border-bottom">
+                                <div class="fw-bold text-dark">{{ $teacher->full_name }}</div>
+                                <small class="text-muted">{{ $teacher->email }}</small>
+                            </li>
+                        @empty
+                            <li class="list-group-item px-4 py-4 text-center text-muted border-0">No teachers assigned.</li>
+                        @endforelse
+                    </ul>
                 </div>
             </div>
         </div>
+
+        <!-- Classes Column -->
         <div class="col-md-4">
-            <div class="card text-center shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Total Students</h5>
-                    <h3 class="text-success">{{ count($students) }}</h3>
+            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                <div class="card-header border-0 bg-light py-3">
+                    <h5 class="mb-0 fw-bold text-dark"><i class="fa fa-building mr-2" style="color: #188ccc;"></i> Classes</h5>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        @forelse($classes as $class)
+                            <li class="list-group-item px-4 py-3 border-0 border-bottom">
+                                <div class="fw-bold text-dark">{{ $class->degree_program }} - {{ $class->semester }}</div>
+                                <small class="text-muted">Section: {{ $class->section }}</small>
+                            </li>
+                        @empty
+                            <li class="list-group-item px-4 py-4 text-center text-muted border-0">No classes registered.</li>
+                        @endforelse
+                    </ul>
                 </div>
             </div>
         </div>
+
+        <!-- Students Column -->
         <div class="col-md-4">
-            <div class="card text-center shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Total Teachers</h5>
-                    <h3 class="text-dark"> {{ count($teachers) }}</h3>
+            <div class="card shadow-sm border-0 rounded-4 mb-4">
+                <div class="card-header border-0 bg-light py-3">
+                    <h5 class="mb-0 fw-bold text-dark"><i class="fa fa-graduation-cap mr-2" style="color: #188ccc;"></i> Students</h5>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        @forelse($students as $student)
+                            <li class="list-group-item px-4 py-3 border-0 border-bottom">
+                                <div class="fw-bold text-dark">{{ $student->full_name }}</div>
+                                <small class="text-muted">Roll No: {{ $student->roll_no }}</small>
+                            </li>
+                        @empty
+                            <li class="list-group-item px-4 py-4 text-center text-muted border-0">No students enrolled.</li>
+                        @endforelse
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
-
-    {{-- Classes Table --}}
-    <div class="card mb-4">
-        <div class="card-header bg-primary text-white">
-            Classes in {{ $name }} ({{ count($classes) }}
-)
-        </div>
-        <div class="card-body">
-            @if($classes->isEmpty())
-                <p>No classes found for this department.</p>
-            @else
-                <div class="table-responsive">
-                    <table class="table table-striped table-bordered">
-                        <thead class="table-primary">
-                            <tr>
-                                <th>#</th>
-                                <th>Semester</th>
-                                <th>Year</th>
-                                <th>Section</th>
-                                <th>Degree Program</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($classes as $index => $class)
-                                <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ $class->semester }}</td>
-                                    <td>{{ $class->year }}</td>
-                                    <td>{{ $class->section }}</td>
-                                    <td>{{ $class->degree_program }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @endif
-        </div>
-    </div>
-
-    {{-- Students Table --}}
-    <div class="card mb-4">
-        <div class="card-header bg-success text-white">
-            Students in {{ $name }} ({{ count($students) }})
-        </div>
-        <div class="card-body">
-            @if($students->isEmpty())
-                <p>No students found for this department.</p>
-            @else
-                <div class="table-responsive">
-                    <table class="table table-striped table-bordered">
-                        <thead class="table-success">
-                            <tr>
-                                <th>#</th>
-                                <th>Name</th>
-                                <th>Roll No</th>
-                                <th>Degree Program</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($students as $index => $student)
-                                <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ $student->full_name }}</td>
-                                    <td>{{ $student->roll_no }}</td>
-                                    <td>{{ $student->degree_program }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @endif
-        </div>
-    </div>
-
-    {{-- Teachers Table --}}
-    <div class="card mb-4">
-        <div class="card-header bg-dark text-white">
-            Teachers in {{ $name }} ( {{ count($teachers) }})
-        </div>
-        <div class="card-body">
-            @if($teachers->isEmpty())
-                <p>No teachers found linked to this department.</p>
-            @else
-                <div class="table-responsive">
-                    <table class="table table-striped table-bordered">
-                        <thead class="table-dark text-white">
-                            <tr>
-                                <th>#</th>
-                                <th>Name</th>
-                                <th>Designation</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($teachers as $index => $teacher)
-                                <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ $teacher->full_name }}</td>
-                                    <td>{{ $teacher->designation }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @endif
-        </div>
-    </div>
-
-    {{-- Back Button --}}
-    <a href="{{ route('admin.department') }}" class="btn btn-secondary mt-3">Back to Departments</a>
 </div>
 
 <x-admin-footer />
